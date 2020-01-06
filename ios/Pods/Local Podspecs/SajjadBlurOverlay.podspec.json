@@ -1,0 +1,23 @@
+{
+  "name": "SajjadBlurOverlay",
+  "version": "1.0.0",
+  "summary": "SajjadBlurOverlay",
+  "homepage": "https://github.com/lvlrSajjad/react-native-blur-overlay",
+  "license": "MIT",
+  "authors": {
+    "author": "author@domain.cn"
+  },
+  "platforms": {
+    "ios": "7.0"
+  },
+  "source": {
+    "git": "https://github.com/lvlrSajjad/react-native-blur-overlay",
+    "tag": "master"
+  },
+  "source_files": "*.{h,m}",
+  "dependencies": {
+    "React": [
+
+    ]
+  }
+}

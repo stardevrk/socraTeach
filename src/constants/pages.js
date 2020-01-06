@@ -1,0 +1,22 @@
+export default {
+  APP: 'app',
+  AUTH: 'auth',
+  LOADING: 'loading',
+  INIT_SCREEN: 'init_screen',
+  SIGN_IN: 'sign_in',
+  SIGN_UP: 'sign_up',
+  PAY_TEACHING: 'pay_teaching',
+  PAY_LEARNING: 'pay_learning',
+  PAYMENT: 'payment',
+  SINGUP_FINISH: 'signup_finish',
+  HOME_SCREEN: 'init_screen',
+  LEARN_SUBJECT: 'learn_subject',
+  TEACH_SUBJECT: 'teach_subject',
+  CAMERA_ROLL: 'camera_roll',
+  CAMERA: 'camera',
+  PROBLEM_CROP: 'problem_crop',
+  SEARCH_SOPHIST: 'search_sophist',
+  CHOOSE_SOPHIST: 'choose_sophist',
+  PROBLEM_SOLVE: 'problem_solve',
+  CHOOSE_PROBLEM: 'choose_problem'
+}

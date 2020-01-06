@@ -1,0 +1,47 @@
+dependencies: \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/ViewManagers/RNSVGLineManager.m \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Target\ Support\ Files/RNSVG/RNSVG-prefix.pch \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/ViewManagers/RNSVGLineManager.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/ViewManagers/RNSVGRenderableManager.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/ViewManagers/RNSVGNodeManager.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/RNSVGNode.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/UIView+React.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTComponent.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/YGEnums.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/YGMacros.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Utils/RNSVGCGFCRule.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Elements/RNSVGSvgView.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Brushes/RNSVGPainter.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Utils/RCTConvert+RNSVG.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTConvert.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTAnimationType.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBorderStyle.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTDefines.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTInspectorDevServerHelper.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTPackagerConnection.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTLog.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTAssert.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTUtils.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTPointerEvents.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTTextDecorationLineType.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/Yoga.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/YGValue.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Utils/RNSVGVBMOS.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Utils/RNSVGUnits.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Utils/RNSVGLength.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Utils/RNSVGPathParser.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Brushes/RNSVGBrushType.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/RNSVGContainer.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTViewManager.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBridgeModule.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTEventDispatcher.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBridge.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBridgeDelegate.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTJavaScriptLoader.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTFrameUpdate.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTInvalidating.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/RNSVGRenderable.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Brushes/RNSVGBrush.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Utils/RNSVGVectorEffect.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Shapes/RNSVGLine.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native-svg/ios/Elements/RNSVGPath.h

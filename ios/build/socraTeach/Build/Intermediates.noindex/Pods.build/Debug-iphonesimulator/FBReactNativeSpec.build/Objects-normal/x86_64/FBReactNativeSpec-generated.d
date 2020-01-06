@@ -1,0 +1,37 @@
+dependencies: \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec-generated.mm \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Target\ Support\ Files/FBReactNativeSpec/FBReactNativeSpec-prefix.pch \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native/Libraries/FBReactNativeSpec/FBReactNativeSpec/FBReactNativeSpec.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/RCTRequired/RCTRequired/RCTRequired.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/RCTTypeSafety/RCTTypeSafety/RCTConvertHelpers.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/FBLazyVector/FBLazyVector/FBLazyVector.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/FBLazyVector/FBLazyVector/FBLazyIterator.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Optional.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Portability.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/portability/Config.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/CPortability.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Traits.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Utility.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/lang/Exception.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/CppAttributes.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/RCTTypeSafety/RCTTypeSafety/RCTTypedModuleConstants.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBridgeModule.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTDefines.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTInspectorDevServerHelper.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTPackagerConnection.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTCxxConvert.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTManagedPointer.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/ReactCommon/ReactCommon/RCTTurboModule.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBridge.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBridgeDelegate.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTJavaScriptLoader.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTFrameUpdate.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTInvalidating.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTModuleMethod.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBridgeMethod.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTNullability.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/ReactCommon/ReactCommon/JSCallInvoker.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/ReactCommon/ReactCommon/TurboModule.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-jsi/jsi/jsi.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-jsi/jsi/jsi-inl.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-cxxreact/cxxreact/MessageQueueThread.h

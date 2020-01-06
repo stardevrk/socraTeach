@@ -1,0 +1,29 @@
+dependencies: \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native/Libraries/TypeSafety/RCTConvertHelpers.mm \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Target\ Support\ Files/RCTTypeSafety/RCTTypeSafety-prefix.pch \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/node_modules/react-native/Libraries/TypeSafety/RCTConvertHelpers.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/FBLazyVector/FBLazyVector/FBLazyVector.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/FBLazyVector/FBLazyVector/FBLazyIterator.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Optional.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Portability.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/portability/Config.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/CPortability.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Traits.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/Utility.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/lang/Exception.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Folly/folly/CppAttributes.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTConvert.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTAnimationType.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTBorderStyle.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTDefines.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTInspectorDevServerHelper.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTPackagerConnection.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTLog.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTAssert.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTUtils.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTPointerEvents.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/React-Core/React/RCTTextDecorationLineType.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/Yoga.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/YGEnums.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/YGMacros.h \
+  /Volumes/Work/ReactNative/socraTeach/socraTeach/ios/Pods/Headers/Public/Yoga/yoga/YGValue.h
