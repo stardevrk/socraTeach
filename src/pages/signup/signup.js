@@ -11,10 +11,22 @@ import NavButton from '../../components/navButton';
 import navigationService from '../../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import pages from '../../constants/pages';
+import {validateEmail} from '../../service/utils';
 
 const LOGO_IMAGE = require('../../assets/images/logo.png');
 
 export default class Signup extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state ={
+      userName: '',
+      email: '',
+      password: '',
+      passwordConfirm: ''
+    }
+  }
     
     goForward = () => {
       navigationService.navigate(pages.PAY_TEACHING);
@@ -22,6 +34,22 @@ export default class Signup extends Component {
 
     goBack = () => {
       navigationService.pop();
+    }
+
+    _changeFirstName = (text) => {
+      this.setState({userName: text}); 
+    }
+
+    _changeEmail = (email) => {
+      this.setState({email: email});
+    }
+
+    _changePassword = (password) => {
+      this.setState({password: password});
+    }
+
+    _changePasswordConfirm = (password) => {
+      this.setState({passwordConfirm: password});
     }
 
     render () {
@@ -41,19 +69,23 @@ export default class Signup extends Component {
                     <BaseInput 
                       desc={'First Name'}
                       wrapperStyle={{marginBottom: getHeight(30)}}
+                      onChangeText={this._changeFirstName}
                     />
                     <BaseInput 
                       desc={'Email Address'}
                       wrapperStyle={{marginBottom: getHeight(30)}}
+                      onChangeText={this._changeEmail}
                     />
                     <BaseInput 
                       desc={'Country'}
                       wrapperStyle={{marginBottom: getHeight(30)}}
+                      onChangeText={this._changePassword}
                     />
                     <BaseInput 
                       desc={'Password'}
                       pwdType={true}
                       wrapperStyle={{marginBottom: getHeight(30)}}
+                      onChangeText={this._changePasswordConfirm}
                     />
                     <BaseInput 
                       desc={'Confirm Password'}

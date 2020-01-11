@@ -20,6 +20,7 @@ import ChooseSophist from '../pages/chSophist';
 import SolveScreen from '../pages/solve';
 import TeachSubject from '../pages/teach';
 import ChooseProblem from '../pages/chProblem';
+import Camera from '../pages/camera';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
@@ -32,6 +33,7 @@ const AppDrawer = createDrawerNavigator(
         [pages.HOME_SCREEN]: HomeScreen,
         [pages.LEARN_SUBJECT]: LearnSubject,
         [pages.CAMERA_ROLL]: PhotoLibrary,
+        [pages.CAMERA]: Camera,
         [pages.PROBLEM_CROP]: ProblemCrop,
         [pages.SEARCH_SOPHIST]: SearchSophist,
         [pages.CHOOSE_SOPHIST]: ChooseSophist,

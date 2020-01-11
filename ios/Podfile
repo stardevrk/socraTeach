@@ -34,6 +34,12 @@ target 'socraTeach' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'Firebase/Database'
+  pod 'Firebase/Messaging'
+  pod 'Firebase/Storage' 
+
   target 'socraTeachTests' do
     inherit! :search_paths
     # Pods for testing

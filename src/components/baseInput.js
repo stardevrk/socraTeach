@@ -29,7 +29,16 @@ const textDefault = {
   height: getHeight(20)
 }
 
-const ComonInput = ({desc, onChange, wrapperStyle, descStyle, textStyle, pwdType}) => {
+const errorDefault = {
+  color: 'red',
+  fontFamily: 'Montserrat-Medium',
+  fontSize: getHeight(12),
+  width: '100%',
+  paddingLeft: getWidth(10),
+  height: getHeight(20)
+}
+
+const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle}) => {
   return (
     <View
       style={{...wrapperDefault, ...wrapperStyle}}
@@ -37,32 +46,43 @@ const ComonInput = ({desc, onChange, wrapperStyle, descStyle, textStyle, pwdType
       <Text style={{...descDefault, ...descStyle}}>{desc}</Text>
       {
         pwdType == true ? 
-        <TextInput style={{...textDefault, ...textStyle}} onChange={onChange} secureTextEntry={true}></TextInput>
+        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} secureTextEntry={true}></TextInput>
         :
-        <TextInput style={{...textDefault, ...textStyle}} onChange={onChange}></TextInput>  
+        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText}></TextInput>  
       }
       
       <View style={{width: '100%', backgroundColor: '#FFFFFF', height: 2}} />
+      {
+        errorExist == true ? 
+        <Text style={{...errorDefault, ...errorStyle}}>{errorText}</Text>
+        : null
+      }
     </View>
   )
 };
 
 ComonInput.defaultProps = {
   desc: '',
-  onChange: null,
+  onChangeText: null,
   descStyle: {},
   textStyle: {},
   pwdType: false,
-  wrapperStyle: {}
+  wrapperStyle: {},
+  errorExist: false,
+  errorStyle: {},
+  errorText: ''
 };
 
 ComonInput.propTypes = {
   desc: PropTypes.string,
-  onChange: PropTypes.func,
+  onChangeText: PropTypes.func,
   descStyle: PropTypes.object,
   textStyle: PropTypes.object,
   pwdType: PropTypes.bool,
-  wrapperStyle: PropTypes.object
+  wrapperStyle: PropTypes.object,
+  errorText: PropTypes.bool,
+  errorStyle: PropTypes.object,
+  errorText: PropTypes.string
 };
 
 export default ComonInput;

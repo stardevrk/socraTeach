@@ -37,10 +37,14 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>App Needs to access to the camera</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>App needs to access to the microphone.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App Needs to access to the PhotoLibaray</string>
+	<string>App needs to access to the PhotoLibaray</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Montserrat-Bold.otf</string>

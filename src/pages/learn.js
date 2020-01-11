@@ -120,6 +120,10 @@ export default class LearnScreen extends Component {
       navigationService.navigate(pages.CAMERA_ROLL);
     }
 
+    cameraClick = () => {
+      navigationService.navigate(pages.CAMERA);
+    }
+
     render () {
       return (
           <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>

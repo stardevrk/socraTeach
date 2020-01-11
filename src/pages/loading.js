@@ -10,6 +10,7 @@ import Page from '../components/basePage';
 import {getHeight} from '../constants/dynamicSize';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
+import {appInitialized} from '../controller/init';
 
 export default class Loading extends Component {
 
@@ -17,6 +18,8 @@ export default class Loading extends Component {
         setTimeout(() => {
             navigationService.navigate(pages.AUTH);
         }, 3000);
+        console.log("Loading is finished!!!");
+        // appInitialized();
     }
 
     render () {
