@@ -5,7 +5,8 @@ import {
     Text,
     ActivityIndicator,
     Image,
-    SafeAreaView
+    SafeAreaView,
+    ScrollView
 } from 'react-native';
 import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
@@ -23,7 +24,8 @@ import Pencil from '../components/icons/pencil';
 import Hammer from '../components/icons/hammer';
 import {PURPLE_MAIN, BLACK_PRIMARY} from '../constants/colors';
 import MenuItem  from '../components/baseMenuItem';
-import { ScrollView } from 'react-native-gesture-handler';
+// import { ScrollView } from 'react-native-gesture-handler';
+import {auth} from '../constants/firebase';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const MENU_LOGO = require('../assets/images/logo-menu.png')
@@ -31,11 +33,19 @@ const MENU_LOGO = require('../assets/images/logo-menu.png')
 export default class MenuContent extends Component {
     
     loginClick = () => {
-        navigationService.navigate(pages.SIGN_IN);
+      navigationService.navigate(pages.SIGN_IN);
     }
 
     singupClick = () => {
         navigationService.navigate(pages.SIGN_UP);
+    }
+
+    onHomeClick = () => {
+      navigationService.navigate(pages.HOME_SCREEN);
+    }
+
+    onSignoutClick = () => {
+      auth.signOut();
     }
 
     render () {
@@ -73,47 +83,47 @@ export default class MenuContent extends Component {
                   <MenuItem 
                     text={'Transer to Bank'}
                     icon={<Arrow size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Teaching History'}
                     icon={<Clock size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Learning History'}
                     icon={<Clock size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Payment Method'}
                     icon={<Scard size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Bank Setup'}
                     icon={<Bank size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Help'}
                     icon={<Qmark size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Free Learning Sessions'}
                     icon={<Image source={LOGO_IMAGE} style={{width: getWidth(38.54), height: getHeight(20)}} resizeMode={'contain'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Claim Free Stylus'}
                     icon={<Pencil size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onHomeClick1}
                   />
                   <MenuItem 
                     text={'Legal'}
                     icon={<Hammer size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick}
+                    onClick={this.onSignoutClick}
                   />
                   <View style={styles.logoView}>
                     <Image style={{width: getWidth(150), height: getHeight(131)}} source={MENU_LOGO} resizeMode={'contain'} />

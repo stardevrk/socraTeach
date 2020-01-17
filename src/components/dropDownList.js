@@ -60,7 +60,8 @@ export default class ModalDropdown extends Component {
     onSelect: PropTypes.func,
     finalWidth: PropTypes.number,
     buttonStyle: PropTypes.object,
-    descPart: PropTypes.element
+    descPart: PropTypes.element,
+    onExtractBtnText: PropTypes.func
   };
 
   static defaultProps = {
@@ -74,7 +75,8 @@ export default class ModalDropdown extends Component {
     keyboardShouldPersistTaps: 'never',
     finalWidth: 100,
     buttonStyle: {},
-    descPart: null
+    descPart: null,
+    onExtractBtnText: () => {}
   };
 
   constructor(props) {
@@ -94,7 +96,7 @@ export default class ModalDropdown extends Component {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     let {buttonText, selectedIndex} = this.state;
     const {defaultIndex, defaultValue, options} = nextProps;
     buttonText = this._nextValue == null ? buttonText : this._nextValue;
@@ -377,7 +379,7 @@ export default class ModalDropdown extends Component {
   };
 
   _onRowPress(rowData, sectionID, rowID, highlightRow) {
-    const {onSelect, renderButtonText, onDropdownWillHide} = this.props;
+    const {onSelect, renderButtonText, onDropdownWillHide, onExtractBtnText} = this.props;
     console.log(rowData);
     if (!onSelect || onSelect(rowID, rowData) !== false) {
       highlightRow(sectionID, rowID);
@@ -388,6 +390,7 @@ export default class ModalDropdown extends Component {
         buttonText: value,
         selectedIndex: rowID
       });
+      onExtractBtnText(value);
     }
     if (!onDropdownWillHide || onDropdownWillHide() !== false) {
       this.setState({

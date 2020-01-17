@@ -13,23 +13,44 @@ import navigationService from '../../navigation/navigationService';
 import pages from '../../constants/pages';
 import ProfileNote2 from '../../components/profileNote2';
 import NavButton from '../../components/navButton';
+import {connect} from 'react-redux';
+import {auth, firestore} from '../../constants/firebase';
 
 const WORD_LOGO = require('../../assets/images/word-logo.png');
 const LOGO_IMAGE = require('../../assets/images/logo.png');
 const HAT_IMAGE = require('../../assets/images/hat.png')
 
-export default class Finish extends Component {
+class Finish extends Component {
 
   constructor(props) {
     super(props);
 
+    let signupInfo = props.signupInfo;
+    console.log("SignupInfo = ", signupInfo);
     this.state = {
-      name: 'Salmon'
+      name: signupInfo.userName,
+      loading: false
     }
   }
 
   goForward = () => {
-    navigationService.navigate(pages.APP);
+    const {signupInfo} = this.props;
+    this.setState({loading: true});
+    auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
+      console.log("Signup Result = ", result);
+      firestore.collection('users').doc(result.user.uid).set({
+        country: signupInfo.country,
+        email: signupInfo.email,
+        userName: signupInfo.userName,
+        stripeToken: signupInfo.stripeToken,
+        learnPay: signupInfo.learnPay,
+        teachPay: signupInfo.teachPay,
+        lastLogin: Date.now()
+      })
+    }).finally(() => {
+      this.setState({loading: false});
+    })
+    // navigationService.navigate(pages.APP);
     // navigationService.popToTop();
   }
 
@@ -40,6 +61,12 @@ export default class Finish extends Component {
   render () {
       return (
           <Page>
+            {
+              this.state.loading == true ? 
+              <View style={styles.container}>
+                <ActivityIndicator size={'large'} />
+              </View>
+              :
               <View style={styles.container} >
                   <NavButton 
                     iconName={'md-arrow-back'} 
@@ -80,6 +107,7 @@ export default class Finish extends Component {
                     onClick={this.goForward}
                   />
               </View>
+            }
           </Page>
       )
   }
@@ -125,3 +153,9 @@ const styles = StyleSheet.create({
       color: '#FFFFFF'
     }
 })
+
+const mapStateToProps = (state) => ({
+  signupInfo: state.signupInfo
+});
+
+export default connect(mapStateToProps)(Finish)

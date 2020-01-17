@@ -19,18 +19,20 @@
 	<key>STORAGE_BUCKET</key>
 	<string>socrateach-65b77.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_ANALYTICS_ENABLED</key>
-	<false></false>
+	<false/>
 	<key>IS_APPINVITE_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_GCM_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>IS_SIGNIN_ENABLED</key>
-	<true></true>
+	<true/>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:118735379610:ios:64eafdeedf6c4c6480d323</string>
 	<key>DATABASE_URL</key>
 	<string>https://socrateach-65b77.firebaseio.com</string>
+	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>
+	<string>YES</string>
 </dict>
 </plist>

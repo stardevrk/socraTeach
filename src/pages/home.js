@@ -13,22 +13,47 @@ import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
+import {connect} from 'react-redux';
+import {fetchInitProblem} from '../controller/problem';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
-export default class HomeScreen extends Component {
+class HomeScreen extends Component {
     
+    constructor(props) {
+        super(props);
+
+        this.state = {}
+    }
     learnClick = () => {
         navigationService.navigate(pages.LEARN_SUBJECT);
     }
 
     teachClick = () => {
         navigationService.navigate(pages.TEACH_SUBJECT);
-    }    
+    }
+    
+    static getDerivedStateFromProps (props, state) {
+        // let subjectProps = props.subjects;
+
+        // if (subjectProps == undefined || subjectProps == null) {
+        //     return null;
+        // }
+        
+        // let subjectArray = subjectProps.subject;
+        // subjectArray.forEach(element => {
+        //     const subject = element.name.toLowerCase();
+        //     props.dispatch(fetchInitProblem(subject));
+        // });
+        
+        
+        return null;
+    }
 
     render () {
         return (
             <MenuPage>
+                <View style={styles.container}>
                     <Image
                         source={LOGO_IMAGE}
                         style={styles.logoImage}
@@ -43,6 +68,7 @@ export default class HomeScreen extends Component {
                         text={'TEACH'}
                         onClick={this.teachClick}
                     />
+                </View>
             </MenuPage>
         )
     }
@@ -67,3 +93,9 @@ const styles = StyleSheet.create({
         
     }
 })
+
+const mapStateToProps = (state) => ({
+    subjects: state.subject
+  })
+  
+  export default connect(mapStateToProps)(HomeScreen);

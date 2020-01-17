@@ -9,6 +9,11 @@ import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import com.gettipsi.stripe.StripeReactPackage;
+import io.invertase.firebase.auth.RNFirebaseAuthPackage;
+import io.invertase.firebase.firestore.RNFirebaseFirestorePackage;
+import io.invertase.firebase.database.RNFirebaseDatabasePackage;
+import io.invertase.firebase.storage.RNFirebaseStoragePackage;
 
 public class MainApplication extends Application implements ReactApplication {
 
@@ -25,6 +30,11 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
+          packages.add(new StripeReactPackage());
+          packages.add(new RNFirebaseAuthPackage());
+          packages.add(new RNFirebaseDatabasePackage());
+          packages.add(new RNFirebaseFirestorePackage());
+          packages.add(new RNFirebaseStoragePackage());
           return packages;
         }
 

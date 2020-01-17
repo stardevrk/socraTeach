@@ -16,7 +16,10 @@ import MenuButton from '../components/menuButton';
 import Crop from '../components/icons/crop';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
+import {uploadImage} from '../service/firebase';
+import {auth, firestore} from '../constants/firebase';
 // import BlurOverlay,{closeOverlay,openOverlay} from 'react-native-blur-overlay';
+import ImagePicker from 'react-native-image-picker';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -26,37 +29,70 @@ export default class ImageCrop extends Component {
 
   constructor(props) {
     super(props);
+    this.state = {
+      imageSource: '',
+      subject: '',
+      loading: false
+    }
 
+    props.navigation.addListener('didFocus', payload => {
+      // console.log("Navigation Event Payload === ", payload);
+      this.setState({imageSource: payload.action.params.imageUri, subject: payload.action.params.subject});
+    })
   }
 
-  goForward = () => {
-    navigationService.navigate(pages.SEARCH_SOPHIST);
+  goForward = async () => {
+    if (this.state.imageSource == '' || this.state.subject == '') {
+      console.log("Not be able to go forward")
+      return;
+    }
+    this.setState({loading: true});    
+    uploadImage(this.state.imageSource).then((data) => {
+      let newDocRef  = firestore.collection(this.state.subject).doc();
+      newDocRef.set({
+        problemId: newDocRef.id,
+        posterId: auth.currentUser.uid,
+        problemImage: data,
+        updateTime: Date.now(),
+        sessionExist: false,
+        subject: this.state.subject
+      }).finally(() => {
+        this.setState({loading: false});
+      })
+    })
+    // navigationService.navigate(pages.SEARCH_SOPHIST);
   }
 
   componentDidMount() {
     // openOverlay();
+    
   }
 
   render () {
+    
       return (
           <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
-            <View style={styles.headView}>
-              
-                <Crop size={getHeight(44)} color={'#FFFFFF'} />
-                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(24), flex: 1, textAlign: 'center'}}>
-                  Select Your Problem
-                </Text>
-              
+            <View style={styles.container}>
+              <View style={styles.headView}>
+                
+                  <Crop size={getHeight(44)} color={'#FFFFFF'} />
+                  <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(24), flex: 1, textAlign: 'center'}}>
+                    Select Your Problem
+                  </Text>
+                
+              </View>
+              <View style={styles.libraryView}>
+                <Image style={{width: '100%', height: '100%', borderRadius: getHeight(10),}} source={{uri: this.state.imageSource}}/>
+              </View>
+              <View style={styles.btnView}>
+                <BaseButton 
+                    text={'CONTINUE'}
+                    onClick={this.goForward}
+                    loading={this.state.loading}
+                />
+              </View>
             </View>
-            <View style={styles.libraryView}>
             
-            </View>
-            <View style={styles.btnView}>
-              <BaseButton 
-                  text={'CONTINUE'}
-                  onClick={this.goForward}
-              />
-            </View>
           </MenuPage>
       )
   }

@@ -65,7 +65,7 @@ MenuPage.propTypes = {
   renderTitle: PropTypes.func,
   renderRightItem: PropTypes.func,
   children: PropTypes.element,
-  backgroundColor: PropTypes.object,
+  backgroundColor: PropTypes.string,
   menuBtnColor: PropTypes.string
 };
 

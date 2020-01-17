@@ -5,7 +5,6 @@ const styles = StyleSheet.create({
     width: '100%',
     position: 'absolute',
     alignItems: 'center',
-    backgroundColor: 'red',
     shadowColor: "#000",
     shadowOffset: {
       width: 0,

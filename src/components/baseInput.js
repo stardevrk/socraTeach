@@ -1,5 +1,5 @@
 import React from 'react';
-import {TextInput, Text, View} from 'react-native';
+import {TextInput, Text, View, Platform} from 'react-native';
 import {PURPLE_MAIN} from '../constants/colors';
 import PropTypes from 'prop-types';
 import {getHeight, getWidth} from '../constants/dynamicSize';
@@ -21,12 +21,13 @@ const descDefault = {
 };
 
 const textDefault = {
-  color: '#FFFFFF',
+  color: 'white',
   fontFamily: 'Montserrat-Medium',
   fontSize: getHeight(10),
   width: '100%',
   paddingLeft: getWidth(10),
-  height: getHeight(20)
+  height: getHeight(20),
+  paddingVertical: 0
 }
 
 const errorDefault = {
@@ -35,10 +36,9 @@ const errorDefault = {
   fontSize: getHeight(12),
   width: '100%',
   paddingLeft: getWidth(10),
-  height: getHeight(20)
 }
 
-const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle}) => {
+const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder}) => {
   return (
     <View
       style={{...wrapperDefault, ...wrapperStyle}}
@@ -46,9 +46,9 @@ const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwd
       <Text style={{...descDefault, ...descStyle}}>{desc}</Text>
       {
         pwdType == true ? 
-        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} secureTextEntry={true}></TextInput>
+        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d3d3d3'}></TextInput>
         :
-        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText}></TextInput>  
+        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'}></TextInput>  
       }
       
       <View style={{width: '100%', backgroundColor: '#FFFFFF', height: 2}} />
@@ -70,7 +70,8 @@ ComonInput.defaultProps = {
   wrapperStyle: {},
   errorExist: false,
   errorStyle: {},
-  errorText: ''
+  errorText: '',
+  placeholder: ''
 };
 
 ComonInput.propTypes = {
@@ -82,7 +83,8 @@ ComonInput.propTypes = {
   wrapperStyle: PropTypes.object,
   errorText: PropTypes.bool,
   errorStyle: PropTypes.object,
-  errorText: PropTypes.string
+  errorText: PropTypes.string,
+  placeholder: PropTypes.string
 };
 
 export default ComonInput;

@@ -15,12 +15,36 @@ import navigationService from '../../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {PURPLE_SECOND} from '../../constants/colors';
 import pages from '../../constants/pages';
+import {connect} from 'react-redux';
+import {signupLearnInfo} from '../../model/actions/signupAC';
 
 const LOGO_IMAGE = require('../../assets/images/logo.png');
 
-export default class PayLearning extends Component {
+class PayLearning extends Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state={
+      checked: false,
+      paypalLearn: false,
+      creditLearn: false,
+      learnSkipped: false
+    }
+
+    console.log(this.props.signupInfo);
+  }
     
     goForward = () => {
+      const {dispatch} = this.props;
+      if ( this.state.checked == false) {
+        return;
+      }
+      dispatch(signupLearnInfo({
+        paypalLearn: this.state.paypalLearn,
+        creditLearn: !this.state.paypalLearn,
+        learnPaySkipped: false
+      }));
       navigationService.navigate(pages.PAYMENT);
     }
 
@@ -29,11 +53,14 @@ export default class PayLearning extends Component {
     }
 
     goSkip = () => {
+      dispatch(signupLearnInfo({
+        learnPaySkipped: true
+      }));
       navigationService.navigate(pages.PAYMENT);
     }
 
-    checkSecond = () => {
-
+    checkPaypal = () => {
+      this.setState({paypalLearn: !this.state.paypalLearn, checked: true});
     }
 
     render () {
@@ -65,13 +92,13 @@ export default class PayLearning extends Component {
                     >
                       <ProfileOption 
                         text={'Paypal'}
-                        checked={true}
-                        onClick={this.checkFirst}
+                        checked={this.state.paypalLearn && this.state.checked}
+                        onClick={this.checkPaypal}
                       />
                       <ProfileOption 
                         text={'Credit Card'}
-                        checked={false}
-                        onClick={this.checkSecond}
+                        checked={!this.state.paypalLearn && this.state.checked}
+                        onClick={this.checkPaypal}
                       />
                     </View>
                     <ProfileNote2
@@ -156,3 +183,9 @@ const styles = StyleSheet.create({
       marginBottom: getHeight(20.57)
     }
 })
+
+const mapStateToProps = (state) => ({
+  signupInfo: state.signupInfo
+})
+
+export default connect(mapStateToProps)(PayLearning);

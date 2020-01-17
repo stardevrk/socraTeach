@@ -112,11 +112,11 @@ export default class ImageCell extends React.PureComponent {
 		return { width: this.props.data.width, height: this.props.data.height };
 	}
 
-	_onPressImage = (uri) => {
+	_onPressImage = (uri, assetURL) => {
 		// Wait for the image to load before reacting to press events
 		this.setState({checked: !this.state.checked});
 		// if (this.state.imageLoaded) {
-			this.props.onPressImage(this.props.imageId, this.props.index, uri);
+			this.props.onPressImage(this.props.imageId, this.props.index, uri, assetURL);
 		// }
 	}
 
@@ -141,7 +141,7 @@ export default class ImageCell extends React.PureComponent {
 					marginRight: (index + 1) % imagesPerRow === 0
 						? imageMargin : imageMargin / 2
 				}}
-				onPress={() => this._onPressImage(source.uri)}
+				onPress={() => this._onPressImage(source.uri, source.assetURL)}
 			>
 				<View style={{width: this._imageSize, height: this._imageSize, justifyContent: 'center', alignItems: 'center'}}>
 					{/* {header}

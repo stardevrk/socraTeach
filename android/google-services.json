@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "118735379610",
+    "firebase_url": "https://socrateach-65b77.firebaseio.com",
+    "project_id": "socrateach-65b77",
+    "storage_bucket": "socrateach-65b77.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:118735379610:android:4be23743f25db47c80d323",
+        "android_client_info": {
+          "package_name": "com.socrateach"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "118735379610-sbkhga5s3gp16o7d81v2guhoguna251p.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChgUJdIGvim1K_gHvoxVteW5tkH0yvI3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "118735379610-sbkhga5s3gp16o7d81v2guhoguna251p.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "118735379610-jr1ljodtflto6lsnfrcse6ub7e239lm5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.birdiefire.pa"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

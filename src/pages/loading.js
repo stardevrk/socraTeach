@@ -11,15 +11,16 @@ import {getHeight} from '../constants/dynamicSize';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {appInitialized} from '../controller/init';
+import {connect} from 'react-redux';
 
-export default class Loading extends Component {
+class Loading extends Component {
 
     componentDidMount() {
-        setTimeout(() => {
-            navigationService.navigate(pages.AUTH);
-        }, 3000);
-        console.log("Loading is finished!!!");
-        // appInitialized();
+        const {dispatch} = this.props;
+        // setTimeout(() => {
+        //     navigationService.navigate(pages.AUTH);
+        // }, 3000);
+        dispatch(appInitialized());
     }
 
     render () {
@@ -52,3 +53,8 @@ const styles = StyleSheet.create({
         fontFamily: 'Montserrat-Bold',
     }
 });
+
+const mapStateToProps = (state) => ({
+})
+
+export default connect(mapStateToProps)(Loading);

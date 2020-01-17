@@ -176,11 +176,13 @@ export default class CameraRollBrowser extends React.PureComponent {
 
     if (assets.length > 0) {
       var extractedData = assets.map((asset, index) => {
+        console.log("Camera Roll Assets =====", asset, index);
         return {
           index: index,
           id: Math.random().toString(36).substring(7),
           source: {
-            uri: asset.node.image.uri
+            uri: asset.node.image.uri,
+            assetURL: asset.node.image.assetURL
           },
           dimensions: {
             width: asset.node.image.width,
@@ -226,7 +228,8 @@ export default class CameraRollBrowser extends React.PureComponent {
                 id: Math.random().toString(36).substring(7),
                 ...asset,
                 source: source,
-                uri: source.uri
+                uri: source.uri,
+                assetURL: source.assetURL
               };
             }
           });
@@ -316,9 +319,9 @@ export default class CameraRollBrowser extends React.PureComponent {
     );
   }
 
-  _clickImage = (imageId, index, uri) => {
+  _clickImage = (imageId, index, uri, assetURL) => {
     this.setState({selectedId: imageId});
-    this.props.selectImage(imageId, index, uri);
+    this.props.selectImage(imageId, index, uri, assetURL);
   }
 
   _renderImage = ({ item, index }) => {

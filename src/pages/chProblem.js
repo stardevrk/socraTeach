@@ -23,6 +23,12 @@ import pages from '../constants/pages';
 import ModalDropdown from '../components/dropDownCategory';
 import MenuPage from '../components/menuPage';
 import Swiper from '../components/Swiper/index';
+import {connect} from 'react-redux';
+import _ from 'lodash';
+// import {clearProblems} from '../model/actions/problemAC';
+import {fetchInitProblem, clearSubjectProblems} from '../controller/problem';
+import {selectProblem} from '../controller/teach';
+
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -35,11 +41,13 @@ function * range (start, end) {
   }
 }
 
-export default class TeachScreen extends Component {
+class ChooseProblem extends Component {
 
   constructor(props) {
     super(props);
 
+    let problems = _.get(props.problem, 'problems', -1);
+    console.log("Constructor Problems =====", problems);
     this.state={
       modalOpened: false,
       subjectArray: [
@@ -60,21 +68,28 @@ export default class TeachScreen extends Component {
           name: 'Chemistry'
         }
       ],
-      cards: [...range(1, 50)],
+      // cards: [...range(1, 50)],
+      cards: problems,
+      cardLength: problems.length == undefined ? 0 : problems.length,
       swipedAllCards: false,
       swipeDirection: '',
-      cardIndex: 0
+      cardIndex: 0,
+      subject: '',
+      newSubjectCards: false
     }
+
+    props.navigation.addListener('didFocus', payload => {
+      // console.log("Navigation Event Payload === ", payload);
+      this.setState({subject: payload.action.params.subject});
+    })
   }
 
   modalWillShow = () => {
-    console.log("$$$$$$$");
     this.setState({modalOpened: true});
     // openOverlay();
   }
 
   modalWillHide = () => {
-    console.log("######");
     this.setState({modalOpened: false});
     // closeOverlay();
   }
@@ -122,14 +137,21 @@ export default class TeachScreen extends Component {
   
     renderCard = (card, index) => {
       return (
-        <View style={{width: '100%', height: getHeight(372), backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center'}}>
-          <Text style={styles.text}>{card} - {index}</Text>
+        <View style={{width: '100%', height: getHeight(372), backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', borderRadius: 5}}>
+          {
+            card != undefined ? 
+            <Image style={{width: '100%', height: '100%'}} resizeMode={'contain'} source={{uri: card['problemImage']}}/>
+            : 
+            null
+          }
+          
         </View>
       )
     };
   
     onSwiped = (type) => {
-      console.log(`on swiped ${type}`)
+      this.setState({newSubjectCards: false});
+      // console.log(`on swiped ${type}`)
     }
   
     onSwipedAllCards = () => {
@@ -143,7 +165,7 @@ export default class TeachScreen extends Component {
     };
 
     renderModalListText = (rowData) => {
-      console.log('rowData', rowData);
+      // console.log('rowData', rowData);
       return `${rowData.name}`;
     }
 
@@ -157,7 +179,38 @@ export default class TeachScreen extends Component {
       navigationService.navigate(pages.CAMERA_ROLL);
     }
 
+  static getDerivedStateFromProps (props, state) {
+    // const problems = props.problem;
+    let problems = _.get(props.problem, 'problems', []);
+    // console.log("Problems ==== ", problems);
+    // const currentSubject = state.subject.toLowerCase();
+    // const problemObject = _.get(problems, currentSubject, {});
+    // const problemList = _.get(problemObject, 'problems', []);
+    
+    return {
+      cards: problems,
+    }
+    
+  }
+
+  _subjectSelect = (subject) => {
+    this.setState({subject: subject, newSubjectCards: true});
+    const {dispatch} = this.props;
+    dispatch(clearSubjectProblems(subject.toLowerCase()));
+    dispatch(fetchInitProblem(subject.toLowerCase()));
+    // this.setState({state: this.state, cardIndex: 0});
+  }
+
+  _swipeSelect = (index) => {
+    // console.log("Swipe Data *******", index);
+    const {cards, subject} = this.state;
+    if (index != undefined && index != null) {
+      selectProblem(subject, cards[index]);
+    }
+  }
+
     render () {
+      const {subjects} = this.props;
       return (
           <MenuPage forceInset={{bottom: 'never'}} titleText={'TEACH'}>
             <View style={styles.workingPart}>
@@ -167,7 +220,7 @@ export default class TeachScreen extends Component {
                 Assignments
               </Text>
               <View style={styles.modalPart}>
-                <ModalDropdown options={this.state.subjectArray} 
+                <ModalDropdown options={subjects.subject} 
                   descPart={
                       <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
                   }
@@ -181,6 +234,8 @@ export default class TeachScreen extends Component {
                   renderSeparator={this.renderModalSeparator}
                   renderRow={this.renderModalListRow}
                   renderButtonText={this.renderModalListText}
+                  onExtractBtnText={this._subjectSelect}
+                  defaultValue={this.state.subject}
                 >
                 </ModalDropdown>
               </View>
@@ -191,11 +246,12 @@ export default class TeachScreen extends Component {
                   }}
                   onSwiped={() => this.onSwiped('general')}
                   onSwipedLeft={() => this.onSwiped('left')}
-                  onSwipedRight={() => this.onSwiped('right')}
+                  onSwipedRight={this._swipeSelect}
                   onSwipedTop={() => this.onSwiped('top')}
                   onSwipedBottom={() => this.onSwiped('bottom')}
                   onTapCard={this.swipeLeft}
                   cards={this.state.cards}
+                  cardLength={this.state.cardLength}
                   cardIndex={this.state.cardIndex}
                   cardVerticalMargin={0}
                   renderCard={this.renderCard}
@@ -203,6 +259,8 @@ export default class TeachScreen extends Component {
                   stackSize={3}
                   stackSeparation={15}
                   useViewOverflow={true}
+                  disableBottomSwipe={true}
+                  newSubjectCards={this.state.newSubjectCards}
                   containerStyle={{justifyContent: 'center', alignItems: 'center', flex: 1, width: '100%'}}
                   overlayLabels={{
                     bottom: {
@@ -387,3 +445,10 @@ const styles = StyleSheet.create({
       backgroundColor: 'transparent'
     }
 })
+
+const mapStateToProps = (state) => ({
+  subjects: state.subject,
+  problem: state.problem
+})
+
+export default connect(mapStateToProps)(ChooseProblem);

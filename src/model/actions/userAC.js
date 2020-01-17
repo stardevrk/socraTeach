@@ -6,7 +6,12 @@ export function logoutUser () {
     }
 }
 
-
+export function fetchUser(user) {
+    return {
+        type: types.RECEIVE_USER,
+        user
+    }
+}
 
 export function clear (user) {
     return {

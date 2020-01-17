@@ -12,10 +12,12 @@ import navigationService from '../../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import pages from '../../constants/pages';
 import {validateEmail} from '../../service/utils';
+import {connect} from 'react-redux';
+import {signupUserInfo} from '../../model/actions/signupAC';
 
 const LOGO_IMAGE = require('../../assets/images/logo.png');
 
-export default class Signup extends Component {
+class Signup extends Component {
 
   constructor(props) {
     super(props);
@@ -24,11 +26,46 @@ export default class Signup extends Component {
       userName: '',
       email: '',
       password: '',
-      passwordConfirm: ''
+      passwordConfirm: '',
+      errorEmail: false,
+      passwordDismatch: false,
+      country: '',
+      emptyName: false,
+      emptyEmail: false,
+      emptyCountry: false,
+      emptyPassword: false,
+      emptyPasswordConfirm: false
     }
   }
     
     goForward = () => {
+      if (this.state.userName == '') {
+        this.setState({emptyName: true});
+        return;
+      }
+      if (this.state.email == '') {
+        this.setState({emptyEmail: true});
+        return;
+      }
+      if (this.state.country == '') {
+        this.setState({emptyCountry: true});
+        return;
+      }
+      if (this.state.password == '') {
+        this.setState({emptyPassword: true});
+        return;
+      }
+      if (this.state.passwordConfirm == '') {
+        this.setState({emptyPasswordConfirm: true});
+        return;
+      }
+      const {dispatch} = this.props;
+      dispatch(signupUserInfo({
+        userName: this.state.userName,
+        email: this.state.email,
+        country: this.state.country,
+        password: this.state.password
+      }));
       navigationService.navigate(pages.PAY_TEACHING);
     }
 
@@ -37,19 +74,59 @@ export default class Signup extends Component {
     }
 
     _changeFirstName = (text) => {
+      
+      if (text != '') {
+        this.setState({emptyName: false});
+      }
+      
       this.setState({userName: text}); 
     }
 
     _changeEmail = (email) => {
       this.setState({email: email});
+      
+      if (email != '') {
+        this.setState({emptyEmail: false});
+      }
+
+      if (!validateEmail(email)) {
+        this.setState({errorEmail: true});
+      } else {
+        this.setState({errorEmail: false});
+      }
+    }
+
+    _changeCountry = (country) => {
+      if (country != '') {
+        this.setState({emptyCountry: false});
+      }
+      this.setState({country: country});
     }
 
     _changePassword = (password) => {
+      if (password != '') {
+        this.setState({emptyPassword: false});
+      }
       this.setState({password: password});
+      if (this.state.passwordConfirm != '' && this.state.passwordConfirm != password) {
+        this.setState({passwordDismatch: true});
+      } 
+      if (this.state.passwordConfirm != '' && this.state.passwordConfirm == password) {
+        this.setState({passwordDismatch: false});
+      }
     }
 
     _changePasswordConfirm = (password) => {
       this.setState({passwordConfirm: password});
+      if (password != '') {
+        this.setState({emptyPasswordConfirm: false});
+      }
+      if (this.state.password != password) {
+        this.setState({passwordDismatch: true})
+      } else {
+        this.setState({passwordDismatch: false})
+      }
+      
     }
 
     render () {
@@ -70,27 +147,38 @@ export default class Signup extends Component {
                       desc={'First Name'}
                       wrapperStyle={{marginBottom: getHeight(30)}}
                       onChangeText={this._changeFirstName}
+                      errorExist={this.state.emptyName}
+                      errorText={'Required!'}
                     />
                     <BaseInput 
                       desc={'Email Address'}
                       wrapperStyle={{marginBottom: getHeight(30)}}
                       onChangeText={this._changeEmail}
+                      errorExist={this.state.errorEmail || this.state.emptyEmail}
+                      errorText={this.state.emptyEmail == true ? 'Required!' : 'Invalid Email!'}
                     />
                     <BaseInput 
                       desc={'Country'}
                       wrapperStyle={{marginBottom: getHeight(30)}}
-                      onChangeText={this._changePassword}
+                      onChangeText={this._changeCountry}
+                      errorExist={this.state.emptyCountry}
+                      errorText={'Required!'}
                     />
                     <BaseInput 
                       desc={'Password'}
                       pwdType={true}
                       wrapperStyle={{marginBottom: getHeight(30)}}
-                      onChangeText={this._changePasswordConfirm}
+                      onChangeText={this._changePassword}
+                      errorExist={this.state.passwordDismatch || this.state.emptyPassword}
+                      errorText={this.state.emptyPassword == true ? 'Required!' : 'Password Dismatch!'}
                     />
                     <BaseInput 
                       desc={'Confirm Password'}
                       pwdType={true}
                       wrapperStyle={{marginBottom: getHeight(64)}}
+                      onChangeText={this._changePasswordConfirm}
+                      errorExist={this.state.emptyPasswordConfirm}
+                      errorText={'Required!'}
                     />
                     
                     <BaseButton 
@@ -127,3 +215,8 @@ const styles = StyleSheet.create({
         marginBottom: getHeight(23),
     }
 })
+
+const mapStateToProps = (state) => ({
+})
+
+export default connect(mapStateToProps)(Signup);

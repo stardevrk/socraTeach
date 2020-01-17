@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     Image,
     TouchableOpacity,
+    Alert
 } from 'react-native';
 import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
@@ -21,10 +22,12 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import ModalDropdown from '../components/dropDownList';
 import MenuPage from '../components/menuPage';
+import ImagePicker from 'react-native-image-picker';
+import {connect} from 'react-redux';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
-export default class LearnScreen extends Component {
+class LearnScreen extends Component {
 
   constructor(props) {
     super(props);
@@ -48,8 +51,11 @@ export default class LearnScreen extends Component {
           iconName: 'chemistry',
           name: 'Chemistry'
         }
-      ]
+      ],
+      subject: ''
     }
+
+    console.log("Redux Store Subjects =", props.subjects);
   }
 
   modalWillShow = () => {
@@ -64,67 +70,135 @@ export default class LearnScreen extends Component {
     // closeOverlay();
   }
 
-    renderModalListRow = (rowData, rowID, highlighted) => {
-      switch (rowData.iconName) {
-        case 'algebra': 
-          return (
-            <View style={styles.mListItem}>
-              <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'physics': 
-          return (
-            <View style={styles.mListItem}>
-              <Physics size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'geometry': 
-          return (
-            <View style={styles.mListItem}>
-              <Geometry size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'chemistry': 
-          return (
-            <View style={styles.mListItem}>
-              <Chemistry size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        default:
-          return (
-            <View style={styles.mListItem}>
-              <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-      }
-      
+  renderModalListRow = (rowData, rowID, highlighted) => {
+    switch (rowData.iconName) {
+      case 'algebra': 
+        return (
+          <View style={styles.mListItem}>
+            <Algebra size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'physics': 
+        return (
+          <View style={styles.mListItem}>
+            <Physics size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'geometry': 
+        return (
+          <View style={styles.mListItem}>
+            <Geometry size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'chemistry': 
+        return (
+          <View style={styles.mListItem}>
+            <Chemistry size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      default:
+        return (
+          <View style={styles.mListItem}>
+            <Algebra size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
     }
+    
+  }
 
-    renderModalListText = (rowData) => {
-      console.log('rowData', rowData);
-      return `${rowData.name}`;
-    }
+  renderModalListText = (rowData) => {
+    console.log('rowData', rowData);
+    return `${rowData.name}`;
+  }
 
-    renderModalSeparator = () => {
-      return (
-        <View></View>
+  renderModalSeparator = () => {
+    return (
+      <View></View>
+    )
+  }
+
+  checkSubject = () => {
+    if (this.state.subject == '') {
+      Alert.alert(
+        'YOUR SUBJECT',
+        'Please select your subject',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
       )
     }
+  }
 
-    libraryClick = () => {
-      navigationService.navigate(pages.CAMERA_ROLL);
+  libraryClick = () => {
+    if (this.state.subject == '') {
+      Alert.alert(
+        'YOUR SUBJECT',
+        'Please select your subject',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
     }
+    const options = {
+      title: 'Select Problem Image',
+      customButtons: [],
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchImageLibrary(options, (response) => {
+      console.log("Image Picker Response = ", response.uri);
+      if (response.uri != undefined && response.uri != null && response.uri != '' ) {
+        const subject = this.state.subject.toLowerCase();
+        navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, subject: subject});
+      }
+    })
+    
+  }
 
-    cameraClick = () => {
-      navigationService.navigate(pages.CAMERA);
+  cameraClick = () => {
+    if (this.state.subject == '') {
+      Alert.alert(
+        'YOUR SUBJECT',
+        'Please select your subject',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
     }
+    navigationService.navigate(pages.CAMERA);
+  }
+
+  _subjectSelect = (subject) => {
+    // console.log("Subject Text = ", subject);
+    this.setState({subject: subject});
+  }
 
     render () {
+      const {subjects} = this.props;
       return (
           <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
             <View style={styles.workingPart}>
@@ -134,7 +208,7 @@ export default class LearnScreen extends Component {
                 Subject
               </Text>
               <View style={styles.modalPart}>
-                <ModalDropdown options={this.state.subjectArray} 
+                <ModalDropdown options={subjects.subject} 
                   descPart={
                     <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
                       <Text style={styles.dropDescText}>
@@ -153,6 +227,7 @@ export default class LearnScreen extends Component {
                   renderSeparator={this.renderModalSeparator}
                   renderRow={this.renderModalListRow}
                   renderButtonText={this.renderModalListText}
+                  onExtractBtnText={this._subjectSelect}
                 >
                 </ModalDropdown>
               </View>
@@ -265,3 +340,9 @@ const styles = StyleSheet.create({
       marginLeft: getWidth(21)
     }
 })
+
+const mapStateToProps = (state) => ({
+  subjects: state.subject
+})
+
+export default connect(mapStateToProps)(LearnScreen);

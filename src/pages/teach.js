@@ -6,6 +6,7 @@ import {
     ActivityIndicator,
     Image,
     TouchableOpacity,
+    Alert
 } from 'react-native';
 import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
@@ -21,10 +22,13 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import ModalDropdown from '../components/dropDownList';
 import MenuPage from '../components/menuPage';
+import {connect} from 'react-redux';
+import _ from 'lodash';
+import {fetchInitProblem} from '../controller/problem';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
-export default class TeachScreen extends Component {
+class TeachScreen extends Component {
 
   constructor(props) {
     super(props);
@@ -48,8 +52,11 @@ export default class TeachScreen extends Component {
           iconName: 'chemistry',
           name: 'Chemistry'
         }
-      ]
+      ],
+      subject: ''
     }
+    console.log("Problem Subject === ", props.problem);
+
   }
 
   modalWillShow = () => {
@@ -121,49 +128,86 @@ export default class TeachScreen extends Component {
     // }
 
     goForward = () => {
-      navigationService.navigate(pages.CHOOSE_PROBLEM);
+
+      if (this.state.subject == '') {
+        Alert.alert(
+          'YOUR SUBJECT',
+          'Please select your subject',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel'
+            }
+          ],
+          {cancelable: false}
+        )
+        return;
+      }
+
+      const problems = this.props.problem;
+      const currentSubject = this.state.subject.toLowerCase();
+      const problemObject = _.get(problems, currentSubject, {});
+      const problemList = _.get(problemObject, 'problems', []);
+      const cardLength = _.get(problemObject, 'problemLength', 0);
+      // console.log("Problem Length ==== ", problemList.length);
+      
+      navigationService.navigate(pages.CHOOSE_PROBLEM, {subject: this.state.subject, cardLength: cardLength});
+      
+      
+    }
+
+    _subjectSelect = (subject) => {
+      const {dispatch} = this.props;
+      dispatch(fetchInitProblem(subject.toLowerCase()));
+      this.setState({subject: subject});
     }
 
     render () {
+      const {subjects} = this.props;
       return (
           <MenuPage forceInset={{bottom: 'never'}} titleText={'TEACH'}>
-            <View style={styles.workingPart}>
-              <Text
-                  style={styles.title}
-              >
-                Subject
-              </Text>
-              <View style={styles.modalPart}>
-                <ModalDropdown options={this.state.subjectArray} 
-                  descPart={
-                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <Text style={styles.dropDescText}>
-                        Choose Your Subject
-                      </Text>
-                      <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                    </View>
-                  }
-                  style={{width: getWidth(283)}}
-                  textStyle={{color: '#FFFFFF', fontSize: getHeight(10), fontFamily: 'Montserrat-Regular'}}
-                  dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(283), marginTop: getHeight(3)}}
-                  dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
-                  dropdownTextHighlightStyle={{color: '#FFFFFF'}}
-                  onDropdownWillShow={this.modalWillShow}
-                  onDropdownWillHide={this.modalWillHide}
-                  renderSeparator={this.renderModalSeparator}
-                  renderRow={this.renderModalListRow}
-                  renderButtonText={this.renderModalListText}
-                >
-                </ModalDropdown>
+            <View style={styles.container}>
+              <View style={styles.workingPart}>
+                  <Text
+                      style={styles.title}
+                  >
+                    Subject
+                  </Text>
+                  <View style={styles.modalPart}>
+                    <ModalDropdown options={subjects.subject} 
+                      descPart={
+                        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
+                          <Text style={styles.dropDescText}>
+                            Choose Your Subject
+                          </Text>
+                          <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
+                        </View>
+                      }
+                      style={{width: getWidth(283)}}
+                      textStyle={{color: '#FFFFFF', fontSize: getHeight(10), fontFamily: 'Montserrat-Regular'}}
+                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(283), marginTop: getHeight(3)}}
+                      dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
+                      dropdownTextHighlightStyle={{color: '#FFFFFF'}}
+                      onDropdownWillShow={this.modalWillShow}
+                      onDropdownWillHide={this.modalWillHide}
+                      renderSeparator={this.renderModalSeparator}
+                      renderRow={this.renderModalListRow}
+                      renderButtonText={this.renderModalListText}
+                      onExtractBtnText={this._subjectSelect}
+                    >
+                    </ModalDropdown>
+                  </View>
+                  
+                </View>
+                <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
+                  <BaseButton 
+                    text={'CONTINUE'}
+                    onClick={this.goForward}
+                  />
+                </View>
               </View>
-              
-            </View>
-            <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
-              <BaseButton 
-                text={'CONTINUE'}
-                onClick={this.goForward}
-              />
-            </View>
+            
           </MenuPage>
       )
     }
@@ -175,7 +219,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
-        paddingTop: getHeight(80)
     },
     headerTitle: {
       width: '100%',
@@ -246,3 +289,10 @@ const styles = StyleSheet.create({
       marginLeft: getWidth(21)
     }
 })
+
+const mapStateToProps = (state) => ({
+  subjects: state.subject,
+  problem: state.problem
+})
+
+export default connect(mapStateToProps)(TeachScreen);

@@ -31,14 +31,15 @@ export default class PhotoLibrary extends Component {
     this.state = {
       num: 0,
       selectedImage: "",
-      selected: false
+      selected: false,
+      selectedImageURL: ''
     };
 
     this.getSelectedImages = this.getSelectedImages.bind(this);
   }
 
   photoSelect = () => {
-    navigationService.navigate(pages.PROBLEM_CROP);
+    navigationService.navigate(pages.PROBLEM_CROP, {imageUri: this.state.selectedImage});
   }
 
   componentDidMount() {
@@ -64,9 +65,9 @@ export default class PhotoLibrary extends Component {
     console.log(this.state.selected);
   }
 
-  _onSelectImage = (imgId, index, uri) => {
-    console.log("SelectedImage URI = ", uri);
-    this.setState({selected: true, selectedImage: uri});
+  _onSelectImage = (imgId, index, uri, assetURL) => {
+    console.log("Selected Image URL ======= ", assetURL);
+    this.setState({selected: true, selectedImage: uri, selectedImageURL: assetURL});
   }
 
   render () {

@@ -17,12 +17,34 @@ import navigationService from '../../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {PURPLE_SECOND} from '../../constants/colors';
 import pages from '../../constants/pages';
+import {connect} from 'react-redux';
+import {signupTechInfo} from '../../model/actions/signupAC';
 
 const LOGO_IMAGE = require('../../assets/images/logo.png');
 
-export default class PayTeaching extends Component {
+class PayTeaching extends Component {
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      checked: false,
+      onProfile: false,
+      depositBank: false,
+      techSkipped: false
+    }
+  }
     
     goForward = () => {
+      const {dispatch} = this.props;
+      if (this.state.checked == false) {
+        return;
+      }
+      dispatch(signupTechInfo({
+        onProfile: this.state.onProfile,
+        depositBank: !this.state.onProfile,
+        techPaySkipped: false
+      }));
       navigationService.navigate(pages.PAY_LEARNING);
     }
 
@@ -30,12 +52,17 @@ export default class PayTeaching extends Component {
       navigationService.pop();
     }
 
-    goSkip = () => {
-      navigationService.navigate(pages.PAY_LEARNING);
+    checkFirst = () => {
+      this.setState({onProfile: !this.state.onProfile, checked: true});
     }
 
-    checkSecond = () => {
-
+    goSkip = () => {
+      // this.setState({techSkipped: true});
+      const {dispatch} = this.props;
+      dispatch(signupTechInfo({
+        techPaySkipped: true
+      }))
+      navigationService.navigate(pages.PAY_LEARNING);
     }
 
     render () {
@@ -65,15 +92,15 @@ export default class PayTeaching extends Component {
                     <View
                       style={styles.optionContainer}
                     >
-                      <ProfileOption 
+                      <ProfileOption
                         text={'Earning accumulate on your profile'}
-                        checked={true}
+                        checked={this.state.onProfile && this.state.checked}
                         onClick={this.checkFirst}
                       />
-                      <ProfileOption 
+                      <ProfileOption
                         text={'Direct Deposit into your bank account'}
-                        checked={false}
-                        onClick={this.checkSecond}
+                        checked={!this.state.onProfile && this.state.checked}
+                        onClick={this.checkFirst}
                       />
                     </View>
                     <ProfileNote1
@@ -156,3 +183,9 @@ const styles = StyleSheet.create({
       marginBottom: getHeight(20.57)
     }
 })
+
+const mapStateToProps = (state) => ({
+  signupInfo: state.signupInfo
+});
+
+export default connect(mapStateToProps)(PayTeaching)
