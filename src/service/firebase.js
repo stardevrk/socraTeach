@@ -7,6 +7,7 @@ export const uploadImage = (uri, mime = 'application/octet-stream') => {
   const tempWindowXMLHttpRequest = window.XMLHttpRequest;
   window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
   window.Blob = Blob
+  console.log("Upload Image Uri $$$$$$$$$$$$$$$$$$", uri);
   return new Promise((resolve, reject) => {
     //const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri//'https://avatars0.githubusercontent.com/u/12028011?v=3&s=200'
     const uploadUri = uri.replace('file://', '');

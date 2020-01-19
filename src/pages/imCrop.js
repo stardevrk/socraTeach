@@ -18,7 +18,6 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {uploadImage} from '../service/firebase';
 import {auth, firestore} from '../constants/firebase';
-// import BlurOverlay,{closeOverlay,openOverlay} from 'react-native-blur-overlay';
 import ImagePicker from 'react-native-image-picker';
 import {connect} from 'react-redux';
 import {getMyInitLearnList} from '../controller/learn';
@@ -58,13 +57,18 @@ class ImageCrop extends Component {
         updateTime: Date.now(),
         sessionExist: false,
         subject: this.state.subject
-      }).finally(() => {
+      }).catch((err) => {
+        console.log("firestore set error ==== ", err);
+      })
+      .finally(() => {
         this.setState({loading: false});
-      });
+      })
       const {dispatch} = this.props;
       dispatch(getMyInitLearnList());
       navigationService.navigate(pages.LEARN_HISTORY);
-    })
+    }).catch((err) =>{
+      console.log("Upload Error = ", err);
+    });
     
   }
 

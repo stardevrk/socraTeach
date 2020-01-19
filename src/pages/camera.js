@@ -17,7 +17,6 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import CameraRollPicker from '../components/cameraRollPicker/index';
 import CameraRollGallery from '../components/cameraRollBrowser/index';
-import BlurOverlay,{closeOverlay,openOverlay} from 'react-native-blur-overlay';
 import { RNCamera } from 'react-native-camera';
 import { SafeAreaView } from 'react-navigation';
 
@@ -103,9 +102,9 @@ export default class Camera extends Component {
     let num = images.length;
 
     if (images.length > 0) {
-      closeOverlay();
+      // closeOverlay();
     } else {
-      openOverlay();
+      // openOverlay();
     }
 
     this.setState({

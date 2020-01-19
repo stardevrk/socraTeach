@@ -136,6 +136,14 @@ android {
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
     }
+    signingConfigs {
+        release {
+            storeFile file('my-upload-key.keystore')
+            storePassword 'perfect'
+            keyAlias 'rkstar'
+            keyPassword 'perfect'
+        }
+    }
     splits {
         abi {
             reset()

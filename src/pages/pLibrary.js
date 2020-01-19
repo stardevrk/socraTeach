@@ -17,7 +17,6 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import CameraRollPicker from '../components/cameraRollPicker/index';
 import CameraRollGallery from '../components/cameraRollBrowser/index';
-import BlurOverlay,{closeOverlay,openOverlay} from 'react-native-blur-overlay';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -51,9 +50,9 @@ export default class PhotoLibrary extends Component {
     let num = images.length;
 
     if (images.length > 0) {
-      closeOverlay();
+      // closeOverlay();
     } else {
-      openOverlay();
+      // openOverlay();
     }
 
     this.setState({

@@ -6,7 +6,8 @@ import {
     ActivityIndicator,
     Image,
     TouchableOpacity,
-    Alert
+    Alert,
+    Platform
 } from 'react-native';
 import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
@@ -165,10 +166,19 @@ class LearnScreen extends Component {
       },
     };
     ImagePicker.launchImageLibrary(options, (response) => {
-      console.log("Image Picker Response = ", response.uri);
+      console.log("Image Picker Response = ", response);
       if (response.uri != undefined && response.uri != null && response.uri != '' ) {
         const subject = this.state.subject.toLowerCase();
-        navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, subject: subject});
+        if (Platform.OS == 'ios') {
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, subject: subject});
+        } else if (Platform.OS == 'android') {
+          let absPath = 'file://' + response.path;
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: absPath, subject: subject});
+        } else {
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, subject: subject});
+        }
+
+        
       }
     })
     
