@@ -27,7 +27,8 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 // import {clearProblems} from '../model/actions/problemAC';
 import {fetchInitProblem, clearSubjectProblems} from '../controller/problem';
-import {selectProblem} from '../controller/teach';
+import {selectProblem, getMyInitTeachList, getMyMoreTeachList, clearMyTeachList} from '../controller/teach';
+import {auth} from '../constants/firebase';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -46,7 +47,7 @@ class ChooseProblem extends Component {
   constructor(props) {
     super(props);
 
-    let problems = _.get(props.problem, 'problems', -1);
+    let problems = _.get(props.problem, 'problems', []);
     console.log("Constructor Problems =====", problems);
     this.state={
       modalOpened: false,
@@ -81,6 +82,10 @@ class ChooseProblem extends Component {
     props.navigation.addListener('didFocus', payload => {
       // console.log("Navigation Event Payload === ", payload);
       this.setState({subject: payload.action.params.subject});
+      this.setState({newSubjectCards: true});
+      const {dispatch} = this.props;
+      dispatch(clearSubjectProblems(payload.action.params.subject.toLowerCase()));
+      dispatch(fetchInitProblem(payload.action.params.subject.toLowerCase()));
     })
   }
 
@@ -144,7 +149,6 @@ class ChooseProblem extends Component {
             : 
             null
           }
-          
         </View>
       )
     };
@@ -182,13 +186,16 @@ class ChooseProblem extends Component {
   static getDerivedStateFromProps (props, state) {
     // const problems = props.problem;
     let problems = _.get(props.problem, 'problems', []);
+    let newProblems = _.filter(problems, function (item) {
+      return item.posterId != auth.currentUser.uid
+    })
     // console.log("Problems ==== ", problems);
     // const currentSubject = state.subject.toLowerCase();
     // const problemObject = _.get(problems, currentSubject, {});
     // const problemList = _.get(problemObject, 'problems', []);
     
     return {
-      cards: problems,
+      cards: newProblems,
     }
     
   }
@@ -198,49 +205,57 @@ class ChooseProblem extends Component {
     const {dispatch} = this.props;
     dispatch(clearSubjectProblems(subject.toLowerCase()));
     dispatch(fetchInitProblem(subject.toLowerCase()));
-    // this.setState({state: this.state, cardIndex: 0});
   }
 
   _swipeSelect = (index) => {
-    // console.log("Swipe Data *******", index);
     const {cards, subject} = this.state;
     if (index != undefined && index != null) {
       selectProblem(subject, cards[index]);
+      // navigationService.navigate(pages.TEACH_SOLVE, {subject: subject, problem: cards[index]});
+      navigationService.navigate(pages.TEACH_SOLVE, {subject: subject, problem: cards[index]});
     }
   }
 
-    render () {
-      const {subjects} = this.props;
-      return (
-          <MenuPage forceInset={{bottom: 'never'}} titleText={'TEACH'}>
-            <View style={styles.workingPart}>
-              <Text
-                  style={styles.title}
+  _teachClick = () => {
+    const {dispatch} = this.props;
+    dispatch(getMyInitTeachList());
+    navigationService.navigate(pages.TEACH_HISTORY);
+  }
+
+  render () {
+    const {subjects} = this.props;
+    return (
+        <MenuPage forceInset={{bottom: 'never'}} titleText={'TEACH'}>
+          <View style={styles.workingPart}>
+            <Text
+                style={styles.title}
+            >
+              Assignments
+            </Text>
+            <View style={styles.modalPart}>
+              <ModalDropdown options={subjects.subject} 
+                descPart={
+                    <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
+                }
+                style={{width: getWidth(130)}}
+                textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
+                dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(283), marginTop: getHeight(3)}}
+                dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
+                dropdownTextHighlightStyle={{color: '#FFFFFF'}}
+                onDropdownWillShow={this.modalWillShow}
+                onDropdownWillHide={this.modalWillHide}
+                renderSeparator={this.renderModalSeparator}
+                renderRow={this.renderModalListRow}
+                renderButtonText={this.renderModalListText}
+                onExtractBtnText={this._subjectSelect}
+                defaultValue={this.state.subject}
               >
-                Assignments
-              </Text>
-              <View style={styles.modalPart}>
-                <ModalDropdown options={subjects.subject} 
-                  descPart={
-                      <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                  }
-                  style={{width: getWidth(130)}}
-                  textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                  dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(283), marginTop: getHeight(3)}}
-                  dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
-                  dropdownTextHighlightStyle={{color: '#FFFFFF'}}
-                  onDropdownWillShow={this.modalWillShow}
-                  onDropdownWillHide={this.modalWillHide}
-                  renderSeparator={this.renderModalSeparator}
-                  renderRow={this.renderModalListRow}
-                  renderButtonText={this.renderModalListText}
-                  onExtractBtnText={this._subjectSelect}
-                  defaultValue={this.state.subject}
-                >
-                </ModalDropdown>
-              </View>
-              <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(40)}}>
-              <Swiper
+              </ModalDropdown>
+            </View>
+            <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(40)}}>
+              {
+                this.state.cards.length != 0 ?
+                <Swiper
                   ref={swiper => {
                     this.swiper = swiper
                   }}
@@ -337,17 +352,21 @@ class ChooseProblem extends Component {
                 >
                   <TouchableOpacity onPress={() => this.swiper.swipeBack()} title='Swipe Back' />
                 </Swiper>
-              </View>
+                : 
+                null
+              }
+            
             </View>
-            <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
-              <BaseButton 
-                text={'CONTINUE'}
-                onClick={this.teachClick}
-              />
-            </View>
-          </MenuPage>
-      )
-    }
+          </View>
+          <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
+            <BaseButton 
+              text={'CONTINUE'}
+              onClick={this._teachClick}
+            />
+          </View>
+        </MenuPage>
+    )
+  }
 }
 
 const styles = StyleSheet.create({

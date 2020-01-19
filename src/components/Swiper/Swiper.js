@@ -88,10 +88,13 @@ class Swiper extends Component {
         ...calculateCardIndexes(props.cardIndex, props.cards),
         swipedAllCards: false
       }
-    } else {
+    } else if (props.cards.length == 0) {
       return {
-        cards: props.cards,
+        cards: [],
+        swipedAllCards: true
       }
+    } else {
+      return null;
     }
     
   }

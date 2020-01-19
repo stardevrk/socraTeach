@@ -24,6 +24,7 @@ import ModalDropdown from '../components/dropDownList';
 import MenuPage from '../components/menuPage';
 import ImagePicker from 'react-native-image-picker';
 import {connect} from 'react-redux';
+import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -189,12 +190,20 @@ class LearnScreen extends Component {
       )
       return;
     }
-    navigationService.navigate(pages.CAMERA);
+    const subject = this.state.subject.toLowerCase();
+    navigationService.navigate(pages.CAMERA, {subject: subject});
   }
 
   _subjectSelect = (subject) => {
     // console.log("Subject Text = ", subject);
     this.setState({subject: subject});
+  }
+
+  _skipUpload = () => {
+    const {dispatch} = this.props;
+    dispatch(clearMyLearnList());
+    dispatch(getMyInitLearnList());
+    navigationService.navigate(pages.LEARN_HISTORY);
   }
 
     render () {
@@ -255,6 +264,13 @@ class LearnScreen extends Component {
                       text={'CAMERA ROLL'}
                       onClick={this.libraryClick}
                     />
+                    <TouchableOpacity style={{position: 'absolute', bottom: getHeight(30)}}
+                      onPress={() => this._skipUpload()}
+                    >
+                      <Text style={{textDecorationColor: '#E0E0E0', color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(18), textDecorationLine: 'underline'}}>
+                        {'SKIP UPLOAD'}
+                      </Text>
+                    </TouchableOpacity>
                   </View>
               </View>
             </View>

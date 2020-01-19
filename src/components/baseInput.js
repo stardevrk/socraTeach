@@ -38,7 +38,7 @@ const errorDefault = {
   paddingLeft: getWidth(10),
 }
 
-const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder}) => {
+const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder, keyboardType}) => {
   return (
     <View
       style={{...wrapperDefault, ...wrapperStyle}}
@@ -46,9 +46,9 @@ const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwd
       <Text style={{...descDefault, ...descStyle}}>{desc}</Text>
       {
         pwdType == true ? 
-        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d3d3d3'}></TextInput>
+        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>
         :
-        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'}></TextInput>  
+        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>  
       }
       
       <View style={{width: '100%', backgroundColor: '#FFFFFF', height: 2}} />
@@ -71,7 +71,8 @@ ComonInput.defaultProps = {
   errorExist: false,
   errorStyle: {},
   errorText: '',
-  placeholder: ''
+  placeholder: '',
+  keyboardType: 'default'
 };
 
 ComonInput.propTypes = {
@@ -84,7 +85,8 @@ ComonInput.propTypes = {
   errorText: PropTypes.bool,
   errorStyle: PropTypes.object,
   errorText: PropTypes.string,
-  placeholder: PropTypes.string
+  placeholder: PropTypes.string,
+  keyboardType: PropTypes.string
 };
 
 export default ComonInput;

@@ -17,6 +17,11 @@ export default {
   PROBLEM_CROP: 'problem_crop',
   SEARCH_SOPHIST: 'search_sophist',
   CHOOSE_SOPHIST: 'choose_sophist',
-  PROBLEM_SOLVE: 'problem_solve',
-  CHOOSE_PROBLEM: 'choose_problem'
+  TEACH_SOLVE: 'teach_solve',
+  LEARN_SOLVE: 'learn_solve',
+  CHOOSE_PROBLEM: 'choose_problem',
+  TEACH_HISTORY: 'teach_history',
+  LEARN_HISTORY: 'learn_history',
+  CHAT_SCREEN: 'chat_screen',
+  APP_CHAT: 'app_chat'
 }

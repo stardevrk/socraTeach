@@ -11,13 +11,13 @@ const wrapperDefault = {
   alignItems: 'center'
 };
 
-const NavButton = ({onClick, buttonStyle}) => {
+const NavButton = ({onClick, buttonStyle, color}) => {
   return (
     <TouchableOpacity
       style={{...wrapperDefault, ...buttonStyle}}
       onPress={onClick}
     >
-      <Back size={getHeight(20)} color={'#FFFFFF'} />
+      <Back size={getHeight(20)} color={color} />
     </TouchableOpacity>
   )
 };
@@ -26,14 +26,16 @@ NavButton.defaultProps = {
   iconName: 'md-arrow-back',
   onClick: null,
   buttonStyle: {},
-  iconStyle: {}
+  iconStyle: {},
+  color: '#FFFFFF'
 };
 
 NavButton.propTypes = {
   iconName: PropTypes.string,
   onClick: PropTypes.func,
   buttonStyle: PropTypes.object,
-  iconStyle: PropTypes.object
+  iconStyle: PropTypes.object,
+  color: PropTypes.string
 };
 
 export default NavButton;

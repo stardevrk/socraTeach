@@ -17,16 +17,34 @@ import PhotoLibrary from '../pages/pLibrary';
 import ProblemCrop from '../pages/imCrop';
 import SearchSophist from '../pages/seSophist';
 import ChooseSophist from '../pages/chSophist';
-import SolveScreen from '../pages/solve';
+import SolveScreen from '../pages/thSolve';
+import LearnSolve from '../pages/leSolve';
 import TeachSubject from '../pages/teach';
 import ChooseProblem from '../pages/chProblem';
 import Camera from '../pages/camera';
+import TeachHistory from '../pages/thHistory';
+import LearnHistory from '../pages/leHistory';
+import ChatScreen from '../pages/chat';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
         header: null
     }
 }
+
+// const chatStack = createStackNavigator(
+//     {
+//         [pages.CHAT_SCREEN]: ChatScreen,
+//     },
+//     navigatorConfig
+// );
+
+// const learnChatStack = createStackNavigator(
+//     {
+//         [pages.CHAT_SCREEN]: ChatScreen,
+//     },
+//     navigatorConfig
+// );
 
 const AppDrawer = createDrawerNavigator(
     {
@@ -37,9 +55,13 @@ const AppDrawer = createDrawerNavigator(
         [pages.PROBLEM_CROP]: ProblemCrop,
         [pages.SEARCH_SOPHIST]: SearchSophist,
         [pages.CHOOSE_SOPHIST]: ChooseSophist,
-        [pages.PROBLEM_SOLVE]: SolveScreen,
+        [pages.TEACH_SOLVE]: SolveScreen,
+        [pages.LEARN_SOLVE]: LearnSolve,
         [pages.TEACH_SUBJECT]: TeachSubject,
-        [pages.CHOOSE_PROBLEM]: ChooseProblem
+        [pages.CHOOSE_PROBLEM]: ChooseProblem,
+        [pages.TEACH_HISTORY]: TeachHistory,
+        [pages.LEARN_HISTORY]: LearnHistory,
+        [pages.CHAT_SCREEN]: ChatScreen,
     },
     {
         initialRouteName: pages.HOME_SCREEN,

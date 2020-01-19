@@ -19,6 +19,7 @@ import CameraRollPicker from '../components/cameraRollPicker/index';
 import CameraRollGallery from '../components/cameraRollBrowser/index';
 import BlurOverlay,{closeOverlay,openOverlay} from 'react-native-blur-overlay';
 import { RNCamera } from 'react-native-camera';
+import { SafeAreaView } from 'react-navigation';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -67,14 +68,30 @@ export default class Camera extends Component {
       time: new Date().toLocaleTimeString(),
       countdown: 0,
       sec_Right: 0,
-      pause: false
+      pause: false,
+      subject: ''
     };
 
     this.getSelectedImages = this.getSelectedImages.bind(this);
+
+    props.navigation.addListener('didFocus', payload => {
+      // console.log("Navigation Event Payload === ", payload);
+      this.setState({subject: payload.action.params.subject});
+    })
   }
 
-  photoSelect = () => {
-    navigationService.navigate(pages.PROBLEM_CROP);
+  _photoTake = async () => {
+    if (this.camera) {
+      const options = {
+          skipProcessing: false,
+          fixOrientation: true, quality: 0.5, base64: true
+      };
+      const data = await this.camera.takePictureAsync(options);
+      console.log("Camera Photo Take ======= ", data.uri);
+      // Actions.EditStory({ data: { uri: data.uri, type: 'image', typer: 'camera' } })
+      navigationService.navigate(pages.PROBLEM_CROP, {imageUri: data.uri, subject: this.state.subject});
+  }
+    // navigationService.navigate(pages.PROBLEM_CROP);
   }
 
   componentDidMount() {
@@ -107,15 +124,16 @@ export default class Camera extends Component {
 
   render () {
       return (
-          <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
-            <View style={styles.libraryView}>
+          <SafeAreaView style={styles.container}>
+            
               <RNCamera
                   ref={ref => {
                       this.camera = ref;
                   }}
                   style={{
                       flex: 1,
-                      justifyContent: 'space-between',
+                      width: '100%',
+                      alignItems: 'center'
                   }}
                   type={this.state.type}
                   flashMode={this.state.flash}
@@ -125,19 +143,31 @@ export default class Camera extends Component {
                   whiteBalance={this.state.whiteBalance}
                   ratio={this.state.ratio}
                   focusDepth={this.state.depth}
-                  permissionDialogTitle={'Permission to use camera'}
-                  permissionDialogMessage={'We need your permission to use your camera phone'}
+                  // permissionDialogTitle={'Permission to use camera'}
+                  // permissionDialogMessage={'We need your permission to use your camera phone'}
+                  androidCameraPermissionOptions={{
+                    title: 'Permission to use Camera',
+                    message: 'We need your permission to use your camera',
+                    buttonPositive: 'OK',
+                    buttonNegative: 'Cancel'
+                  }}
+                  androidRecordAudioPermissionOptions={{
+                    title: 'Permission to use Audio',
+                    message: 'We need your permission to use your audio',
+                    buttonPositive: 'OK',
+                    buttonNegative: 'Cancel'
+                  }}
               >
-              </RNCamera>
-            </View>
-            <View style={styles.btnView}>
-              <BaseButton 
+                <BaseButton 
                   text={'TAKE'}
-                  onClick={this.photoSelect}
-                  textStyle={this.state.selected == false ? {color: 'gray'} : {}}
-              />
-            </View>
-          </MenuPage>
+                  onClick={this._photoTake}
+                  buttonStyle={{position: 'absolute', bottom: getHeight(30)}}
+                />
+              </RNCamera>
+              
+            
+            
+          </SafeAreaView>
       )
   }
 }
@@ -152,7 +182,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%'
+        width: '100%',
+        backgroundColor: 'red'
     },
     libraryView: {
       width: '100%',

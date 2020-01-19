@@ -22,6 +22,7 @@ import Bank from '../components/icons/bank';
 import Qmark from '../components/icons/qmark';
 import Pencil from '../components/icons/pencil';
 import Hammer from '../components/icons/hammer';
+import Logout from '../components/icons/logout';
 import {PURPLE_MAIN, BLACK_PRIMARY} from '../constants/colors';
 import MenuItem  from '../components/baseMenuItem';
 // import { ScrollView } from 'react-native-gesture-handler';
@@ -46,6 +47,14 @@ export default class MenuContent extends Component {
 
     onSignoutClick = () => {
       auth.signOut();
+    }
+
+    onTeachHistory = () => {
+      navigationService.navigate(pages.TEACH_HISTORY);
+    }
+
+    onLearnHistory = () => {
+      navigationService.navigate(pages.LEARN_HISTORY);
     }
 
     render () {
@@ -88,12 +97,12 @@ export default class MenuContent extends Component {
                   <MenuItem 
                     text={'Teaching History'}
                     icon={<Clock size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick1}
+                    onClick={this.onTeachHistory}
                   />
                   <MenuItem 
                     text={'Learning History'}
                     icon={<Clock size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick1}
+                    onClick={this.onLearnHistory}
                   />
                   <MenuItem 
                     text={'Payment Method'}
@@ -123,6 +132,11 @@ export default class MenuContent extends Component {
                   <MenuItem 
                     text={'Legal'}
                     icon={<Hammer size={getHeight(20)} color={'#FFFFFF'} />}
+                    onClick={this.onHomeClick1}
+                  />
+                  <MenuItem 
+                    text={'Log out'}
+                    icon={<Logout size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this.onSignoutClick}
                   />
                   <View style={styles.logoView}>

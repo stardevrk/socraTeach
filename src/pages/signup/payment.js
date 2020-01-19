@@ -158,6 +158,7 @@ class Payment extends Component {
                   onChangeText={this._changeCardNumber}
                   errorText={this.state.invalidCardNum == true ? 'Invalid Card Number' : 'Required!'}
                   errorExist={this.state.emptyCardNumber || this.state.invalidCardNum}
+                  keyboardType={'numeric'}
                 />
                 <BaseInput 
                   desc={'Expiration'}
@@ -166,6 +167,7 @@ class Payment extends Component {
                   errorText={this.state.invalidExp == true ? 'Invalid Expiration!' : 'Required!'}
                   errorExist={this.state.emptyExp || this.state.invalidExp}
                   placeholder={'08/2020'}
+                  keyboardType={'numeric'}
                 />
                 <BaseInput 
                   desc={'Security Code'}

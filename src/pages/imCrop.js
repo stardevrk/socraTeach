@@ -20,12 +20,14 @@ import {uploadImage} from '../service/firebase';
 import {auth, firestore} from '../constants/firebase';
 // import BlurOverlay,{closeOverlay,openOverlay} from 'react-native-blur-overlay';
 import ImagePicker from 'react-native-image-picker';
+import {connect} from 'react-redux';
+import {getMyInitLearnList} from '../controller/learn';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
 const IMAGE_WIDTH = Dimensions.get('screen').width > 500 ? getWidth(360) / 3 : (Dimensions.get('screen').width - 15) / 3;
 
-export default class ImageCrop extends Component {
+class ImageCrop extends Component {
 
   constructor(props) {
     super(props);
@@ -58,9 +60,12 @@ export default class ImageCrop extends Component {
         subject: this.state.subject
       }).finally(() => {
         this.setState({loading: false});
-      })
+      });
+      const {dispatch} = this.props;
+      dispatch(getMyInitLearnList());
+      navigationService.navigate(pages.LEARN_HISTORY);
     })
-    // navigationService.navigate(pages.SEARCH_SOPHIST);
+    
   }
 
   componentDidMount() {
@@ -69,32 +74,30 @@ export default class ImageCrop extends Component {
   }
 
   render () {
-    
-      return (
-          <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
-            <View style={styles.container}>
-              <View style={styles.headView}>
-                
-                  <Crop size={getHeight(44)} color={'#FFFFFF'} />
-                  <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(24), flex: 1, textAlign: 'center'}}>
-                    Select Your Problem
-                  </Text>
-                
-              </View>
-              <View style={styles.libraryView}>
-                <Image style={{width: '100%', height: '100%', borderRadius: getHeight(10),}} source={{uri: this.state.imageSource}}/>
-              </View>
-              <View style={styles.btnView}>
-                <BaseButton 
-                    text={'CONTINUE'}
-                    onClick={this.goForward}
-                    loading={this.state.loading}
-                />
-              </View>
+    return (
+        <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
+          <View style={styles.container}>
+            <View style={styles.headView}>
+              
+                <Crop size={getHeight(44)} color={'#FFFFFF'} />
+                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(24), flex: 1, textAlign: 'center'}}>
+                  Select Your Problem
+                </Text> 
             </View>
-            
-          </MenuPage>
-      )
+            <View style={styles.libraryView}>
+              <Image style={{width: '100%', height: '100%', borderRadius: getHeight(10),}} source={{uri: this.state.imageSource}}/>
+            </View>
+            <View style={styles.btnView}>
+              <BaseButton 
+                  text={'CONTINUE'}
+                  onClick={this.goForward}
+                  loading={this.state.loading}
+              />
+            </View>
+          </View>
+          
+        </MenuPage>
+    )
   }
 }
 
@@ -147,3 +150,9 @@ const styles = StyleSheet.create({
       backgroundColor: 'rgba(0,0,0,0.8)'
     }
 })
+
+const mapStateToProps = (state) => ({
+  
+})
+
+export default connect(mapStateToProps)(ImageCrop);

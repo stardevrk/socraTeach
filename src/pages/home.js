@@ -15,6 +15,8 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {connect} from 'react-redux';
 import {fetchInitProblem} from '../controller/problem';
+import {getMyInitTeachList, clearMyTeachList} from '../controller/teach';
+import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -48,6 +50,14 @@ class HomeScreen extends Component {
         
         
         return null;
+    }
+
+    componentDidMount() {
+        const {dispatch} = this.props;
+      dispatch(clearMyLearnList());
+      dispatch(clearMyTeachList());
+      dispatch(getMyInitLearnList());
+      dispatch(getMyInitTeachList());
     }
 
     render () {

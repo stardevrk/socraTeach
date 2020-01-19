@@ -5,6 +5,8 @@ import store from '../model/store';
 import {fetchUser, logoutUser} from '../model/actions/userAC';
 import {fetchSubjects} from '../model/actions/subjectAC';
 import {clearListeners, clearUserListener, hasListener, addListener} from './listeners';
+import {getMyInitTeachList} from './teach';
+import {getMyInitLearnList} from './learn';
 
 let firstAuth = true;
 

@@ -156,6 +156,7 @@ class Signup extends Component {
                       onChangeText={this._changeEmail}
                       errorExist={this.state.errorEmail || this.state.emptyEmail}
                       errorText={this.state.emptyEmail == true ? 'Required!' : 'Invalid Email!'}
+                      keyboardType={'email-address'}
                     />
                     <BaseInput 
                       desc={'Country'}
