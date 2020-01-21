@@ -38,7 +38,7 @@ class LearnHistory extends Component {
     
     static getDerivedStateFromProps (props, state) {
       let problems = _.get(props.problem, 'problems', []);
-      // console.log("Learn History Porblems ====", problems);
+      console.log("Learn History Porblems ====", problems);
       let newProblems = _.map(problems, (item, index) => {
         item['key'] = index;
         let subject = item.subject;
@@ -84,6 +84,7 @@ class LearnHistory extends Component {
 
     _moveSolvePage = (problem) => {
       const {dispatch} = this.props;
+      dispatch(clearSession());
       dispatch(updateSession('learn_session', problem.subject, problem.problemId, problem));
       navigationService.navigate(pages.LEARN_SOLVE, {subject: problem.subject, problem: problem});
     }

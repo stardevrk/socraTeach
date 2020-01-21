@@ -27,11 +27,20 @@ import {PURPLE_MAIN, BLACK_PRIMARY} from '../constants/colors';
 import MenuItem  from '../components/baseMenuItem';
 // import { ScrollView } from 'react-native-gesture-handler';
 import {auth} from '../constants/firebase';
+import {connect} from 'react-redux';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const MENU_LOGO = require('../assets/images/logo-menu.png')
 
-export default class MenuContent extends Component {
+class MenuContent extends Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+      user: {}
+    }
+  }
     
     loginClick = () => {
       navigationService.navigate(pages.SIGN_IN);
@@ -57,7 +66,19 @@ export default class MenuContent extends Component {
       navigationService.navigate(pages.LEARN_HISTORY);
     }
 
+    static getDerivedStateFromProps (props, state) {
+      if (props.user != null) {
+        return {
+          user: props.user
+        }
+      } else {
+        return null;
+      }
+    }
+
     render () {
+      // console.log("This.props === ", this.props.user);
+      const {user} = this.state;
         return (
             <View style={styles.container}>
               <SafeAreaView style={styles.safeView}>
@@ -68,7 +89,9 @@ export default class MenuContent extends Component {
                       <Person size={getHeight(30)} color={'#FFFFFF'} />
                     </View>
                     <Text style={styles.headerTitle}>
-                      Salmon Chase
+                      {
+                        user.userName == undefined ? '' : user.userName
+                      }
                     </Text>
                   </View>
                   <View style={styles.markView}>
@@ -217,3 +240,9 @@ const styles = StyleSheet.create({
       paddingTop: getHeight(40)
     }
 })
+
+const mapStateToProps = (state) => ({
+  user: state.user
+})
+
+export default connect(mapStateToProps)(MenuContent);

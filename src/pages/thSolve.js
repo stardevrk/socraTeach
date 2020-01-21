@@ -31,7 +31,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {GiftedChat} from 'react-native-gifted-chat';
 import {sendMessage} from '../controller/chat';
 import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
-import {getPosterName} from '../controller/user';
+import {getPosterInfo} from '../controller/user';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -53,6 +53,7 @@ class SOLVESCREEN extends Component {
       subject: '',
       posterName: '',
       posterRate: 0,
+      prevPosterId: ''
     }
 
     let tempSubject = '';
@@ -120,29 +121,21 @@ class SOLVESCREEN extends Component {
 
     static getDerivedStateFromProps (nextprops, nextstate) {
       const {session} = nextprops;
-      // this._getPosterName(nextprops.session.problemData.posterId);
-      // firestore.collection('users').doc(session.problemData.posterId).get().then((posterDoc) => {
-      //   let posterData = posterDoc.data();
-      //     // this.setState({posterName: posterData.userName});
-      //     return {
-      //       subject: session.subject,
-      //       problemUri: session.problemData.problemImage,
-      //       problemData: session.problemData,
-      //       posterName: posterData.userName
-      //     };
-      // })
-      nextprops.dispatch(getPosterName(session.problemData.posterId));
-      // return {
-      //   subject: session.subject,
-      //   problemUri: session.problemData.problemImage,
-      //   problemData: session.problemData
-      // };
+
+      if (nextstate.prevPosterId != session.problemData.posterId || nextstate.prevProblemId != session.problemData.problemId) {
+        nextprops.dispatch(getPosterInfo(session.problemData.posterId));  
+      }
+
+      let newPosterId = session.problemData.posterId == undefined ? '' : session.problemData.posterId;
+      let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
 
       return {
         subject: session.subject,
         problemUri: session.problemData.problemImage,
         problemData: session.problemData,
-        posterName: session.posterName != undefined ? session.posterName : ''
+        posterName: session.poster != undefined ? session.poster.userName : '',
+        prevPosterId: newPosterId,
+        prevProblemId : newProblemId
       };
     }
 

@@ -216,7 +216,7 @@ class ChooseProblem extends Component {
       selectProblem(subject, cards[index]);
       let problemData = cards[index];
       dispatch(clearSession());
-      dispatch(updateSession('teach_session', subject, problemData.problemId));
+      dispatch(updateSession('teach_session', subject, problemData.problemId, cards[index]));
       navigationService.navigate(pages.TEACH_SOLVE, {subject: subject, problem: cards[index]});
     }
   }

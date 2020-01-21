@@ -27,7 +27,7 @@ import { BLACK_PRIMARY, GRAY_PRIMARY } from '../constants/colors';
 import {firestore} from '../constants/firebase';
 import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
 import {connect} from 'react-redux';
-import {getTeacherName} from '../controller/user';
+import {getTeacherInfo} from '../controller/user';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -51,6 +51,7 @@ class LearnSolve extends Component {
       teacherRate: 0,
       answer: '',
       chatting: false,
+      prevTeacherId: '',
       messages: [
         {
           _id: 1,
@@ -154,25 +155,49 @@ class LearnSolve extends Component {
 
       // this._getPosterName(nextprops.session.problemData.posterId);
 
-      if (problemData.teacherId != undefined && problemData.teacherId != null) {
-        // this._getTeacherName(problemData.teacherId);
-        // return firestore.collection('users').doc(problemData.teacherId).get().then((teacherDoc) => {
-        //   let teacherData = teacherDoc.data();
-        //     // this.setState({teacherName: teacherData.userName});
-            
-        // })
-        nextprops.dispatch(getTeacherName(problemData.teacherId));
+      let newTeacherId = problemData.teacherId == undefined ? '' : problemData.teacherId;
+      let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
+
+      if (problemData.teacherId == undefined || problemData.teacherId == null) {
+        return {
+          subject: problemData.subject,
+          problemUri: problemData.problemImage,
+          problemData: problemData,
+          answer: problemData.answer,
+          teacherName: '',
+          prevTeacherId: newTeacherId,
+          prevProblemId : newProblemId
+        }
+
+      } else {
+        if (nextstate.prevTeacherId != problemData.teacherId || nextstate.prevProblemId != session.problemData.problemId ) {
+          // this._getTeacherName(problemData.teacherId);
+          // return firestore.collection('users').doc(problemData.teacherId).get().then((teacherDoc) => {
+          //   let teacherData = teacherDoc.data();
+          //     // this.setState({teacherName: teacherData.userName});
+              
+          // })
+          nextprops.dispatch(getTeacherInfo(problemData.teacherId));
+        }
+  
+        // console.log("LeSolve Session ===== ", session);
+        
+  
+  
+        return {
+          subject: problemData.subject,
+          problemUri: problemData.problemImage,
+          problemData: problemData,
+          answer: problemData.answer,
+          teacherName: session.teacher != undefined ? session.teacher.userName : '',
+          prevTeacherId: newTeacherId,
+          prevProblemId : newProblemId
+        }
       }
 
-      console.log("LeSolve Session ===== ", session);
+      
 
-      return {
-        subject: problemData.subject,
-        problemUri: problemData.problemImage,
-        problemData: problemData,
-        answer: problemData.answer,
-        teacherName: session.teacherName != undefined ? session.teacherName : ''
-      }
+      
       // return {
       //   subject: problemData.subject,
       //   problemUri: problemData.problemImage,

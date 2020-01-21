@@ -5,32 +5,31 @@ import store from '../model/store';
 import {fetchUser, logoutUser} from '../model/actions/userAC';
 import {fetchSubjects} from '../model/actions/subjectAC';
 import {clearListeners, clearUserListener, hasListener, addListener} from './listeners';
-import {updatePosterName, updateTeacherName} from '../model/actions/sessionAC';
+import {updatePoster, updateTeacher} from '../model/actions/sessionAC';
 
-export function getPosterName (posterId) {
+export function getPosterInfo(posterId) {
   return async function (dispatch, getState) {
     try {
-      firestore.collection('users').doc(posterId).onSnapshot((posterDoc) => {
+      firestore.collection('users').doc(posterId).get().then((posterDoc) => {
         let posterData = posterDoc.data();
-          // this.setState({posterName: posterData.userName});
-          dispatch(updatePosterName(posterData.userName));
+          dispatch(updatePoster(posterData, posterId));
       })
     } catch (e) {
-      console.log('Get Poster Name error', e);
+      console.log('Get Poster Info error', e);
     }
   }
 }
 
-export function getTeacherName (teacherId) {
+export function getTeacherInfo (teacherId) {
+  console.log("teacherId ^^^^^^^^^^^^^^^^^", teacherId);
   return async function (dispatch, getState) {
     try {
-      firestore.collection('users').doc(teacherId).onSnapshot((teacherDoc) => {
+      firestore.collection('users').doc(teacherId).get().then((teacherDoc) => {
         let teacherData = teacherDoc.data();
-          // this.setState({posterName: posterData.userName});
-          dispatch(updateTeacherName(teacherData.userName));
+          dispatch(updateTeacher(teacherData, teacherId));
       })
     } catch (e) {
-      console.log('Get Poster Name error', e);
+      console.log('Get Teacher Info error', e);
     }
   }
 }

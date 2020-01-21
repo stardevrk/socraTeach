@@ -13,25 +13,25 @@ let lastProblem = '';
 
 export function getChatUsers(subject, problemId) {
   return async function (dispatch, getState) {
-    console.log("GET CHAT USERS ======", subject);
+    
     try {
       if (!hasListener('chat_users_'+ subject + '_' + problemId)) {
+        
         let channelListener = firestore.collection(subject).doc(problemId).onSnapshot(sn => {
           let problemData = sn.data();
-          
-          
-            let posterListener = firestore.collection('users').doc(problemData.posterId).get().then(sn => {
-              let postUserData = {};
-              postUserData[sn.id] = sn.data();
-              dispatch(fetchChatUsers(postUserData));
-            })
+          console.log("GET CHAT USERS ======", subject);
+          firestore.collection('users').doc(problemData.posterId).get().then(sn => {
+            let postUserData = {};
+            postUserData[sn.id] = sn.data();
+            dispatch(fetchChatUsers(postUserData));
+          });
             
           if (problemData.teacherId != undefined && problemData.teacherId != null) {
-            let teacherListener = firestore.collection('users').doc(problemData.teacherId).get().then(sn => {
+            firestore.collection('users').doc(problemData.teacherId).get().then(sn => {
               let teacherData = {};
               teacherData[sn.id] = sn.data();
               dispatch(fetchChatUsers(teacherData));
-            })
+            });
           }
         })
         addListener('chat_users_'+ subject + '_' + problemId, channelListener);
@@ -56,14 +56,18 @@ export function getInitChats(subject, problemId) {
         newLastProblem = sn.docs[sn.docs.length - 1];
         if (sn.docs.length == 10) {
           dispatch(setEarliearLoadable(true));
+        } else {
+          dispatch(setEarliearLoadable(false));
         }
+        
         if (newLastProblem !== undefined && sn.docs.length > 0 && !hasListener('chats_' + subject + '_' + problemId + '_' + newLastProblem.id)) {
+          
           lastProblem = newLastProblem;
           var listener = firestore.collection(subject).doc(problemId).collection('messages')
           .orderBy('timestamp', 'DESC')
           .endAt(newLastProblem)
           .onSnapshot((snapShot) => {
-            console.log("GET CHAT getInitChats ======", subject);
+            console.log("GET CHAT getInitChats ======", newLastProblem.id);
             if (!snapShot.empty) {
               let chatsData = {};
               snapShot.forEach((doc) => {
@@ -103,10 +107,12 @@ export function getMoreChats(subject, problemId) {
       }
       // let currentBlockIndex = BlockIndex + 1;
       firestore.collection(subject).doc(problemId).collection('messages')
-      .orderBy('timestamp', 'DESC').startAt(lastProblem).limit(20).get().then(sn => {
+      .orderBy('timestamp', 'DESC').startAfter(lastProblem).limit(20).get().then(sn => {
         newLastProblem = sn.docs[sn.docs.length - 1];
         if (sn.docs.length == 20) {
           dispatch(setEarliearLoadable(true));
+        } else {
+          dispatch(setEarliearLoadable(false));
         }
         dispatch(loadEarlierChats(true));
         if (sn.docs.length > 0 && !hasListener('chats_' + subject + '_' + problemId + '_' + newLastProblem.id)) {

@@ -41,7 +41,7 @@ class TeachHistory extends Component {
         item.subject = newSubject;
         return item;
       })
-      console.log(props.problem);
+      // console.log(props.problem);
         return {
           teachList: newProblems,
           userName: props.user.userName
@@ -68,7 +68,7 @@ class TeachHistory extends Component {
       const {dispatch} = this.props;
       dispatch(clearSession());
       dispatch(updateSession('teach_session', item.subject.toLowerCase(), item.problemId, item));
-      console.log("Teach Problem Select =======", item.subject, item.problemId);
+      // console.log("Teach Problem Select =======", item.subject, item.problemId);
       navigationService.navigate(pages.TEACH_SOLVE, {subject: item.subject.toLowerCase(), problem: item});
     }
 

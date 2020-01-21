@@ -72,8 +72,10 @@ class ChatScreen extends Component {
         }
         
         if (state.prevSession !== props.session) {
+          console.log("Session Now ======= ***************", state.prevSession);
+          console.log("Session Prev ======= ***************", props.session);
           props.dispatch(clearChatsData(subject.toLowerCase(), problemId));
-          props.dispatch(getChatUsers(subject.toLowerCase(),problemId));
+          // props.dispatch(getChatUsers(subject.toLowerCase(),problemId));
           props.dispatch(getInitChats(subject.toLowerCase(), problemId));
           return {
             prevSession: props.session,
@@ -82,11 +84,13 @@ class ChatScreen extends Component {
           }
         }
 
-        // console.log("Session Users ======= ***************", props.session);
+        console.log("Session next1 ********************", props.chat.users); 
 
-        if (props.chat.users == undefined) {
-          return null;
-        }
+        // if (props.chat.users == undefined) {
+        //   return null;
+        // }
+
+        console.log("Session next2 ********************", props.chat.messages); 
 
         if (props.chat.messages == undefined) {
           return {
@@ -94,18 +98,27 @@ class ChatScreen extends Component {
           }
         }
 
-        // console.log("Session prev ======= ***************", state.prevMessages);
-        // console.log("Session next ********************", props.chat.messages);
+        //  console.log("Session prev ======= ***************", state.prevMessages);
+        //  console.log("Session next ********************", props.chat.messages);
 
         const loading = props.chat.loading != undefined ? props.chat.loading : false;
-        const earlierLodable = props.chat.earlierLodable != undefined ? props.chat.earlierLodable : true; 
+        const earlierLodable = props.chat.earlierLodable != undefined ? props.chat.earlierLodable : true;
+        console.log("Session next ********************", props.session); 
         const {messages} = props.chat;
-        const {users} = props.chat;
+        // const {users} = props.chat;
+
+        let chatUserName = '';
+        if (props.session.sessionType == 'teach_session') {
+          chatUserName = props.session.poster != undefined ? props.session.poster.userName : '';
+        }
+
+        if (props.session.sessionType == 'learn_session') {
+          chatUserName = props.session.teacher != undefined ? props.session.teacher.userName : '';
+        }
         
         if (messages !== state.prevMessages) {
           
           const messagesRaw = _.map(messages, item => {
-            
             let newItem = {
                 _id: item._id,
                 text: item.text,
@@ -113,7 +126,7 @@ class ChatScreen extends Component {
                 timestamp: item.timestamp,
                 user: {
                   _id: item.sentBy,
-                  name: users[item.sentBy].userName
+                  name: chatUserName
                 }
               }
             return newItem;
@@ -152,7 +165,7 @@ class ChatScreen extends Component {
           dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, message, false));
         }
       } else {
-        console.log("New Teach Session !!!!!!!1");
+        
         for (const message of messages) {
           dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, message, true));
         }
@@ -166,8 +179,8 @@ class ChatScreen extends Component {
       this.setState({loadingEarlier: true});
       const {dispatch} = this.props;
       const {session} =  this.props;
-
-      dispatch(getMoreChats(session.subject, session.problemData.problemId));
+      // console.log("Load More Chats! !!!!!!!1", session.subject, session.problemData.problemId);
+      dispatch(getMoreChats(session.subject.toLowerCase(), session.problemData.problemId));
     }
 
     componentWillUnmount() {

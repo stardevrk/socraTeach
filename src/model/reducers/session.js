@@ -1,6 +1,9 @@
 import * as types from '../actionTypes';
 
-const initialState = {};
+const initialState = {
+  poster: {},
+  teacher: {}
+};
 
 export default function user (state = initialState, action = '') {
   switch (action.type) {
@@ -13,15 +16,21 @@ export default function user (state = initialState, action = '') {
       }
     case types.SESSION_CLEAR:
       return initialState
-    case types.SESSION_GET_POSTERNAME:
+    case types.SESSION_GET_POSTER:
       return {
         ...state,
-        posterName: action.posterName
+        poster: action.poster,
+        [action.posterId]: {
+          ...action.poster
+        }
       }
-    case types.SESSION_GET_TEACHERNAME:
+    case types.SESSION_GET_TEACHER:
       return {
         ...state,
-        teacherName: action.teacherName
+        teacher: action.teacher,
+        [action.teacherId]: {
+          ...action.teacherId
+        }
       }
     default :
       return state

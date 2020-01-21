@@ -16,16 +16,18 @@ export function clearSession() {
     }
 }
 
-export function updatePosterName(posterName) {
+export function updatePoster(poster, posterId) {
   return {
-    type: types.SESSION_GET_POSTERNAME,
-    posterName
+    type: types.SESSION_GET_POSTER,
+    poster,
+    posterId
   }
 }
 
-export function updateTeacherName(teacherName) {
+export function updateTeacher(teacher, teacherId) {
   return {
-    type: types.SESSION_GET_TEACHERNAME,
-    teacherName
+    type: types.SESSION_GET_TEACHER,
+    teacher,
+    teacherId
   }
 }
