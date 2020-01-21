@@ -109,6 +109,7 @@ export default class Login extends Component {
                       onChangeText={this._changeEmail}
                       errorExist={this.state.emptyEmail || this.state.invalidEmail}
                       errorText={this.state.invalidEmail == true ? 'Invalid Email!' : 'Required!'}
+                      keyboardType={'email-address'}
                     />
                     <BaseInput 
                       desc={'Password'}

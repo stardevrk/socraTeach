@@ -27,6 +27,7 @@ import { BLACK_PRIMARY, GRAY_PRIMARY } from '../constants/colors';
 import {firestore} from '../constants/firebase';
 import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
 import {connect} from 'react-redux';
+import {getTeacherName} from '../controller/user';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -36,7 +37,7 @@ const SOLUTION_EXAMPLE = require('../assets/images/solution-example.png');
 
 const SCREEN_HEIGHT = Dimensions.get('window').height > Dimensions.get('window').width ? Dimensions.get('window').height : Dimensions.get('window').width;
 
-class SOLVESCREEN extends Component {
+class LearnSolve extends Component {
 
   constructor(props) {
     super(props);
@@ -72,16 +73,16 @@ class SOLVESCREEN extends Component {
       tempSubject = payload.action.params.subject;
       tempProblemId = problemData.problemId;
       tempPosterId = problemData.posterId;
-      this.setState({subject: problemData.subject, problemData: problemData, problemUri: problemData.problemImage, answer: problemData.answer}, () => {
-        // this._getPosterName(problemData.posterId);
-        if (problemData.teacherId != undefined && problemData.teacherId != null) {
-          // this.setState({teacherName: })
-          this.props.dispatch(clearChatsData());
-          this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
-          this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
-          this._getTeacherName(problemData.teacherId);
-        }
-      });
+      // this.setState({subject: problemData.subject, problemData: problemData, problemUri: problemData.problemImage, answer: problemData.answer}, () => {
+      //   // this._getPosterName(problemData.posterId);
+      //   if (problemData.teacherId != undefined && problemData.teacherId != null) {
+      //     // this.setState({teacherName: })
+      //     // this.props.dispatch(clearChatsData());
+      //     // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
+      //     // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
+      //     this._getTeacherName(problemData.teacherId);
+      //   }
+      // });
       
     })
   }
@@ -95,23 +96,28 @@ class SOLVESCREEN extends Component {
     }    
 
     _renderTitle = () => {
-      return (
-        <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', top: getHeight(20)}}
-        onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}
-        >
-          <Text style={styles.titleText}>
-            {this.state.teacherName}
-          </Text>
-          <Text style={styles.titleText}>
-            {
-              this.state.teacherName != '' ? 
-              (630)-772-1212
-              : 
-              ''
-            }
-          </Text>
-        </TouchableOpacity>
-      )
+      if (this.state.problemData.teacherId !== undefined) {
+        return (
+          <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', top: getHeight(20)}}
+          onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}
+          >
+            <Text style={styles.titleText}>
+              {this.state.teacherName}
+            </Text>
+            <Text style={styles.titleText}>
+              {
+                this.state.teacherName != '' ? 
+                '(630)-772-1212'
+                : 
+                ''
+              }
+            </Text>
+          </TouchableOpacity>
+        )
+      }
+      else {
+        return null;
+      }
     }
 
     _renderRightItem = () => {
@@ -142,29 +148,38 @@ class SOLVESCREEN extends Component {
       // this.setState({chatting: true});  
     }
 
-    // gotoMainPage = () => {
-    //   // navigationService.popToTop();
-    //   this.setState({chatting: false});
-    // }
+    static getDerivedStateFromProps (nextprops, nextstate) {
+      const {session} = nextprops;
+      const problemData = session.problemData;
 
-    // onSend = (messages = []) => {
-    //   const {dispatch}  = this.props;
-    //   this.setState(previousState => ({
-    //     messages: GiftedChat.append(previousState.messages, messages),
-    //   }));
-    //   for (const message of messages) {
-    //     dispatch(sendMessage(this.state.subject.toLowerCase(), this.state.problemData.problemId, message));
-    //   }
-    //   //  sendMessage(this.state.subject.toLocaleUpperCase(), this.state.problemId, messages)
-    // }
+      // this._getPosterName(nextprops.session.problemData.posterId);
 
-    // _renderMainPage =  () => {
-        
-    // }
+      if (problemData.teacherId != undefined && problemData.teacherId != null) {
+        // this._getTeacherName(problemData.teacherId);
+        // return firestore.collection('users').doc(problemData.teacherId).get().then((teacherDoc) => {
+        //   let teacherData = teacherDoc.data();
+        //     // this.setState({teacherName: teacherData.userName});
+            
+        // })
+        nextprops.dispatch(getTeacherName(problemData.teacherId));
+      }
 
-    // _renderChatPage = () => {
-      
-    // }
+      console.log("LeSolve Session ===== ", session);
+
+      return {
+        subject: problemData.subject,
+        problemUri: problemData.problemImage,
+        problemData: problemData,
+        answer: problemData.answer,
+        teacherName: session.teacherName != undefined ? session.teacherName : ''
+      }
+      // return {
+      //   subject: problemData.subject,
+      //   problemUri: problemData.problemImage,
+      //   problemData: problemData,
+      //   answer: problemData.answer
+      // };
+    }
 
     render () {
         return (
@@ -182,11 +197,16 @@ class SOLVESCREEN extends Component {
                 {/* <Image source={SOLUTION_EXAMPLE} resizeMode={'contain'}/> */}
                 <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline value={this.state.answer} editable={false} />
               </View>
-              <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
-                <TouchableOpacity onPress={() => this._clickChat()}>
-                  <Chat size={getHeight(30)} color={'#000000'} /> 
-                </TouchableOpacity>
-              </View>
+              {
+                this.state.problemData.teacherId !== undefined ? 
+                <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
+                  <TouchableOpacity onPress={() => this._clickChat()}>
+                    <Chat size={getHeight(30)} color={'#000000'} /> 
+                  </TouchableOpacity>
+                </View>
+                : null
+              }
+
               {
                 this.state.modalVisible == true ? 
                 <View style={styles.modalContainerView}>
@@ -266,7 +286,7 @@ class SOLVESCREEN extends Component {
     }
 }
 
-SOLVESCREEN.navigatorStyle = {
+LearnSolve.navigatorStyle = {
     navBarHidden: true,
     statusBarBlur: false
 }
@@ -389,7 +409,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => ({
-  messages: state.chat
+  messages: state.chat,
+  session: state.session
 })
 
-export default connect(mapStateToProps)(SOLVESCREEN);
+export default connect(mapStateToProps)(LearnSolve);

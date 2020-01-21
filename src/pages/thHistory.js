@@ -18,6 +18,7 @@ import pages from '../constants/pages';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { BLACK_PRIMARY } from '../constants/colors';
+import {updateSession, clearSession} from '../model/actions/sessionAC';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -64,6 +65,10 @@ class TeachHistory extends Component {
     }
 
     _moveSolvePage = (item) => {
+      const {dispatch} = this.props;
+      dispatch(clearSession());
+      dispatch(updateSession('teach_session', item.subject.toLowerCase(), item.problemId, item));
+      console.log("Teach Problem Select =======", item.subject, item.problemId);
       navigationService.navigate(pages.TEACH_SOLVE, {subject: item.subject.toLowerCase(), problem: item});
     }
 

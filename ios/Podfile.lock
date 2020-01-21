@@ -553,8 +553,6 @@ PODS:
     - React
   - RNSVG (9.13.6):
     - React
-  - SajjadBlurOverlay (1.0.0):
-    - React
   - Stripe (14.0.0)
   - tipsi-stripe (7.5.1):
     - React
@@ -604,7 +602,6 @@ DEPENDENCIES:
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - SajjadBlurOverlay (from `../node_modules/react-native-blur-overlay/ios`)
   - tipsi-stripe (from `../node_modules/tipsi-stripe`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
@@ -709,8 +706,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  SajjadBlurOverlay:
-    :path: "../node_modules/react-native-blur-overlay/ios"
   tipsi-stripe:
     :path: "../node_modules/tipsi-stripe"
   Yoga:
@@ -779,7 +774,6 @@ SPEC CHECKSUMS:
   RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
   RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
-  SajjadBlurOverlay: 4366a3417954b7d4a8a70682e0c43959ff76a3cb
   Stripe: db29ad197c74aca6fb981e4e8355cf7ebd0fca5a
   tipsi-stripe: 3e0073c7eec0b2bfd1d1d5736d843c22e3024485
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b

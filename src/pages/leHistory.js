@@ -18,8 +18,9 @@ import pages from '../constants/pages';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { BLACK_PRIMARY } from '../constants/colors';
-import {firestore} from '../constants/firebase';
+import {auth} from '../constants/firebase';
 import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
+import {updateSession, clearSession} from '../model/actions/sessionAC';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -37,21 +38,16 @@ class LearnHistory extends Component {
     
     static getDerivedStateFromProps (props, state) {
       let problems = _.get(props.problem, 'problems', []);
-      console.log("Learn History Porblems ====", problems);
+      // console.log("Learn History Porblems ====", problems);
       let newProblems = _.map(problems, (item, index) => {
         item['key'] = index;
         let subject = item.subject;
         const newSubject = subject.charAt(0).toUpperCase() + subject.slice(1);
         item.subject = newSubject;
+        item.posterId = auth.currentUser.uid
         return item;
       })
 
-      // let changedProblems = _.map(newProblems, item => {
-      //   let subject = item.subject;
-      //   const newSubject = subject.charAt(0).toUpperCase() + subject.slice(1);
-      //   item.subject = newSubject;
-      //   return item;
-      // })
       return {
         teachList: newProblems,
         userName: props.user.userName
@@ -87,6 +83,8 @@ class LearnHistory extends Component {
     }
 
     _moveSolvePage = (problem) => {
+      const {dispatch} = this.props;
+      dispatch(updateSession('learn_session', problem.subject, problem.problemId, problem));
       navigationService.navigate(pages.LEARN_SOLVE, {subject: problem.subject, problem: problem});
     }
 

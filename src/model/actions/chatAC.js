@@ -34,3 +34,17 @@ export function fetchChatUsers (users) {
     users
   }
 }
+
+export function loadEarlierChats (loading) {
+  return {
+    type: types.LOADING_EARLIER_MESSAGES,
+    loading
+  }
+}
+
+export function setEarliearLoadable(lodable) {
+  return {
+    type: types.SET_EARLIER_LODABLE,
+    lodable
+  }
+}

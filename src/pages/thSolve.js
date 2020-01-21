@@ -31,6 +31,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import {GiftedChat} from 'react-native-gifted-chat';
 import {sendMessage} from '../controller/chat';
 import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
+import {getPosterName} from '../controller/user';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -62,12 +63,12 @@ class SOLVESCREEN extends Component {
       tempSubject = payload.action.params.subject;
       tempProblemId = problemData.problemId;
       tempPosterId = problemData.posterId;
-      this.setState({subject: payload.action.params.subject, problemData: problemData, problemUri: problemData.problemImage}, () => {
-        this.props.dispatch(clearChatsData());
-        this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
-        this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
-        this._getPosterName(tempPosterId);
-      });
+      // this.setState({subject: payload.action.params.subject, problemData: problemData, problemUri: problemData.problemImage}, () => {
+      //   // this.props.dispatch(clearChatsData());
+      //   // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
+      //   // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
+      //   this._getPosterName(tempPosterId);
+      // });
     })
   }
     
@@ -118,7 +119,31 @@ class SOLVESCREEN extends Component {
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
-      return null;
+      const {session} = nextprops;
+      // this._getPosterName(nextprops.session.problemData.posterId);
+      // firestore.collection('users').doc(session.problemData.posterId).get().then((posterDoc) => {
+      //   let posterData = posterDoc.data();
+      //     // this.setState({posterName: posterData.userName});
+      //     return {
+      //       subject: session.subject,
+      //       problemUri: session.problemData.problemImage,
+      //       problemData: session.problemData,
+      //       posterName: posterData.userName
+      //     };
+      // })
+      nextprops.dispatch(getPosterName(session.problemData.posterId));
+      // return {
+      //   subject: session.subject,
+      //   problemUri: session.problemData.problemImage,
+      //   problemData: session.problemData
+      // };
+
+      return {
+        subject: session.subject,
+        problemUri: session.problemData.problemImage,
+        problemData: session.problemData,
+        posterName: session.posterName != undefined ? session.posterName : ''
+      };
     }
 
     _clickChat =() =>{
@@ -360,7 +385,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => ({
-  messages: state.chat
+  messages: state.chat,
+  session: state.session
 })
 
 export default connect(mapStateToProps)(SOLVESCREEN);

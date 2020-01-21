@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>118735379610-u7qp6nsm8klf1di6pp9tdciitrucho04.apps.googleusercontent.com</string>
+	<string>118735379610-l9i25f1la13c5o1k4fd7buvf6o2102mm.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.118735379610-u7qp6nsm8klf1di6pp9tdciitrucho04</string>
+	<string>com.googleusercontent.apps.118735379610-l9i25f1la13c5o1k4fd7buvf6o2102mm</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDK__K2PrpaBdI4-2AgZNcb3zBw9HWAg-Y</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.myexperienceapp.com.experience</string>
+	<string>com.socrateach</string>
 	<key>PROJECT_ID</key>
 	<string>socrateach-65b77</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,7 +29,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true/>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:118735379610:ios:64eafdeedf6c4c6480d323</string>
+	<string>1:118735379610:ios:2a34e52befba7eaf80d323</string>
 	<key>DATABASE_URL</key>
 	<string>https://socrateach-65b77.firebaseio.com</string>
 	<key>FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED</key>

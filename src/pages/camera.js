@@ -94,7 +94,7 @@ export default class Camera extends Component {
   }
 
   componentDidMount() {
-    openOverlay();
+    // openOverlay();
   }
 
   getSelectedImages(images, current) {
@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
-        backgroundColor: 'red'
+        // backgroundColor: 'red'
     },
     libraryView: {
       width: '100%',

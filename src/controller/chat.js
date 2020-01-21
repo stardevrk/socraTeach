@@ -4,32 +4,34 @@ import pages from '../constants/pages';
 import store from '../model/store';
 // import {fetchUser, logoutUser} from '../model/actions/userAC';
 // import {fetchProblem, fetchMoreProblems, clearProblems} from '../model/actions/problemAC';
-import {fetchInitChats, fetchMoreChats, clearChats, fetchChatUsers} from '../model/actions/chatAC';
+import {fetchInitChats, fetchMoreChats, clearChats, fetchChatUsers, loadEarlierChats, setEarliearLoadable} from '../model/actions/chatAC';
 import {clearListeners, clearUserListener, hasListener, addListener, offListenerWithPrefix} from './listeners';
 import _ from 'lodash';
 
+let BlockIndex = 0;
+let lastProblem = '';
+
 export function getChatUsers(subject, problemId) {
   return async function (dispatch, getState) {
+    console.log("GET CHAT USERS ======", subject);
     try {
       if (!hasListener('chat_users_'+ subject + '_' + problemId)) {
         let channelListener = firestore.collection(subject).doc(problemId).onSnapshot(sn => {
           let problemData = sn.data();
           
-          if (!hasListener('chat_users_' + problemData.posterId)) {
-            let posterListener = firestore.collection('users').doc(problemData.posterId).onSnapshot(sn => {
+          
+            let posterListener = firestore.collection('users').doc(problemData.posterId).get().then(sn => {
               let postUserData = {};
               postUserData[sn.id] = sn.data();
               dispatch(fetchChatUsers(postUserData));
             })
-            addListener('chat_users_' + problemData.posterId, posterListener);
-          }
-          if (problemData.teacherId != undefined && problemData.teacherId != null && !hasListener('chat_users_' + problemData.teacherId)) {
-            let teacherListener = firestore.collection('users').doc(problemData.teacherId).onSnapshot(sn => {
+            
+          if (problemData.teacherId != undefined && problemData.teacherId != null) {
+            let teacherListener = firestore.collection('users').doc(problemData.teacherId).get().then(sn => {
               let teacherData = {};
               teacherData[sn.id] = sn.data();
               dispatch(fetchChatUsers(teacherData));
             })
-            addListener('chat_users_' + problemData.teacherId, teacherListener);
           }
         })
         addListener('chat_users_'+ subject + '_' + problemId, channelListener);
@@ -42,6 +44,7 @@ export function getChatUsers(subject, problemId) {
 
 export function getInitChats(subject, problemId) {
   return async function (dispatch, getState) {
+    
     try {
       let newLastProblem = null;
       let currentState = getState();
@@ -51,13 +54,16 @@ export function getInitChats(subject, problemId) {
       .orderBy('timestamp', 'DESC').limit(10).get().then(sn => {
         
         newLastProblem = sn.docs[sn.docs.length - 1];
-
-        if (!hasListener('chats_' + subject + '_' + problemId + '_' + 0)) {
+        if (sn.docs.length == 10) {
+          dispatch(setEarliearLoadable(true));
+        }
+        if (newLastProblem !== undefined && sn.docs.length > 0 && !hasListener('chats_' + subject + '_' + problemId + '_' + newLastProblem.id)) {
+          lastProblem = newLastProblem;
           var listener = firestore.collection(subject).doc(problemId).collection('messages')
           .orderBy('timestamp', 'DESC')
           .endAt(newLastProblem)
           .onSnapshot((snapShot) => {
-            // 
+            console.log("GET CHAT getInitChats ======", subject);
             if (!snapShot.empty) {
               let chatsData = {};
               snapShot.forEach((doc) => {
@@ -67,13 +73,14 @@ export function getInitChats(subject, problemId) {
                   _id: chatData._id,
                   text: chatData.text,
                   createdAt: new Date(chatData.timestamp),
-                  sentBy: chatData.sentBy
+                  sentBy: chatData.sentBy,
+                  timestamp: chatData.timestamp
                 };
               })
-              dispatch(fetchInitChats(chatsData, subject, problemId, newLastProblem, 0));
+              dispatch(fetchInitChats(chatsData, subject, problemId, newLastProblem, newLastProblem.id));
             }
           });
-          addListener('chats_' + subject + '_' + problemId + '_' + 0, listener);
+          addListener('chats_' + subject + '_' + problemId + '_' + newLastProblem.id, listener);
         }
       });
       
@@ -89,18 +96,28 @@ export function getMoreChats(subject, problemId) {
       let newLastProblem = null;
       let currentState = getState();
       let chatObject = _.get(currentState, 'chat', {});
-      let prevLastProblem = _.get(chatObject, 'lastProblem', null);
-      let prevBlockIndex = _.get(chatObject, 'blockIndex', null);
-      let currentBlockIndex = parseInt(prevBlockIndex) + 1;
+      // let prevLastProblem = _.get(chatObject, 'lastProblem', null);
+      let earlierLodable = _.get(chatObject, 'earlierLodable', true);
+      if (earlierLodable == false) {
+        return;
+      }
+      // let currentBlockIndex = BlockIndex + 1;
       firestore.collection(subject).doc(problemId).collection('messages')
-      .orderBy('timestamp', 'DESC').startAt(prevLastProblem).limit(20).get().then(sn => {
+      .orderBy('timestamp', 'DESC').startAt(lastProblem).limit(20).get().then(sn => {
         newLastProblem = sn.docs[sn.docs.length - 1];
-
-        if (!hasListener('chats_' + subject + '_' + problemId + '_' + currentBlockIndex)) {
+        if (sn.docs.length == 20) {
+          dispatch(setEarliearLoadable(true));
+        }
+        dispatch(loadEarlierChats(true));
+        if (sn.docs.length > 0 && !hasListener('chats_' + subject + '_' + problemId + '_' + newLastProblem.id)) {
+          
+          // BlockIndex = currentBlockIndex;
+          
           var listener = firestore.collection(subject).doc(problemId).collection('messages')
           .orderBy('timestamp', 'DESC')
-          .startAfter(prevLastProblem).endAt(newLastProblem)
+          .startAfter(lastProblem).endAt(newLastProblem)
           .onSnapshot((snapShot) => {
+            
             if (!snapShot.empty) {
               let chatsData = {};
               snapShot.forEach((doc) => {
@@ -110,13 +127,19 @@ export function getMoreChats(subject, problemId) {
                   _id: chatData._id,
                   text: chatData.text,
                   createdAt: new Date(chatData.timestamp),
-                  sentBy: chatData.sentBy
+                  sentBy: chatData.sentBy,
+                  timestamp: chatData.timestamp
                 };
               })
-              dispatch(fetchMoreChats(chatsData, subject, problemId, newLastProblem, currentBlockIndex));
+              dispatch(fetchMoreChats(chatsData, subject, problemId, newLastProblem, newLastProblem.id));
+              dispatch(loadEarlierChats(false));
+              lastProblem = newLastProblem
             }
           })
-          addListener('chats_' + subject + '_' + problemId + '_' + currentBlockIndex, listener);
+          addListener('chats_' + subject + '_' + problemId + '_' + newLastProblem.id, listener);
+          dispatch(loadEarlierChats(false));
+        } else {
+          dispatch(loadEarlierChats(false));
         }
       })
     } catch(e) {
@@ -125,7 +148,7 @@ export function getMoreChats(subject, problemId) {
   }
 }
 
-export function sendMessage (subject, problemId, message) {
+export function sendMessage (subject, problemId, message, shouldGetInitChats) {
   // console.log("Subject =====", subject);
   return async function(dispatch, getState) {
     try {
@@ -135,6 +158,11 @@ export function sendMessage (subject, problemId, message) {
         sentBy: auth.currentUser.uid,
         // createdAt: message.createdAt,
         timestamp: Date.now()
+      }).finally(() => {
+        if (shouldGetInitChats == true) {
+          dispatch(getChatUsers(subject, problemId));
+          dispatch(getInitChats(subject, problemId));
+        }
       })
     } catch (e) {
       console.log("Send message Error ==== ", e);
@@ -145,6 +173,8 @@ export function sendMessage (subject, problemId, message) {
 export function clearChatsData(subject, problemId) {
   return async function (dispatch, getState) {
     try {
+      // BlockIndex = 0;
+      lastProblem = '';
       offListenerWithPrefix('chats_');
       dispatch(clearChats());
     } catch (e) {

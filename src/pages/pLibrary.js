@@ -42,7 +42,7 @@ export default class PhotoLibrary extends Component {
   }
 
   componentDidMount() {
-    openOverlay();
+    // openOverlay();
   }
 
   getSelectedImages(images, current) {

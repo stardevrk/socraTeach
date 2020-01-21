@@ -6,6 +6,7 @@ import problem from './problem';
 import myTeach from './myTeach';
 import myLearn from './myLearn';
 import chat from './chat';
+import session from './session';
 
 export default combineReducers({
   user,
@@ -14,5 +15,6 @@ export default combineReducers({
   problem,
   myTeach,
   myLearn,
-  chat
+  chat,
+  session
 })

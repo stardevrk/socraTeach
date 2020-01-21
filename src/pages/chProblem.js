@@ -29,6 +29,7 @@ import _ from 'lodash';
 import {fetchInitProblem, clearSubjectProblems} from '../controller/problem';
 import {selectProblem, getMyInitTeachList, getMyMoreTeachList, clearMyTeachList} from '../controller/teach';
 import {auth} from '../constants/firebase';
+import {updateSession, clearSession} from '../model/actions/sessionAC';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -209,9 +210,13 @@ class ChooseProblem extends Component {
 
   _swipeSelect = (index) => {
     const {cards, subject} = this.state;
+    const {dispatch} = this.props;
+
     if (index != undefined && index != null) {
       selectProblem(subject, cards[index]);
-      // navigationService.navigate(pages.TEACH_SOLVE, {subject: subject, problem: cards[index]});
+      let problemData = cards[index];
+      dispatch(clearSession());
+      dispatch(updateSession('teach_session', subject, problemData.problemId));
       navigationService.navigate(pages.TEACH_SOLVE, {subject: subject, problem: cards[index]});
     }
   }

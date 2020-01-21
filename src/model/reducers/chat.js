@@ -1,7 +1,9 @@
 import * as types from '../actionTypes';
 import _ from 'lodash';
 
-const initialState = null;
+const initialState = {
+  earlierLodable: false
+};
 
 export default function singup (state = initialState, action = '') {
   switch (action.type) {
@@ -9,19 +11,19 @@ export default function singup (state = initialState, action = '') {
       return {
         ...state,
         messages: {
-          ..._.get(state, 'messges', {}),
+          ..._.get(state, 'messages', {}),
           ...action.chats
         },
         subject: action.subject,
         problemId: action.problemId,
         lastProblem: action.lastProblem,
-        blockIndex: action.blockIndex
+        blockIndex: action.blockIndex,
       }
     case types.RECEIVE_MORE_CHATS:
       return {
         ...state,
         messages: {
-          ..._.get(state, 'messges', {}),
+          ..._.get(state, 'messages', {}),
           ...action.chats
         },
         subject: action.subject,
@@ -29,8 +31,6 @@ export default function singup (state = initialState, action = '') {
         lastProblem: action.lastProblem,
         blockIndex: action.blockIndex
       }
-    case types.CLEAR_CHATS:
-      return initialState
     case types.RECEIVE_CHAT_USERS:
       return {
         ...state,
@@ -41,6 +41,16 @@ export default function singup (state = initialState, action = '') {
       }
     case types.CLEAR_CHATS:
       return initialState
+    case types.LOADING_EARLIER_MESSAGES:
+      return {
+        ...state,
+        loading: action.loading
+      }
+    case types.SET_EARLIER_LODABLE:
+      return {
+        ...state,
+        earlierLodable: action.lodable
+      }
     default :
       return state
   }
