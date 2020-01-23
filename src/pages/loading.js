@@ -8,8 +8,6 @@ import {
 import {PURPLE_MAIN} from '../constants/colors';
 import Page from '../components/basePage';
 import {getHeight} from '../constants/dynamicSize';
-import navigationService from '../navigation/navigationService';
-import pages from '../constants/pages';
 import {appInitialized} from '../controller/init';
 import {connect} from 'react-redux';
 

@@ -37,6 +37,10 @@ const SOLUTION_EXAMPLE = require('../assets/images/solution-example.png');
 
 const SCREEN_HEIGHT = Dimensions.get('window').height > Dimensions.get('window').width ? Dimensions.get('window').height : Dimensions.get('window').width;
 
+let timerDuration = 60 * 1;
+let timerDisplay = '05:00';
+let myTimer;
+
 class LearnSolve extends Component {
 
   constructor(props) {
@@ -64,6 +68,8 @@ class LearnSolve extends Component {
           },
         }
       ],
+      displayTimer: '',
+      prevProblemId: ''
     }
 
     let tempSubject = '';
@@ -125,7 +131,7 @@ class LearnSolve extends Component {
       return (
         <View style={{position: 'absolute', right: getWidth(16), top: getHeight(23)}}>
           <Text style={styles.titleText}>
-            5:00
+            {this.state.displayTimer}
           </Text>
         </View>
       )
@@ -147,6 +153,27 @@ class LearnSolve extends Component {
     _clickChat =() =>{
       navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'leSolve'});
       // this.setState({chatting: true});  
+    }
+
+    startTimer = (duration, display) => {
+      var timer = duration, minutes, seconds;
+      let self = this;
+      myTimer = setInterval(() => {
+        //  console.log("Count Down ////////");
+          minutes = parseInt(timer / 60, 10);
+          seconds = parseInt(timer % 60, 10);
+  
+          minutes = minutes < 10 ? "0" + minutes : minutes;
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+  
+          display = minutes + ":" + seconds;
+          self.setState({displayTimer: display});
+  
+          if (--timer < 0) {
+            self.setState({modalVisible: true});
+              timer = duration;
+          }
+      }, 1000);
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
@@ -206,6 +233,28 @@ class LearnSolve extends Component {
       // };
     }
 
+    componentDidUpdate(prevProps, prevState, snapShot) {
+      // if (this.state.problemData.sessionExist == false) {
+      //   this.startTimer(timerDuration, timerDisplay);
+      //   return;
+      // }
+
+      if (this.state.modalVisible == true) {
+        clearInterval(myTimer);
+      }
+
+      if (this.state.prevProblemId != prevState.prevProblemId) {
+        this.setState({modalVisible: false});
+        clearInterval(myTimer)
+        // console.log("TimerDuration ==== ", timerDuration );
+        this.startTimer(timerDuration, timerDisplay);
+      }
+    }
+
+    componentDidMount() {
+      this.startTimer(timerDuration, timerDisplay);
+    }
+
     render () {
         return (
           <MenuPage 
@@ -218,10 +267,10 @@ class LearnSolve extends Component {
                   style={styles.logoImage}
                   resizeMode={'contain'}
               />
-              <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                {/* <Image source={SOLUTION_EXAMPLE} resizeMode={'contain'}/> */}
+              {/* <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                
                 <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline value={this.state.answer} editable={false} />
-              </View>
+              </View> */}
               {
                 this.state.problemData.teacherId !== undefined ? 
                 <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
@@ -325,7 +374,7 @@ const styles = StyleSheet.create({
     },
     logoImage: {
         width: getWidth(291),
-        height: getHeight(151),
+        height: getHeight(600),
         marginBottom: getHeight(23),
         
     },

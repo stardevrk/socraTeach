@@ -8,6 +8,14 @@ import navigationService from '../navigation/navigationService';
 import Page from './basePage';
 import MenuButton from '../components/menuButton';
 
+const containerDefault = {
+  flex: 1,
+  justifyContent: 'center',
+  alignItems: 'center',
+  width: '100%',
+  paddingTop: getHeight(80)
+}
+
 export default class MenuPage extends Component {
 
   toggleMenu = () => {
@@ -15,10 +23,10 @@ export default class MenuPage extends Component {
   }
 
   render () {
-    const {forceInset, titleText, rightText, renderTitle, renderRightItem, children, backgroundColor, menuBtnColor} = this.props
+    const {forceInset, titleText, rightText, renderTitle, renderRightItem, children, backgroundColor, menuBtnColor, customContainer} = this.props
     return (
       <Page forceInset={forceInset} backgroundColor={backgroundColor}>
-        <View style={styles.container}>
+        <View style={{...containerDefault, ...customContainer}}>
           
           {
             renderTitle ? 
@@ -49,6 +57,7 @@ export default class MenuPage extends Component {
 
 MenuPage.defaultProps = {
   forceInset: {},
+  customContainer: {},
   titleText: '',
   rightText: '',
   renderTitle: null,
@@ -60,6 +69,7 @@ MenuPage.defaultProps = {
 
 MenuPage.propTypes = {
   forceInset: PropTypes.object,
+  customContainer: PropTypes.object,
   titleText: PropTypes.string,
   rightText: PropTypes.string,
   renderTitle: PropTypes.func,

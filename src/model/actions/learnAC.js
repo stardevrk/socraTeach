@@ -23,3 +23,25 @@ export function clearMyLearnProblems(){
     type: types.CLEAR_MYTEACH_LIST
   }
 }
+
+export function fetchMyLiveLearnProblems (problems, lastProblem) {
+  return {
+    type: types.RECEIVE_MYLIVE_LEARN,
+    problems,
+    lastProblem
+  }
+}
+
+export function fetchMyLiveLearnProblemsMore(problems, lastProblem) {
+  return {
+    type: types.RECEIVE_MYLIVE_LEARN_MORE,
+    problems,
+    lastProblem
+  }
+}
+
+export function clearMyLiveLearnProblems(problems, lastProblem) {
+  return {
+    type: types.CLEAR_MYLIVE_LEARN
+  }
+}

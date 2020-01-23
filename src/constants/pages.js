@@ -22,6 +22,7 @@ export default {
   CHOOSE_PROBLEM: 'choose_problem',
   TEACH_HISTORY: 'teach_history',
   LEARN_HISTORY: 'learn_history',
+  LIVE_LEARN: 'live_learn',
   CHAT_SCREEN: 'chat_screen',
   APP_CHAT: 'app_chat'
 }

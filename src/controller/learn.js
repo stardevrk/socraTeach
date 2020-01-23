@@ -3,7 +3,7 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import store from '../model/store';
 import {clearListeners, clearUserListener, hasListener, addListener, offListenerWithPrefix} from './listeners';
-import {fetchMyLearnProblems, fetchMyLearnProblemsMore, clearMyLearnProblems} from '../model/actions/learnAC';
+import {fetchMyLearnProblems, fetchMyLearnProblemsMore, clearMyLearnProblems, fetchMyLiveLearnProblems, fetchMyLiveLearnProblemsMore, clearMyLiveLearnProblems} from '../model/actions/learnAC';
 import _ from 'lodash';
 
 export function getMyInitLearnList () {
@@ -21,14 +21,9 @@ export function getMyInitLearnList () {
             let lastProblem = snapShot.docs[snapShot.docs.length - 1];
             snapShot.forEach((doc) => {
               let problemData = doc.data();
-              // problemData['userName'] = '';
-              // if (problemData.teacherId != undefined && problemData.teacherId != null) {
-              //   firestore.collection('users').doc(problemData.teacherId).get().then((teacherDoc) => {
-              //     const userData = teacherDoc.data();
-              //     problemData['userName'] = userData.userName;
-              //   })
-              // }
-              problemArray.push(problemData);
+              
+                problemArray.push(problemData);
+              
             })
             dispatch(fetchMyLearnProblems(problemArray, lastProblem, 0));
           }
@@ -63,13 +58,7 @@ export function getMyMoreLearnList () {
             let lastProblem = snapShot.docs[snapShot.docs.length - 1];
             snapShot.forEach((doc) => {
               let problemData = doc.data();
-              // problemData['userName'] = '';
-              // if (problemData.teacherId != undefined && problemData.teacherId != null) {
-              //   firestore.collection('users').doc(problemData.teacherId).get().then((teacherDoc) => {
-              //     problemData['userName'] = userData.userName;
-              //   });
-              // }
-              problemArray.push(problemData);
+                problemArray.push(problemData);
             })
             dispatch(fetchMyLearnProblemsMore(problemArray, lastProblem, currentBlockIndex));
           }
@@ -89,6 +78,82 @@ export function clearMyLearnList() {
       dispatch(clearMyLearnProblems());
     } catch (e) {
       console.log("Clear My Learn Problem Error = ", e);
+    }
+  }
+}
+
+export function getMyInitLiveLearnList () {
+  return async function (dispatch, getState) {
+    try {
+      if (!hasListener('my_live_learn_start')) {
+        var listener = firestore.collection('users')
+        .doc(auth.currentUser.uid).collection('learn')
+        .orderBy('uploadTime', 'DESC')
+        .limit(50)
+        .onSnapshot((snapShot) => {
+          if (snapShot.docs.length > 0) {
+            let problemArray = [];
+            let lastProblem = snapShot.docs[snapShot.docs.length - 1];
+            snapShot.forEach((doc) => {
+              let problemData = doc.data();
+              if (problemData.sesssionStartedAt != undefined && problemData.sesssionStartedAt == false
+              ) {
+                problemArray.push(problemData);
+              }
+            })
+            dispatch(fetchMyLiveLearnProblems(problemArray, lastProblem));
+          }
+        });
+        addListener('my_live_learn_start', listener);
+      }
+    } catch (e) {
+      console.log("Fetch My Live Learn Problem Error = ", e);
+    }
+  }
+}
+
+export function getMyMoreLiveLearnList () {
+  return async function (dispatch, getState) {
+    try {
+      const currentState = getState();
+      const teachObject = _.get(currentState, 'myLiveLearn', {});
+      const prevLastProblem = _.get(teachObject, 'lastProblem', null);
+
+      if (!hasListener('my_live_learn_' + prevLastProblem)) {  
+        var listener = firestore.collection('users')
+        .doc(auth.currentUser.uid).collection('learn')
+        .orderBy('uploadTime', 'DESC')
+        .startAfter(prevLastProblem)
+        .limit(50)
+        .onSnapshot((snapShot) => {
+          if (snapShot.docs.length > 0) {
+            let problemArray = [];
+            let lastProblem = snapShot.docs[snapShot.docs.length - 1];
+            snapShot.forEach((doc) => {
+              let problemData = doc.data();
+              if (problemData.sesssionStartedAt != undefined && problemData.sesssionStartedAt == false
+              ) {
+                problemArray.push(problemData);
+              }
+            })
+            dispatch(fetchMyLiveLearnProblemsMore(problemArray, lastProblem));
+          }
+        });
+        addListener('my_live_learn_' + prevLastProblem, listener);
+      }
+    } catch (e) {
+      console.log("Fetch My Live Learn More Problem Error = ", e);
+    }
+  }
+}
+
+export function clearMyLiveLearnList() {
+  return async function (dispatch, getState) {
+    try {
+      offListenerWithPrefix('my_live_learn');
+      dispatch(clearMyLiveLearnList());
+    } catch (e) {
+      console.log("Clear My Live Learn Problem Error = ", e);
     }
   }
 }

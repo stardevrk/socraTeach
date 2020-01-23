@@ -76,6 +76,7 @@ export function getInitChats(subject, problemId) {
                 chatsData[doc.id] = {
                   _id: chatData._id,
                   text: chatData.text,
+                  image: chatData.image != undefined ? chatData.image : '',
                   createdAt: new Date(chatData.timestamp),
                   sentBy: chatData.sentBy,
                   timestamp: chatData.timestamp
@@ -132,6 +133,7 @@ export function getMoreChats(subject, problemId) {
                 chatsData[doc.id] = {
                   _id: chatData._id,
                   text: chatData.text,
+                  image: chatData.image != undefined ? chatData.image : '',
                   createdAt: new Date(chatData.timestamp),
                   sentBy: chatData.sentBy,
                   timestamp: chatData.timestamp
@@ -160,7 +162,8 @@ export function sendMessage (subject, problemId, message, shouldGetInitChats) {
     try {
       await firestore.collection(subject).doc(problemId).collection('messages').doc(message._id).set({
         _id: message._id,
-        text: message.text,
+        text: message.text != undefined ? message.text : '',
+        image: message.image != undefined ? message.image : '',
         sentBy: auth.currentUser.uid,
         // createdAt: message.createdAt,
         timestamp: Date.now()

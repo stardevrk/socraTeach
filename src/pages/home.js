@@ -19,6 +19,7 @@ import {getMyInitTeachList, clearMyTeachList} from '../controller/teach';
 import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
+const WORD_LOGO = require('../assets/images/word-logo.png');
 
 class HomeScreen extends Component {
     
@@ -36,20 +37,18 @@ class HomeScreen extends Component {
     }
     
     static getDerivedStateFromProps (props, state) {
-        // let subjectProps = props.subjects;
-
-        // if (subjectProps == undefined || subjectProps == null) {
-        //     return null;
-        // }
-        
-        // let subjectArray = subjectProps.subject;
-        // subjectArray.forEach(element => {
-        //     const subject = element.name.toLowerCase();
-        //     props.dispatch(fetchInitProblem(subject));
-        // });
-        
         
         return null;
+    }
+
+    _renderTitle = () => {
+        return (
+            <Image 
+                style={{width: getWidth(191), height: getHeight(28), paddingTop: -getHeight(80)}}
+                resizeMode={'contain'}
+                source={WORD_LOGO}
+            />
+        )
     }
 
     componentDidMount() {
@@ -62,7 +61,7 @@ class HomeScreen extends Component {
 
     render () {
         return (
-            <MenuPage>
+            <MenuPage renderTitle={this._renderTitle} customContainer={{paddingTop: 30}}>
                 <View style={styles.container}>
                     <Image
                         source={LOGO_IMAGE}
@@ -94,11 +93,15 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%'
+        width: '100%',
+        marginTop: -getHeight(60),
+        // backgroundColor: 'red'
     },
     logoImage: {
         width: getWidth(291),
         height: getHeight(151),
+        // position: 'absolute',
+        // top: getHeight(40)
         marginBottom: getHeight(23),
         
     }

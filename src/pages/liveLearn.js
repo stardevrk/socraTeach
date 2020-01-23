@@ -19,12 +19,12 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 import { BLACK_PRIMARY } from '../constants/colors';
 import {auth} from '../constants/firebase';
-import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
+import {getMyInitLiveLearnList, getMyMoreLiveLearnList, clearMyLiveLearnList} from '../controller/learn';
 import {updateSession, clearSession} from '../model/actions/sessionAC';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
-class LearnHistory extends Component {
+class LiveLearn extends Component {
     
     constructor(props) {
         super(props);
@@ -38,7 +38,7 @@ class LearnHistory extends Component {
     
     static getDerivedStateFromProps (props, state) {
       let problems = _.get(props.problem, 'problems', []);
-       
+      console.log("Learn History Porblems ====", problems);
       let newProblems = _.map(problems, (item, index) => {
         item['key'] = index;
         let subject = item.subject;
@@ -48,13 +48,9 @@ class LearnHistory extends Component {
         return item;
       })
 
-      console.log("Learn History Porblems ====", newProblems);
-
       let filteredProblems = _.filter(newProblems, function (item) {
-          return item.sessionStartedAt > 0;
+          return item.sessionStartedAt ==  undefined;
       })
-
-      console.log("Learn History Porblems ====", filteredProblems);
 
       return {
         teachList: filteredProblems,
@@ -85,8 +81,8 @@ class LearnHistory extends Component {
     _refreshData = () => {
       this.setState({loading: true});
       const {dispatch}  = this.props;
-      dispatch(clearMyLearnList());
-      dispatch(getMyInitLearnList());
+      dispatch(clearMyLiveLearnList());
+      dispatch(getMyInitLiveLearnList());
       this.setState({loading: false});
     }
 
@@ -99,7 +95,7 @@ class LearnHistory extends Component {
 
     render () {
         return (
-          <MenuPage titleText={'LEARN HISTORY'}>
+          <MenuPage titleText={'LIVE LEARNS'}>
               <View style={styles.container}>
                 <FlatList
                   style={{width: '100%'}}
@@ -132,7 +128,7 @@ class LearnHistory extends Component {
     }
 }
 
-LearnHistory.navigatorStyle = {
+LiveLearn.navigatorStyle = {
     navBarHidden: true,
     statusBarBlur: false
 }
@@ -185,7 +181,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
     subjects: state.subject,
     problem: state.myLearn,
-    user: state.user
+    user: state.user,
   })
   
-  export default connect(mapStateToProps)(LearnHistory);
+  export default connect(mapStateToProps)(LiveLearn);

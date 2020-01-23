@@ -5,7 +5,8 @@ import {
     Text,
     ActivityIndicator,
     Image,
-    KeyboardAvoidingView
+    KeyboardAvoidingView,
+    Platform
 } from 'react-native';
 import Page from '../components/basePage';
 import MenuPage from '../components/menuPage';
@@ -16,10 +17,13 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import NavButton from '../components/navButton';
 import {connect} from 'react-redux';
-import {GiftedChat} from 'react-native-gifted-chat';
+import {GiftedChat, Actions} from 'react-native-gifted-chat';
 import _ from 'lodash';
 import {auth} from '../constants/firebase';
 import {getChatUsers, getInitChats, clearChatsData, getMoreChats, sendMessage} from '../controller/chat';
+import ActionSheet from 'react-native-action-sheet';
+import ImagePicker from 'react-native-image-picker';
+import {uploadImage} from '../service/firebase';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -37,19 +41,24 @@ class ChatScreen extends Component {
           loadingEarlier: false,
           earlierLodable: false,
           // session: {},
-          prevSession: {}
+          prevSession: {},
+          sessionTimer: null,
+          loading: false
         }
 
         props.navigation.addListener('didFocus', payload => {
           // let problemData = payload.action.params.problem;
           // console.log(payload.action.params)
-          // console.log("Chat Screen Payload ========== ", payload);
+          console.log("Chat Screen Payload ========== ", payload);
 
           let problemData = payload.state.params !== undefined ? payload.state.params.problem : payload.action.params.problem;
           let subject = payload.state.params !== undefined ? payload.state.params.subject : payload.action.params.subject;
           let prevScreen = payload.state.params !== undefined ? payload.state.params.prevScreen : payload.action.params.prevScreen;
-          tempProblemId = problemData.problemId;
-          this.setState({prevScreen: prevScreen});
+          // tempProblemId = problemData.problemId;
+          let timer = payload.state.params !== undefined ? payload.state.params.timer : payload.action.params.timer;
+          this.setState({prevScreen: prevScreen, sessionTimer: timer});
+
+
           
           // this.setState({subject: subject, problemData: problemData, prevScreen: prevScreen});
           // if (this.state.subject !== '') {
@@ -72,10 +81,7 @@ class ChatScreen extends Component {
         }
         
         if (state.prevSession !== props.session) {
-          console.log("Session Now ======= ***************", state.prevSession);
-          console.log("Session Prev ======= ***************", props.session);
           props.dispatch(clearChatsData(subject.toLowerCase(), problemId));
-          // props.dispatch(getChatUsers(subject.toLowerCase(),problemId));
           props.dispatch(getInitChats(subject.toLowerCase(), problemId));
           return {
             prevSession: props.session,
@@ -84,28 +90,17 @@ class ChatScreen extends Component {
           }
         }
 
-        console.log("Session next1 ********************", props.chat.users); 
-
-        // if (props.chat.users == undefined) {
-        //   return null;
-        // }
-
-        console.log("Session next2 ********************", props.chat.messages); 
-
         if (props.chat.messages == undefined) {
           return {
             messages: []
           }
         }
 
-        //  console.log("Session prev ======= ***************", state.prevMessages);
-        //  console.log("Session next ********************", props.chat.messages);
-
         const loading = props.chat.loading != undefined ? props.chat.loading : false;
         const earlierLodable = props.chat.earlierLodable != undefined ? props.chat.earlierLodable : true;
-        console.log("Session next ********************", props.session); 
+        // console.log("Session next ********************", props.session); 
         const {messages} = props.chat;
-        // const {users} = props.chat;
+        console.log("Message Item $$$$$$$$$$=", messages);
 
         let chatUserName = '';
         if (props.session.sessionType == 'teach_session') {
@@ -122,6 +117,7 @@ class ChatScreen extends Component {
             let newItem = {
                 _id: item._id,
                 text: item.text,
+                image: item.image,
                 createdAt: item.createdAt,
                 timestamp: item.timestamp,
                 user: {
@@ -131,6 +127,7 @@ class ChatScreen extends Component {
               }
             return newItem;
           });
+          
           const sortedMessages = _.orderBy(messagesRaw, ['timestamp'], ['desc']);
           return {
             messages: sortedMessages,
@@ -157,6 +154,10 @@ class ChatScreen extends Component {
 
     onSend = (messages = []) => {
       const {dispatch, session}  = this.props;
+      if (this.state.sessionTimer != null) {
+        // clearInterval(this.state.sessionTimer);  
+      }
+      
       // this.setState(previousState => ({
       //   messages: GiftedChat.append(previousState.messages, messages),
       // }));
@@ -195,6 +196,137 @@ class ChatScreen extends Component {
       })
     }
 
+    _renderActions = () => {
+      return (
+        <Actions 
+          onPressActionButton={this._pressActionButton}
+        />
+      )
+    }
+
+    _imagePickandSend = () => {
+      const options = {
+        title: 'Select Image',
+        customButtons: [],
+        storageOptions: {
+          skipBackup: true,
+          path: 'chat_images',
+        },
+      };
+      
+      ImagePicker.launchImageLibrary(options, (response) => {
+        console.log("Image Picker Response = ", response);
+        
+        if (response.uri != undefined && response.uri != null && response.uri != '' ) {
+          this.setState({loading: true});
+          let imageToBeUploaded = '';
+          if (Platform.OS == 'ios') {
+            imageToBeUploaded = response.uri;
+          } else if (Platform.OS == 'android') {
+            let absPath = 'file://' + response.path;
+            imageToBeUploaded = absPath;
+          } else {
+            imageToBeUploaded = response.uri;
+          }
+
+          const {dispatch, session} = this.props;
+          uploadImage(imageToBeUploaded).then((data) => {
+            const newMessage = {
+              _id: 'image_message_' + Date.now(),
+              createdAt: new Date(),
+              image: data,
+              user: 
+              {_id: auth.currentUser.uid}
+            }
+            if (this.state.messages.length > 0) {
+                dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, false));
+            } else {
+                dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, true));
+            }
+          }).finally(() => {
+            this.setState({loading: false});
+          })
+        }
+      })
+    }
+
+    _imageTakeandSend = () => {
+      const options = {
+        title: 'Select Image',
+        customButtons: [],
+        storageOptions: {
+          skipBackup: true,
+          path: 'chat_images',
+        },
+      };
+
+      ImagePicker.launchCamera(options, (response)=> {
+        console.log("Image Picker Response = ", response);
+        
+        if (response.uri != undefined && response.uri != null && response.uri != '' ) {
+          this.setState({loading: true});
+          let imageToBeUploaded = '';
+          if (Platform.OS == 'ios') {
+            imageToBeUploaded = response.uri;
+          } else if (Platform.OS == 'android') {
+            let absPath = 'file://' + response.path;
+            imageToBeUploaded = absPath;
+          } else {
+            imageToBeUploaded = response.uri;
+          }
+
+          const {dispatch, session} = this.props;
+          uploadImage(imageToBeUploaded).then((data) => {
+            const newMessage = {
+              _id: 'image_message_' + Date.now(),
+              createdAt: new Date(),
+              image: data,
+              user: 
+              {_id: auth.currentUser.uid}
+            }
+            if (this.state.messages.length > 0) {
+                dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, false));
+            } else {
+                dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, true));
+            }
+          }).finally(() => {
+            this.setState({loading: false});
+          })
+        }
+      })
+    }
+
+    _pressActionButton = () => {
+      const options = [
+        'Image From Library',
+        'Image From Camera',
+        'Cancel',
+      ]
+      const cancelButtonIndex = options.length - 1
+      
+      ActionSheet.showActionSheetWithOptions(
+        {
+          options,
+          cancelButtonIndex,
+        },
+        async buttonIndex => {
+          // const { onSend } = this.props
+          switch (buttonIndex) {
+            case 0:
+              // pickImageAsync(onSend)
+              this._imagePickandSend();
+              return
+            case 1:
+               this._imageTakeandSend();
+              return
+            case 2:
+              // getLocationAsync(onSend)
+            default:
+          }
+        },
+      )
+    }
+
     render () {
         return (
           <Page backgroundColor={'#FFFFFF'}>
@@ -219,7 +351,16 @@ class ChatScreen extends Component {
                   onLoadEarlier={() => {this._loadEarlierMessages()}}
                   isLoadingEarlier={this.state.loadingEarlier}
                   scrollToBottom={true}
+                  renderActions={this._renderActions}
+                  // onPressActionButton={this._pressActionButton}
                 />
+                {
+                  this.state.loading == true ? 
+                  <View style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.3)'}}>
+                    <ActivityIndicator size={'large'} />
+                  </View>
+                  : null
+                }
             </KeyboardAvoidingView>
             
           </Page>

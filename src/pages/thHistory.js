@@ -93,7 +93,7 @@ class TeachHistory extends Component {
                           {item.userName}
                         </Text>
                       </View>
-                      <Image source={{uri: item.problemImage}} resizeMode={'stretch'} style={{width: '100%', height: getHeight(80), borderRadius: getHeight(10)}} />
+                      <Image source={{uri: item.problemImage}} resizeMode={'contain'} style={{width: '100%', height: getHeight(200), borderRadius: getHeight(10)}} />
                     </View>
                   </TouchableOpacity>}
                   keyExtractor={(index) => index.toString()}

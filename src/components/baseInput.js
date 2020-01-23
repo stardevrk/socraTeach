@@ -23,7 +23,7 @@ const descDefault = {
 const textDefault = {
   color: 'white',
   fontFamily: 'Montserrat-Medium',
-  fontSize: getHeight(10),
+  fontSize: getHeight(14),
   width: '100%',
   paddingLeft: getWidth(10),
   height: getHeight(20),

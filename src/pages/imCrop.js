@@ -18,18 +18,17 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {uploadImage} from '../service/firebase';
 import {auth, firestore} from '../constants/firebase';
-import ImagePicker from 'react-native-image-picker';
 import {connect} from 'react-redux';
 import {getMyInitLearnList} from '../controller/learn';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
-
 const IMAGE_WIDTH = Dimensions.get('screen').width > 500 ? getWidth(360) / 3 : (Dimensions.get('screen').width - 15) / 3;
 
 class ImageCrop extends Component {
 
   constructor(props) {
     super(props);
+
     this.state = {
       imageSource: '',
       subject: '',
@@ -37,7 +36,6 @@ class ImageCrop extends Component {
     }
 
     props.navigation.addListener('didFocus', payload => {
-      // console.log("Navigation Event Payload === ", payload);
       this.setState({imageSource: payload.action.params.imageUri, subject: payload.action.params.subject});
     })
   }
@@ -65,7 +63,7 @@ class ImageCrop extends Component {
       })
       const {dispatch} = this.props;
       dispatch(getMyInitLearnList());
-      navigationService.navigate(pages.LEARN_HISTORY);
+      navigationService.navigate(pages.LIVE_LEARN);
     }).catch((err) =>{
       console.log("Upload Error = ", err);
     });
@@ -82,14 +80,13 @@ class ImageCrop extends Component {
         <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
           <View style={styles.container}>
             <View style={styles.headView}>
-              
                 <Crop size={getHeight(44)} color={'#FFFFFF'} />
                 <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(24), flex: 1, textAlign: 'center'}}>
                   Select Your Problem
                 </Text> 
             </View>
             <View style={styles.libraryView}>
-              <Image style={{width: '100%', height: '100%', borderRadius: getHeight(10),}} source={{uri: this.state.imageSource}}/>
+              <Image style={{height: '100%', borderRadius: getHeight(10),}} source={{uri: this.state.imageSource}} resizeMode={'contain'} />
             </View>
             <View style={styles.btnView}>
               <BaseButton 
@@ -136,7 +133,7 @@ const styles = StyleSheet.create({
       width: getWidth(316),
       height: getHeight(410),
       borderRadius: getHeight(10),
-      backgroundColor: '#FFFFFF'
+      backgroundColor: 'transparent'
     },
     btnView: {
       flex: 1,

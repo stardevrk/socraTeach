@@ -25,26 +25,13 @@ import Camera from '../pages/camera';
 import TeachHistory from '../pages/thHistory';
 import LearnHistory from '../pages/leHistory';
 import ChatScreen from '../pages/chat';
+import LiveLearn from '../pages/liveLearn';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
         header: null
     }
 }
-
-// const chatStack = createStackNavigator(
-//     {
-//         [pages.CHAT_SCREEN]: ChatScreen,
-//     },
-//     navigatorConfig
-// );
-
-// const learnChatStack = createStackNavigator(
-//     {
-//         [pages.CHAT_SCREEN]: ChatScreen,
-//     },
-//     navigatorConfig
-// );
 
 const AppDrawer = createDrawerNavigator(
     {
@@ -62,6 +49,7 @@ const AppDrawer = createDrawerNavigator(
         [pages.TEACH_HISTORY]: TeachHistory,
         [pages.LEARN_HISTORY]: LearnHistory,
         [pages.CHAT_SCREEN]: ChatScreen,
+        [pages.LIVE_LEARN]: LiveLearn
     },
     {
         initialRouteName: pages.HOME_SCREEN,

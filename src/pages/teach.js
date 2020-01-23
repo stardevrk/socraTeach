@@ -186,7 +186,7 @@ class TeachScreen extends Component {
                       }
                       style={{width: getWidth(283)}}
                       textStyle={{color: '#FFFFFF', fontSize: getHeight(10), fontFamily: 'Montserrat-Regular'}}
-                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(283), marginTop: getHeight(3)}}
+                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(150), marginTop: getHeight(3), height: getHeight(120)}}
                       dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
                       dropdownTextHighlightStyle={{color: '#FFFFFF'}}
                       onDropdownWillShow={this.modalWillShow}

@@ -41,6 +41,10 @@ const SOLUTION_EXAMPLE = require('../assets/images/solution-example.png');
 
 const SCREEN_HEIGHT = Dimensions.get('window').height > Dimensions.get('window').width ? Dimensions.get('window').height : Dimensions.get('window').width;
 
+let timerDuration = 60 * 1;
+let timerDisplay = '05:00';
+let myTimer;
+
 class SOLVESCREEN extends Component {
 
   constructor(props) {
@@ -53,12 +57,15 @@ class SOLVESCREEN extends Component {
       subject: '',
       posterName: '',
       posterRate: 0,
-      prevPosterId: ''
+      prevPosterId: '',
+      displayTimer: '',
+      prevProblemId: ''
     }
 
     let tempSubject = '';
     let tempProblemId = '';
     let tempPosterId = '';
+    // this.startTimer(timerDuration, timerDisplay);
     props.navigation.addListener('didFocus', payload => {
       let problemData = payload.action.params.problem;
       tempSubject = payload.action.params.subject;
@@ -70,6 +77,7 @@ class SOLVESCREEN extends Component {
       //   // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
       //   this._getPosterName(tempPosterId);
       // });
+      // this.setState({timerDisplay: '', timeDuration: })
     })
   }
     
@@ -100,7 +108,7 @@ class SOLVESCREEN extends Component {
       return (
         <View style={{position: 'absolute', right: getWidth(16), top: getHeight(23)}}>
           <Text style={styles.titleText}>
-            5:00
+            {this.state.displayTimer}
           </Text>
         </View>
       )
@@ -113,16 +121,58 @@ class SOLVESCREEN extends Component {
       })
     }
 
+    startTimer = (duration, display) => {
+        var timer = duration, minutes, seconds;
+        let self = this;
+        myTimer = setInterval(() => {
+          //  console.log("Count Down ////////");
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+    
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+    
+            display = minutes + ":" + seconds;
+            self.setState({displayTimer: display});
+    
+            if (--timer < 0) {
+              self.setState({modalVisible: true});
+                timer = duration;
+            }
+        }, 1000);
+    }
+
     _finishSession = () => {
       this.setState({modalVisible: false})
       //Save session Result & navigate to Home page
       navigationService.navigate(pages.HOME_SCREEN);
     }
 
+    componentDidUpdate(prevProps, prevState, snapShot) {
+      // if (this.state.problemData.sessionExist == false) {
+      //   this.startTimer(timerDuration, timerDisplay);
+      //   return;
+      // }
+
+      if (this.state.modalVisible == true) {
+        // clearInterval(myTimer);
+      }
+
+      if (this.state.prevProblemId != prevState.prevProblemId) {
+        this.setState({modalVisible: false});
+        // clearInterval(myTimer)
+        // console.log("TimerDuration ==== ", timerDuration );
+        // this.startTimer(timerDuration, timerDisplay);
+      }
+    }
+
     static getDerivedStateFromProps (nextprops, nextstate) {
       const {session} = nextprops;
 
       if (nextstate.prevPosterId != session.problemData.posterId || nextstate.prevProblemId != session.problemData.problemId) {
+        // clearInterval(myTimer);
+        
+        // SOLVESCREEN.startTimer(timerDuration, timerDisplay);
         nextprops.dispatch(getPosterInfo(session.problemData.posterId));  
       }
 
@@ -140,16 +190,13 @@ class SOLVESCREEN extends Component {
     }
 
     _clickChat =() =>{
-      navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'thSolve'});
+      // clearInterval(myTimer);
+      navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'thSolve', timer: myTimer});
       // this.setState({chatting: true});  
     }
 
     componentDidMount() {
-      const {dispatch} = this.props;
-      const problemData = this.state.problemData;
-      // console.log("TH Solve Mounted! ====", this.state.subject, problemData.problemId);
-      // dispatch(getChatUsers(this.state.subject, problemData.problemId));
-      // dispatch(getInitChats(this.state.subject, problemData.problemId));
+      // this.startTimer(timerDuration, timerDisplay);
     }
 
     render () {
@@ -165,10 +212,10 @@ class SOLVESCREEN extends Component {
                   style={styles.logoImage}
                   resizeMode={'contain'}
               />
-              <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                {/* <Image source={SOLUTION_EXAMPLE} resizeMode={'contain'}/> */}
+              {/* <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                
                 <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline/>
-              </View>
+              </View> */}
             </KeyboardAwareScrollView>
             <View style={{width: '100%', height: getHeight(50), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
               <TouchableOpacity onPress={() => this._clickChat()}>
@@ -269,7 +316,7 @@ const styles = StyleSheet.create({
     },
     logoImage: {
         width: getWidth(291),
-        height: getHeight(151),
+        height: getHeight(600),
         marginBottom: getHeight(23),
         
     },

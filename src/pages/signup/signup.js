@@ -171,7 +171,7 @@ class Signup extends Component {
                       wrapperStyle={{marginBottom: getHeight(30)}}
                       onChangeText={this._changePassword}
                       errorExist={this.state.passwordDismatch || this.state.emptyPassword}
-                      errorText={this.state.emptyPassword == true ? 'Required!' : 'Password Dismatch!'}
+                      errorText={this.state.emptyPassword == true ? 'Required!' : 'Password Mismatch!'}
                     />
                     <BaseInput 
                       desc={'Confirm Password'}
