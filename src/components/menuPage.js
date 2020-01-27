@@ -35,7 +35,7 @@ export default class MenuPage extends Component {
               {titleText}
             </Text>
           }
-          <MenuButton buttonStyle={{position: 'absolute', left: getWidth(16), top: getHeight(15)}}
+          <MenuButton buttonStyle={{position: 'absolute', left: getWidth(16), top: getHeight(15), zIndex: 10}}
                       buttonColor={menuBtnColor}
                       onClick={this.toggleMenu} 
           />

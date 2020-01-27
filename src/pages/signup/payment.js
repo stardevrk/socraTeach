@@ -3,7 +3,8 @@ import {
     StyleSheet,
     Image,
     View,
-    ActivityIndicator
+    ActivityIndicator,
+    Alert
 } from 'react-native';
 import Page from '../../components/basePage';
 import {getWidth, getHeight} from '../../constants/dynamicSize';
@@ -73,9 +74,23 @@ class Payment extends Component {
     getStripeToken(this.state.cardNumber, exp_month, exp_year, this.state.cardSecurity).then((value) => {
       console.log("Stripe Response ", value.tokenId);
       dispatch(signupStripeInfo(value.tokenId));
-    }).finally(() => {
-      this.setState({loading: false});
       navigationService.navigate(pages.SINGUP_FINISH);
+    }).catch(() => {
+      Alert.alert(
+        'Invalid Card',
+        'Please use correct Card',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+    })
+    .finally(() => {
+      this.setState({loading: false});
     });
 
     // navigationService.navigate(pages.SINGUP_FINISH);

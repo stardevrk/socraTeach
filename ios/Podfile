@@ -38,7 +38,8 @@ target 'socraTeach' do
   pod 'Firebase/Firestore'
   pod 'Firebase/Database'
   pod 'Firebase/Messaging'
-  pod 'Firebase/Storage' 
+  pod 'Firebase/Storage'
+   
 
   target 'socraTeachTests' do
     inherit! :search_paths
