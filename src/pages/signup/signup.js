@@ -2,11 +2,14 @@ import React, {Component} from 'react';
 import {
     StyleSheet,
     Image,
+    TouchableOpacity,
+    View
 } from 'react-native';
 import Page from '../../components/basePage';
 import {getWidth, getHeight} from '../../constants/dynamicSize';
 import BaseButton from '../../components/baseButton';
 import BaseInput from '../../components/baseInput';
+import AuthInput from '../../components/authInput';
 import NavButton from '../../components/navButton';
 import navigationService from '../../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
@@ -14,8 +17,11 @@ import pages from '../../constants/pages';
 import {validateEmail} from '../../service/utils';
 import {connect} from 'react-redux';
 import {signupUserInfo} from '../../model/actions/signupAC';
+import { BLACK_PRIMARY } from '../../constants/colors';
 
 const LOGO_IMAGE = require('../../assets/images/logo.png');
+const BACK_BUTTON = require('../../assets/images/back-button.png');
+const FORWARD_BUTTON = require('../../assets/images/forward-button.png');
 
 class Signup extends Component {
 
@@ -43,10 +49,7 @@ class Signup extends Component {
         this.setState({emptyName: true});
         return;
       }
-      if (this.state.email == '') {
-        this.setState({emptyEmail: true});
-        return;
-      }
+
       if (this.state.country == '') {
         this.setState({emptyCountry: true});
         return;
@@ -62,11 +65,10 @@ class Signup extends Component {
       const {dispatch} = this.props;
       dispatch(signupUserInfo({
         userName: this.state.userName,
-        email: this.state.email,
         country: this.state.country,
         password: this.state.password
       }));
-      navigationService.navigate(pages.PAY_TEACHING);
+      navigationService.navigate(pages.PAYMENT);
     }
 
     goBack = () => {
@@ -131,61 +133,53 @@ class Signup extends Component {
 
     render () {
         return (
-            <Page>
+            <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
                 <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
-                    <NavButton 
-                      iconName={'md-arrow-back'} 
-                      buttonStyle={{position: 'absolute', left: getWidth(16), top: getHeight(15)}}
-                      onClick={this.goBack}
-                    />
-                    <Image
-                        source={LOGO_IMAGE}
-                        style={styles.logoImage}
-                        resizeMode={'contain'}
-                    />
-                    <BaseInput 
-                      desc={'First Name'}
-                      wrapperStyle={{marginBottom: getHeight(30)}}
+                  <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
+                      <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
+                  </TouchableOpacity>
+                  
+                  <AuthInput 
+                      desc={'Full Name'}
+                      
+                      wrapperStyle={{marginBottom: getHeight(27)}}
+                      descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changeFirstName}
                       errorExist={this.state.emptyName}
                       errorText={'Required!'}
-                    />
-                    <BaseInput 
-                      desc={'Email Address'}
-                      wrapperStyle={{marginBottom: getHeight(30)}}
-                      onChangeText={this._changeEmail}
-                      errorExist={this.state.errorEmail || this.state.emptyEmail}
-                      errorText={this.state.emptyEmail == true ? 'Required!' : 'Invalid Email!'}
-                      keyboardType={'email-address'}
-                    />
-                    <BaseInput 
+                  />
+                  <AuthInput 
                       desc={'Country'}
-                      wrapperStyle={{marginBottom: getHeight(30)}}
+                      
+                      wrapperStyle={{marginBottom: getHeight(27)}}
+                      descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changeCountry}
                       errorExist={this.state.emptyCountry}
                       errorText={'Required!'}
-                    />
-                    <BaseInput 
+                  />
+                  <AuthInput 
                       desc={'Password'}
                       pwdType={true}
-                      wrapperStyle={{marginBottom: getHeight(30)}}
+                      wrapperStyle={{marginBottom: getHeight(27)}}
+                      descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changePassword}
-                      errorExist={this.state.passwordDismatch || this.state.emptyPassword}
-                      errorText={this.state.emptyPassword == true ? 'Required!' : 'Password Mismatch!'}
-                    />
-                    <BaseInput 
-                      desc={'Confirm Password'}
+                      errorExist={this.state.emptyPassword || this.state.passwordDismatch}
+                      errorText={this.state.passwordDismatch == true ? 'Password Mismatch!' : 'Required!'}
+                  />
+                  <AuthInput 
+                      desc={'Confirm'}
                       pwdType={true}
-                      wrapperStyle={{marginBottom: getHeight(64)}}
+                      wrapperStyle={{marginBottom: getHeight(62)}}
+                      descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changePasswordConfirm}
                       errorExist={this.state.emptyPasswordConfirm}
                       errorText={'Required!'}
-                    />
-                    
-                    <BaseButton 
-                        text={'CONTINUE'}
-                        onClick={this.goForward}
-                    />
+                  />
+                  <View style={styles.forwardBtnView}>
+                      <TouchableOpacity style={styles.forwardBtn} onPress={this.goForward}>
+                          <Image style={styles.backBtnImage} resizeMode={'contain'} source={FORWARD_BUTTON}/>
+                      </TouchableOpacity>
+                  </View>
                 </KeyboardAwareScrollView>
             </Page>
         )
@@ -198,23 +192,38 @@ Signup.navigatorStyle = {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        width: '100%',
-        height: '100%',
-    },
-    wrapper: {
+  container: {
       flex: 1,
       width: '100%',
       height: '100%',
-      justifyContent: 'center',
-      alignItems: 'center'
-    },
-    logoImage: {
-        width: getWidth(291),
-        height: getHeight(151),
-        marginBottom: getHeight(23),
-    }
+  },
+  wrapper: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    
+  },
+  logoImage: {
+      width: getWidth(291),
+      height: getHeight(151),
+      marginBottom: getHeight(23),
+  },
+  backBtnView: {
+    marginTop: getHeight(48),
+    marginLeft: getWidth(32),
+    marginBottom: getHeight(24)
+  },
+  backBtnImage: {
+      width: getHeight(48),
+      height: getHeight(48)
+  },
+  forwardBtnView: {
+      width: '100%', 
+      alignItems: 'flex-end',
+  },
+  forwardBtn: {
+      marginRight: getWidth(32),
+  }
 })
 
 const mapStateToProps = (state) => ({

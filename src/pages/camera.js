@@ -6,7 +6,8 @@ import {
     ActivityIndicator,
     Image,
     Dimensions,
-    CameraRoll
+    CameraRoll,
+    TouchableOpacity
 } from 'react-native';
 import Page from '../components/basePage';
 import MenuPage from '../components/menuPage';
@@ -21,6 +22,7 @@ import { RNCamera } from 'react-native-camera';
 import { SafeAreaView } from 'react-navigation';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
+const BACK_IMAGE = require('../assets/images/back-button.png');
 
 const IMAGE_WIDTH = Dimensions.get('screen').width > 500 ? getWidth(360) / 3 : (Dimensions.get('screen').width - 15) / 3;
 
@@ -86,9 +88,9 @@ export default class Camera extends Component {
           fixOrientation: true, quality: 0.5, base64: true
       };
       const data = await this.camera.takePictureAsync(options);
-      console.log("Camera Photo Take ======= ", data.uri);
+      console.log("Camera Photo Take ======= ", data);
       // Actions.EditStory({ data: { uri: data.uri, type: 'image', typer: 'camera' } })
-      navigationService.navigate(pages.PROBLEM_CROP, {imageUri: data.uri, subject: this.state.subject});
+      navigationService.navigate(pages.PROBLEM_CROP, {imageUri: data.uri, subject: this.state.subject, imageWidth: data.width, imageHeight: data.height});
   }
     // navigationService.navigate(pages.PROBLEM_CROP);
   }
@@ -157,6 +159,11 @@ export default class Camera extends Component {
                     buttonNegative: 'Cancel'
                   }}
               >
+                <TouchableOpacity style={{position: 'absolute', top: getHeight(40), left: getWidth(32)}}
+                  onPress={() => {navigationService.navigate(pages.LEARN_SUBJECT)}}
+                >
+                  <Image source={BACK_IMAGE} style={{width: getHeight(48), height: getHeight(48)}}/>
+                </TouchableOpacity>
                 <BaseButton 
                   text={'TAKE'}
                   onClick={this._photoTake}
@@ -180,7 +187,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         justifyContent: 'center',
-        alignItems: 'center',
         width: '100%',
         // backgroundColor: 'red'
     },

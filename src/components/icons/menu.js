@@ -1,5 +1,5 @@
 import React from 'react'
-import Svg, { Path, Defs, G, Use, Mask } from 'react-native-svg'
+import Svg, { Path, Defs, G, Use, Mask, Rect } from 'react-native-svg'
 
 export default function (props) {
   return (

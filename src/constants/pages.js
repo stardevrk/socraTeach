@@ -8,6 +8,7 @@ export default {
   PAY_TEACHING: 'pay_teaching',
   PAY_LEARNING: 'pay_learning',
   PAYMENT: 'payment',
+  BANK: 'BANK',
   SINGUP_FINISH: 'signup_finish',
   HOME_SCREEN: 'init_screen',
   LEARN_SUBJECT: 'learn_subject',
@@ -24,5 +25,16 @@ export default {
   LEARN_HISTORY: 'learn_history',
   LIVE_LEARN: 'live_learn',
   CHAT_SCREEN: 'chat_screen',
-  APP_CHAT: 'app_chat'
+  APP_CHAT: 'app_chat',
+  PROBLEM_SUBMITTED: 'problem_submitted',
+  LEARN_START: 'learn_start',
+  TEACH_START: 'teach_start',
+  NOTI_STUDENT: 'noti_student',
+  PAYMENTS: 'payments',
+  PAYMENTS_SETUP: 'payments_setup',
+  BANKS: 'banks',
+  BANK_SETUP: 'bank_setup',
+  TRANSACTION_HISTORY: 'transaction_history',
+  TRANSFER: 'transfer',
+  TRANSFER_STARTED: 'transfer_started'
 }

@@ -49,7 +49,7 @@ class ChooseProblem extends Component {
     super(props);
 
     let problems = _.get(props.problem, 'problems', []);
-    console.log("Constructor Problems =====", problems);
+    
     this.state={
       modalOpened: false,
       subjectArray: [
@@ -217,7 +217,8 @@ class ChooseProblem extends Component {
       let problemData = cards[index];
       dispatch(clearSession());
       dispatch(updateSession('teach_session', subject, problemData.problemId, cards[index]));
-      navigationService.navigate(pages.TEACH_SOLVE, {subject: subject, problem: cards[index]});
+      // navigationService.navigate(pages.TEACH_SOLVE, {subject: subject, problem: cards[index]});
+      navigationService.navigate(pages.NOTI_STUDENT);
     }
   }
 
@@ -230,14 +231,14 @@ class ChooseProblem extends Component {
   render () {
     const {subjects} = this.props;
     return (
-        <MenuPage forceInset={{bottom: 'never'}} titleText={'TEACH'}>
+        <MenuPage forceInset={{bottom: 'never'}}>
           <View style={styles.workingPart}>
-            <Text
+             <Text
                 style={styles.title}
             >
-              Assignments
+              Problems
             </Text>
-            <View style={styles.modalPart}>
+            {/*<View style={styles.modalPart}>
               <ModalDropdown options={subjects.subject} 
                 descPart={
                     <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
@@ -256,8 +257,8 @@ class ChooseProblem extends Component {
                 defaultValue={this.state.subject}
               >
               </ModalDropdown>
-            </View>
-            <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(40)}}>
+            </View> */}
+            <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(87)}}>
               {
                 this.state.cards.length != 0 ?
                 <Swiper
@@ -365,7 +366,7 @@ class ChooseProblem extends Component {
           </View>
           <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
             <BaseButton 
-              text={'CONTINUE'}
+              text={'TEACH'}
               onClick={this._teachClick}
             />
           </View>
@@ -400,11 +401,11 @@ const styles = StyleSheet.create({
     },
     title: {
       width: '100%',
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       color: '#FFFFFF',
-      marginTop: getHeight(40),
-      fontSize: getHeight(40),
-      paddingLeft: getWidth(31),
+      marginTop: getHeight(11),
+      fontSize: getHeight(25),
+      textAlign: 'center'
     },
     dropDescText: {
       color: '#FFFFFF',

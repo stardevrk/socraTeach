@@ -14,7 +14,7 @@ const wrapperDefault = {
 const MenuButton = ({ onClick, buttonStyle, buttonColor }) => {
   return (
     <TouchableOpacity style={{...wrapperDefault, ...buttonStyle}} onPress={onClick}>
-        <Menu size={getHeight(20)} color={buttonColor} />
+        <Menu size={getWidth(36)} color={buttonColor} />
     </TouchableOpacity>
   )
 };

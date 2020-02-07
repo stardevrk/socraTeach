@@ -22,6 +22,7 @@ import Bank from '../components/icons/bank';
 import Qmark from '../components/icons/qmark';
 import Pencil from '../components/icons/pencil';
 import Hammer from '../components/icons/hammer';
+import Hat from '../components/icons/hat';
 import Logout from '../components/icons/logout';
 import {PURPLE_MAIN, BLACK_PRIMARY} from '../constants/colors';
 import MenuItem  from '../components/baseMenuItem';
@@ -51,7 +52,8 @@ class MenuContent extends Component {
     }
 
     onHomeClick = () => {
-      navigationService.navigate(pages.HOME_SCREEN);
+      // navigationService.navigate(pages.HOME_SCREEN);
+      navigationService.reset(pages.LOADING);
     }
 
     onSignoutClick = () => {
@@ -64,6 +66,22 @@ class MenuContent extends Component {
 
     onLearnHistory = () => {
       navigationService.navigate(pages.LEARN_HISTORY);
+    }
+
+    _onPayments = () => {
+      navigationService.navigate(pages.PAYMENTS);
+    }
+
+    _onBanks = () => {
+      navigationService.navigate(pages.BANKS);
+    }
+
+    _onTransactionHistory = () => {
+      navigationService.navigate(pages.TRANSACTION_HISTORY);
+    }
+
+    _onTransfer = () => {
+      navigationService.navigate(pages.TRANSFER);
     }
 
     static getDerivedStateFromProps (props, state) {
@@ -82,7 +100,7 @@ class MenuContent extends Component {
         return (
             <View style={styles.container}>
               <SafeAreaView style={styles.safeView}>
-                <ScrollView>
+                
                 <View style={styles.contentView}>
                   <View style={styles.header}>
                     <View style={styles.personView}>
@@ -113,11 +131,11 @@ class MenuContent extends Component {
                     onClick={this.onHomeClick}
                   />
                   <MenuItem 
-                    text={'Transer to Bank'}
+                    text={'Transer Balance'}
                     icon={<Arrow size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick1}
+                    onClick={this._onTransfer}
                   />
-                  <MenuItem 
+                  {/* <MenuItem 
                     text={'Teaching History'}
                     icon={<Clock size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this.onTeachHistory}
@@ -126,23 +144,29 @@ class MenuContent extends Component {
                     text={'Learning History'}
                     icon={<Clock size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this.onLearnHistory}
+                  /> */}
+                  <MenuItem 
+                    text={'Transaction History'}
+                    icon={<Hat width={getHeight(20)} height={getHeight(20)} color={'#FFFFFF'} />}
+                    onClick={this._onTransactionHistory}
                   />
                   <MenuItem 
                     text={'Payment Method'}
                     icon={<Scard size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick1}
+                    onClick={this._onPayments}
                   />
                   <MenuItem 
                     text={'Bank Setup'}
                     icon={<Bank size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick1}
+                    onClick={this._onBanks}
                   />
                   <MenuItem 
                     text={'Help'}
                     icon={<Qmark size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this.onHomeClick1}
                   />
-                  <MenuItem 
+                  
+                  {/* <MenuItem 
                     text={'Free Learning Sessions'}
                     icon={<Image source={LOGO_IMAGE} style={{width: getWidth(38.54), height: getHeight(20)}} resizeMode={'contain'} />}
                     onClick={this.onHomeClick1}
@@ -156,7 +180,7 @@ class MenuContent extends Component {
                     text={'Legal'}
                     icon={<Hammer size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this.onHomeClick1}
-                  />
+                  /> */}
                   <MenuItem 
                     text={'Log out'}
                     icon={<Logout size={getHeight(20)} color={'#FFFFFF'} />}
@@ -166,7 +190,7 @@ class MenuContent extends Component {
                     <Image style={{width: getWidth(150), height: getHeight(131)}} source={MENU_LOGO} resizeMode={'contain'} />
                   </View>
                 </View>
-                </ScrollView>
+                
               </SafeAreaView>
             </View>
         )
@@ -237,7 +261,7 @@ const styles = StyleSheet.create({
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingTop: getHeight(40)
+      
     }
 })
 

@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import {BLACK_PRIMARY} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN} from '../constants/colors';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import Triangle from '../components/icons/triangle';
@@ -23,6 +23,7 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import ModalDropdown from '../components/dropDownList';
 import MenuPage from '../components/menuPage';
+import TopBarPage from '../components/topBarPage';
 import ImagePicker from 'react-native-image-picker';
 import {connect} from 'react-redux';
 import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
@@ -120,7 +121,7 @@ class LearnScreen extends Component {
 
   renderModalSeparator = () => {
     return (
-      <View></View>
+      <View style={{width: '100%', height: 2, backgroundColor: PURPLE_MAIN}}></View>
     )
   }
 
@@ -170,12 +171,12 @@ class LearnScreen extends Component {
       if (response.uri != undefined && response.uri != null && response.uri != '' ) {
         const subject = this.state.subject.toLowerCase();
         if (Platform.OS == 'ios') {
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, subject: subject});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject});
         } else if (Platform.OS == 'android') {
           let absPath = 'file://' + response.path;
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: absPath, subject: subject});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: absPath, imageWidth: response.width, imageHeight: response.height, subject: subject});
         } else {
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, subject: subject});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject});
         }
 
         
@@ -216,77 +217,68 @@ class LearnScreen extends Component {
     navigationService.navigate(pages.LEARN_HISTORY);
   }
 
-    render () {
-      const {subjects} = this.props;
-      return (
-          <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
-            <View style={styles.workingPart}>
-              <Text
-                  style={styles.title}
+  _gotoLearn = () => {
+    navigationService.navigate(pages.LEARN_START);
+  }
+
+  render () {
+    const {subjects} = this.props;
+    return (
+        <TopBarPage titleText={'LEARN'} forceInset={{bottom: 'never'}} onRightClick={this._gotoLearn} notiExist={true}>
+          <View style={styles.workingPart}>
+            <Text
+              style={styles.title}
+            >
+              Subject
+            </Text>
+            <View style={styles.modalPart}>
+              <ModalDropdown options={subjects.subject} 
+                descPart={
+                    <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
+                }
+                style={{width: getWidth(276)}}
+                textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
+                dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(150), marginTop: getHeight(3), height: getHeight(128)}}
+                buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}
+                dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
+                dropdownTextHighlightStyle={{color: '#FFFFFF'}}
+                onDropdownWillShow={this.modalWillShow}
+                onDropdownWillHide={this.modalWillHide}
+                renderSeparator={this.renderModalSeparator}
+                renderRow={this.renderModalListRow}
+                renderButtonText={this.renderModalListText}
+                defaultValue={'Choose Your Subject'}
+                onExtractBtnText={this._subjectSelect}
               >
-                Subject
-              </Text>
-              <View style={styles.modalPart}>
-                <ModalDropdown options={subjects.subject} 
-                  descPart={
-                    <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                      <Text style={styles.dropDescText}>
-                        Choose Your Subject
-                      </Text>
-                      <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                    </View>
-                  }
-                  style={{width: getWidth(283)}}
-                  textStyle={{color: '#FFFFFF', fontSize: getHeight(10), fontFamily: 'Montserrat-Regular'}}
-                  dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(150), marginTop: getHeight(3), height: getHeight(120)}}
-                  dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
-                  dropdownTextHighlightStyle={{color: '#FFFFFF'}}
-                  onDropdownWillShow={this.modalWillShow}
-                  onDropdownWillHide={this.modalWillHide}
-                  renderSeparator={this.renderModalSeparator}
-                  renderRow={this.renderModalListRow}
-                  renderButtonText={this.renderModalListText}
-                  onExtractBtnText={this._subjectSelect}
-                >
-                </ModalDropdown>
-              </View>
-              {/* <BlurOverlay
-                  radius={14}
-                  downsampling={2}
-                  brightness={-100}
-                  onPress={() => {
-                      closeOverlay();
-                  }}
-                  customStyles={{alignItems: 'center', justifyContent: 'center'}}
-                  blurStyle="dark"
-              /> */}
-              <View style={styles.belowPart}>
-                  <View style={styles.blackPart}>
-                    <Text style={styles.uploadText}>
-                      Upload
-                    </Text>
-                    <BaseButton 
-                      text={'TAKE PICTURE'}
-                      onClick={this.cameraClick}
-                      buttonStyle={{marginBottom: getHeight(31)}}
-                    />
-                    <BaseButton 
-                      text={'CAMERA ROLL'}
-                      onClick={this.libraryClick}
-                    />
-                    <TouchableOpacity style={{position: 'absolute', bottom: getHeight(30)}}
-                      onPress={() => this._skipUpload()}
-                    >
-                      <Text style={{textDecorationColor: '#E0E0E0', color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(18), textDecorationLine: 'underline'}}>
-                        {'SKIP UPLOAD'}
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-              </View>
+              </ModalDropdown>
             </View>
-          </MenuPage>
-      )
-    }
+            <View style={styles.belowPart}>
+                <View style={styles.blackPart}>
+                  <Text style={styles.uploadText}>
+                    Upload
+                  </Text>
+                  <BaseButton 
+                    text={'TAKE PICTURE'}
+                    onClick={this.cameraClick}
+                    buttonStyle={{marginBottom: getHeight(31)}}
+                  />
+                  <BaseButton 
+                    text={'CAMERA ROLL'}
+                    onClick={this.libraryClick}
+                  />
+                  {/* <TouchableOpacity style={{position: 'absolute', bottom: getHeight(30)}}
+                    onPress={() => this._skipUpload()}
+                  >
+                    <Text style={{textDecorationColor: '#E0E0E0', color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(18), textDecorationLine: 'underline'}}>
+                      {'SKIP UPLOAD'}
+                    </Text>
+                  </TouchableOpacity> */}
+                </View>
+            </View>
+          </View>
+        </TopBarPage>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -314,13 +306,12 @@ const styles = StyleSheet.create({
     },
     title: {
       width: '100%',
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       color: '#FFFFFF',
-      marginTop: getHeight(0),
-      fontSize: getHeight(40),
-      paddingLeft: getWidth(31),
-      marginBottom: getHeight(34),
-      marginTop: getHeight(93)
+      fontSize: getHeight(30),
+      paddingLeft: getWidth(52),
+      marginBottom: getHeight(44),
+      marginTop: getHeight(126)
     },
     dropDescText: {
       color: '#FFFFFF',
@@ -330,7 +321,7 @@ const styles = StyleSheet.create({
     },
     modalPart: {
       alignSelf: 'flex-start', 
-      marginLeft: getWidth(31)
+      marginLeft: getWidth(52)
     },
     belowPart: {
       flex: 1,
@@ -346,10 +337,10 @@ const styles = StyleSheet.create({
     uploadText: {
       color: '#FFFFFF',
       fontFamily: 'Montserrat-Bold',
-      fontSize: getHeight(48),
+      fontSize: getHeight(30),
       width: '100%',
       marginTop: getHeight(33),
-      paddingLeft: getWidth(34),
+      paddingLeft: getWidth(50),
       marginBottom: getHeight(40)
     },
     mListItem: {

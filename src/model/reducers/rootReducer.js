@@ -8,6 +8,7 @@ import myLearn from './myLearn';
 import chat from './chat';
 import session from './session';
 import myLiveLearn from './myLiveLearn';
+import login from './login';
 
 export default combineReducers({
   user,
@@ -18,5 +19,6 @@ export default combineReducers({
   myLearn,
   chat,
   session,
-  myLiveLearn
+  myLiveLearn,
+  login
 })

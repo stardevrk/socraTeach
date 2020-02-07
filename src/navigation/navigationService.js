@@ -32,6 +32,14 @@ function goBack () {
   _navigator.dispatch(NavigationActions.back())
 }
 
+function reset(routeName, params) {
+  StackActions.reset();
+  _navigator.dispatch(NavigationActions.navigate({
+    routeName,
+    params
+  }));
+}
+
 function push (routeName, params) {
   const currentR = getCurrentRoute()
   if (_.get(currentR, 'routeName') !== routeName) {
@@ -75,5 +83,6 @@ export default {
   replace,
   getCurrentRoute,
   popToTop,
-  openDrawer
+  openDrawer,
+  reset
 }

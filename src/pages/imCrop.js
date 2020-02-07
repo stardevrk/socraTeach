@@ -6,7 +6,8 @@ import {
     ActivityIndicator,
     Image,
     Dimensions,
-    CameraRoll
+    CameraRoll,
+    Animated
 } from 'react-native';
 import Page from '../components/basePage';
 import MenuPage from '../components/menuPage';
@@ -20,9 +21,28 @@ import {uploadImage} from '../service/firebase';
 import {auth, firestore} from '../constants/firebase';
 import {connect} from 'react-redux';
 import {getMyInitLearnList} from '../controller/learn';
+import {PanGestureHandler, PinchGestureHandler} from 'react-native-gesture-handler';
+import AmazingCropper from '../components/imageCropper';
+import PropTypes from 'prop-types';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const IMAGE_WIDTH = Dimensions.get('screen').width > 500 ? getWidth(360) / 3 : (Dimensions.get('screen').width - 15) / 3;
+const tag ='[GESTURE]'
+
+const CustomCropperFooter = (props) => (
+  <View style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
+    <BaseButton
+      text={'CONTINUE'}
+      onClick={props.onDone}
+    />
+  </View>
+)
+
+CustomCropperFooter.propTypes = {
+  onDone: PropTypes.func,
+  onRotate: PropTypes.func,
+  onCancel: PropTypes.func
+}
 
 class ImageCrop extends Component {
 
@@ -32,21 +52,76 @@ class ImageCrop extends Component {
     this.state = {
       imageSource: '',
       subject: '',
-      loading: false
+      loading: false,
+      aspect: getHeight(410) / getWidth(316),
+      // scale: new Animated.Value(1),
+      imageWidth: 0,
+      imageHeight: 0,
+      prevImageSource: '',
+      prevImageHeight: 0,
+      prevImageWidth: 0
     }
 
+    // this.child = React.createRef();
+
     props.navigation.addListener('didFocus', payload => {
-      this.setState({imageSource: payload.action.params.imageUri, subject: payload.action.params.subject});
+      let newAspect = payload.action.params.imageHeight/payload.action.params.imageWidth;
+      this.setState({imageSource: payload.action.params.imageUri, subject: payload.action.params.subject, aspect: newAspect, imageWidth: payload.action.params.imageWidth,
+      imageHeight: payload.action.params.imageHeight});
     })
   }
 
-  goForward = async () => {
+  goForward = () => {
+
+    // this.child.onDone();
+    console.log("onDoneResult ==== ", this.child);
+    // if (this.state.imageSource == '' || this.state.subject == '') {
+    //   console.log("Not be able to go forward")
+    //   return;
+    // }
+    // this.setState({loading: true});    
+    // uploadImage(this.state.imageSource).then((data) => {
+    //   let newDocRef  = firestore.collection(this.state.subject).doc();
+    //   newDocRef.set({
+    //     problemId: newDocRef.id,
+    //     posterId: auth.currentUser.uid,
+    //     problemImage: data,
+    //     updateTime: Date.now(),
+    //     sessionExist: false,
+    //     subject: this.state.subject
+    //   }).catch((err) => {
+    //     console.log("firestore set error ==== ", err);
+    //   })
+    //   .finally(() => {
+    //     this.setState({loading: false});
+    //   })
+    //   const {dispatch} = this.props;
+    //   dispatch(getMyInitLearnList());
+    //   navigationService.navigate(pages.LIVE_LEARN);
+    // }).catch((err) =>{
+    //   console.log("Upload Error = ", err);
+    // });
+    
+  }
+
+  componentDidMount() {
+    // openOverlay();
+    
+  }
+
+  handleGesture = () => {
+    Animated.event([{nativeEvent: {scale:this.scale}}], { useNativeDriver: true });
+  }
+
+  _onDone = (croppedUri) => {
+    console.log('Cropped Image === ', croppedUri);
+
     if (this.state.imageSource == '' || this.state.subject == '') {
       console.log("Not be able to go forward")
       return;
     }
     this.setState({loading: true});    
-    uploadImage(this.state.imageSource).then((data) => {
+    uploadImage(croppedUri).then((data) => {
       let newDocRef  = firestore.collection(this.state.subject).doc();
       newDocRef.set({
         problemId: newDocRef.id,
@@ -63,40 +138,76 @@ class ImageCrop extends Component {
       })
       const {dispatch} = this.props;
       dispatch(getMyInitLearnList());
-      navigationService.navigate(pages.LIVE_LEARN);
+      navigationService.navigate(pages.PROBLEM_SUBMITTED);
     }).catch((err) =>{
       console.log("Upload Error = ", err);
     });
-    
   }
 
-  componentDidMount() {
-    // openOverlay();
-    
+  _onCancel = () => {
+
+  }
+
+  _onGestureStateChange = (event) => {
+    console.log(tag,event.nativeEvent);
+  //  this.scale.setValue(event.nativeEvent.scale)
+    // this.setState({scale: event.nativeEvent.scale});
+    this.scale.setValue(event.nativeEvent.scale);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.navigation.state.params.imageUri != nextState.prevImageSource ||
+      nextProps.navigation.state.params.imageWidth != nextState.prevImageWidth ||
+      nextProps.navigation.state.params.imageHeight != nextState.prevImageHeight
+      ) {
+      return true
+    } else {
+      return false
+    }
   }
 
   render () {
+    let imageWidth = this.props.navigation.state.params.imageWidth;
+    let imageHeight = this.props.navigation.state.params.imageHeight;
+    let imageSource = this.props.navigation.state.params.imageUri;
+    let aspect = imageHeight/imageWidth;
+    this.setState({
+      prevImageSource: imageSource,
+      prevImageWidth: imageWidth,
+      prevImageHeight: imageHeight
+    })
     return (
-        <MenuPage forceInset={{bottom: 'never'}} titleText={'LEARN'}>
-          <View style={styles.container}>
-            <View style={styles.headView}>
-                <Crop size={getHeight(44)} color={'#FFFFFF'} />
-                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(24), flex: 1, textAlign: 'center'}}>
-                  Select Your Problem
-                </Text> 
+        <MenuPage forceInset={{bottom: 'never'}}>
+          {
+            this.state.loading == true ? 
+            <View style={styles.container}>
+              <ActivityIndicator size={'large'} />
             </View>
-            <View style={styles.libraryView}>
-              <Image style={{height: '100%', borderRadius: getHeight(10),}} source={{uri: this.state.imageSource}} resizeMode={'contain'} />
+             : 
+            <View style={styles.container}>
+              <View style={styles.headView}>
+                  <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(25), flex: 1, textAlign: 'center'}}>
+                    Select Your Problem
+                  </Text> 
+              </View>
+              <View style={{height: getHeight(640), width: getWidth(350), borderRadius: getHeight(10)}}>
+                <AmazingCropper
+                  ref={(instance) => this.child = instance}
+                  onDone={this._onDone}
+                  footerComponent={
+                    <CustomCropperFooter />
+                  }
+                  onCancel={this.onCancel}
+                  imageUri={imageSource}
+                  imageWidth={imageWidth}
+                  imageHeight={imageHeight}
+                  NOT_SELECTED_AREA_OPACITY={0.3}
+                  BORDER_WIDTH={0}
+                />
+              </View>
+              
             </View>
-            <View style={styles.btnView}>
-              <BaseButton 
-                  text={'CONTINUE'}
-                  onClick={this.goForward}
-                  loading={this.state.loading}
-              />
-            </View>
-          </View>
-          
+          }
         </MenuPage>
     )
   }
@@ -116,11 +227,10 @@ const styles = StyleSheet.create({
     },
     headView: {
       flexDirection: 'row',
-      justifyContent: 'flex-start',
+      justifyContent: 'center',
       alignItems: 'center',
       width: '100%',
-      paddingLeft: getWidth(23),
-      marginBottom: getHeight(90)
+      marginBottom: getHeight(24)
     },
     titleView: {
       flexDirection: 'row',
@@ -133,14 +243,13 @@ const styles = StyleSheet.create({
       width: getWidth(316),
       height: getHeight(410),
       borderRadius: getHeight(10),
-      backgroundColor: 'transparent'
+      backgroundColor: 'red'
     },
     btnView: {
-      flex: 1,
       width: '100%',
       justifyContent: 'center',
       alignItems: 'center',
-      paddingBottom: getHeight(40)
+      marginTop: getHeight(16)
     },
     btnMask: {
       width: '100%',

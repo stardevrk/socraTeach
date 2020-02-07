@@ -7,13 +7,21 @@ import {PURPLE_MAIN} from '../constants/colors';
 import navigationService from '../navigation/navigationService';
 import Page from './basePage';
 import MenuButton from '../components/menuButton';
+import {isIphoneX} from '../service/utils';
 
 const containerDefault = {
   flex: 1,
   justifyContent: 'center',
   alignItems: 'center',
+  width: '100%'
+}
+
+const headerDefault = {
+  height: getHeight(40),
   width: '100%',
-  paddingTop: getHeight(80)
+  justifyContent: 'flex-start',
+  flexDirection: 'row',
+  marginTop: isIphoneX ? 0 : getHeight(20),
 }
 
 export default class MenuPage extends Component {
@@ -23,29 +31,33 @@ export default class MenuPage extends Component {
   }
 
   render () {
-    const {forceInset, titleText, rightText, renderTitle, renderRightItem, children, backgroundColor, menuBtnColor, customContainer} = this.props
+    const {forceInset, titleText, rightText, renderTitle, renderRightItem, children, backgroundColor, menuBtnColor, customContainer, customHeaderBar} = this.props
     return (
       <Page forceInset={forceInset} backgroundColor={backgroundColor}>
         <View style={{...containerDefault, ...customContainer}}>
+          <View style={{...headerDefault, ...customHeaderBar}}>
+            <MenuButton buttonStyle={{marginLeft: getWidth(30)}}
+                        buttonColor={menuBtnColor}
+                        onClick={this.toggleMenu} 
+            />
+            {
+              renderTitle ? 
+              renderTitle() :
+              <Text style={styles.headerTitle}>
+                {titleText}
+              </Text>
+            }
+            {
+              renderRightItem ?
+              renderRightItem() :
+              <Text style={styles.rightTitle}>
+                {rightText}
+              </Text>
+            }
+          </View>
           
-          {
-            renderTitle ? 
-            renderTitle() :
-            <Text style={styles.headerTitle}>
-              {titleText}
-            </Text>
-          }
-          <MenuButton buttonStyle={{position: 'absolute', left: getWidth(16), top: getHeight(15), zIndex: 10}}
-                      buttonColor={menuBtnColor}
-                      onClick={this.toggleMenu} 
-          />
-          {
-            renderRightItem ?
-            renderRightItem() :
-            <Text style={styles.rightTitle}>
-              {rightText}
-            </Text>
-          }
+          
+          
           {
             children
           }
@@ -64,7 +76,8 @@ MenuPage.defaultProps = {
   renderRightItem: null,
   children: null,
   backgroundColor: PURPLE_MAIN,
-  menuBtnColor: '#FFFFFF'
+  menuBtnColor: '#FFFFFF',
+  customHeaderBar: {}
 };
 
 MenuPage.propTypes = {
@@ -76,7 +89,8 @@ MenuPage.propTypes = {
   renderRightItem: PropTypes.func,
   children: PropTypes.element,
   backgroundColor: PropTypes.string,
-  menuBtnColor: PropTypes.string
+  menuBtnColor: PropTypes.string,
+  customHeaderBar: PropTypes.object
 };
 
 const styles = StyleSheet.create({

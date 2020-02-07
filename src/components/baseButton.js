@@ -15,8 +15,8 @@ const wrapperDefault = {
 
 const textDefault = {
   color: PURPLE_MAIN,
-  fontFamily: 'Montserrat-Medium',
-  fontSize: getHeight(18)
+  fontFamily: 'Montserrat-Bold',
+  fontSize: getHeight(17)
 };
 
 const ComonButton = ({text, onClick, buttonStyle, textStyle, loading}) => {

@@ -184,12 +184,13 @@ export default class ModalDropdown extends Component {
           children ||
           (
             <View style={[styles.button, buttonStyle]}>
-              {descPart}
+              
               <Text style={[styles.buttonText, textStyle]}
                     numberOfLines={1}
               >
                 {buttonText}
               </Text>
+              {descPart}
             </View>
           )
         }

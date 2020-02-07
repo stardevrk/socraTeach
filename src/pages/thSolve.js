@@ -23,7 +23,7 @@ import BStar from '../components/icons/bstar';
 import Phone from '../components/icons/phone';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
-import { BLACK_PRIMARY, GRAY_PRIMARY } from '../constants/colors';
+import { BLACK_PRIMARY, GRAY_PRIMARY, PURPLE_MAIN, GREEN_PRIMARY } from '../constants/colors';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {firestore} from '../constants/firebase';
@@ -62,23 +62,25 @@ class SOLVESCREEN extends Component {
       prevProblemId: ''
     }
 
-    let tempSubject = '';
-    let tempProblemId = '';
-    let tempPosterId = '';
+    /** Commented By Me*/
+    // let tempSubject = '';
+    // let tempProblemId = '';
+    // let tempPosterId = '';
     // this.startTimer(timerDuration, timerDisplay);
-    props.navigation.addListener('didFocus', payload => {
-      let problemData = payload.action.params.problem;
-      tempSubject = payload.action.params.subject;
-      tempProblemId = problemData.problemId;
-      tempPosterId = problemData.posterId;
-      // this.setState({subject: payload.action.params.subject, problemData: problemData, problemUri: problemData.problemImage}, () => {
-      //   // this.props.dispatch(clearChatsData());
-      //   // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
-      //   // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
-      //   this._getPosterName(tempPosterId);
-      // });
-      // this.setState({timerDisplay: '', timeDuration: })
-    })
+    // props.navigation.addListener('didFocus', payload => {
+    //   let problemData = payload.action.params.problem;
+    //   tempSubject = payload.action.params.subject;
+    //   tempProblemId = problemData.problemId;
+    //   tempPosterId = problemData.posterId;
+    //   // this.setState({subject: payload.action.params.subject, problemData: problemData, problemUri: problemData.problemImage}, () => {
+    //   //   // this.props.dispatch(clearChatsData());
+    //   //   // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
+    //   //   // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
+    //   //   this._getPosterName(tempPosterId);
+    //   // });
+    //   // this.setState({timerDisplay: '', timeDuration: })
+    // })
+    /** Commented By Me*/
   }
     
     learnClick = () => {
@@ -167,26 +169,28 @@ class SOLVESCREEN extends Component {
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
-      const {session} = nextprops;
+      /** Commented By Me*/
+      // const {session} = nextprops;
 
-      if (nextstate.prevPosterId != session.problemData.posterId || nextstate.prevProblemId != session.problemData.problemId) {
-        // clearInterval(myTimer);
+      // if (nextstate.prevPosterId != session.problemData.posterId || nextstate.prevProblemId != session.problemData.problemId) {
+      //   // clearInterval(myTimer);
         
-        // SOLVESCREEN.startTimer(timerDuration, timerDisplay);
-        nextprops.dispatch(getPosterInfo(session.problemData.posterId));  
-      }
+      //   // SOLVESCREEN.startTimer(timerDuration, timerDisplay);
+      //   nextprops.dispatch(getPosterInfo(session.problemData.posterId));  
+      // }
 
-      let newPosterId = session.problemData.posterId == undefined ? '' : session.problemData.posterId;
-      let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
+      // let newPosterId = session.problemData.posterId == undefined ? '' : session.problemData.posterId;
+      // let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
 
-      return {
-        subject: session.subject,
-        problemUri: session.problemData.problemImage,
-        problemData: session.problemData,
-        posterName: session.poster != undefined ? session.poster.userName : '',
-        prevPosterId: newPosterId,
-        prevProblemId : newProblemId
-      };
+      // return {
+      //   subject: session.subject,
+      //   problemUri: session.problemData.problemImage,
+      //   problemData: session.problemData,
+      //   posterName: session.poster != undefined ? session.poster.userName : '',
+      //   prevPosterId: newPosterId,
+      //   prevProblemId : newProblemId
+      // };
+      /** Commented By Me*/
     }
 
     _clickChat =() =>{
@@ -228,18 +232,16 @@ class SOLVESCREEN extends Component {
               <View style={styles.modalContainerView}>
                 <View style={styles.modalView}>
                   <View style={styles.modalMark}>
-                    <Hat width={getWidth(86)} height={getHeight(84)} color={BLACK_PRIMARY} />  
+                    <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} />
                   </View>
-                  <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} />
-                  <Image style={styles.modalLogoRight} source={MARK_IMAGE} resizeMode={'contain'} />
                   <View style={styles.modalTitleView}>
-                    <Text style={styles.modalTitle}>Rate Your Student</Text>
+                    <Text style={styles.modalTitle}>Rate Salmon</Text>
                   </View>
                   <View style={styles.starView}>
                     <TouchableOpacity onPress={() => {this.setState({posterRate: 1})}}>
                       {
                         this.state.posterRate > 0 ? 
-                        <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                        <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                         :
                         <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                       }
@@ -247,7 +249,7 @@ class SOLVESCREEN extends Component {
                     <TouchableOpacity onPress={() => {this.setState({posterRate: 2})}}>
                       {
                         this.state.posterRate > 1 ? 
-                        <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                        <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                         :
                         <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                       }
@@ -255,7 +257,7 @@ class SOLVESCREEN extends Component {
                     <TouchableOpacity onPress={() => {this.setState({posterRate: 3})}}>
                       {
                         this.state.posterRate > 2 ? 
-                        <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                        <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                         :
                         <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                       }
@@ -263,7 +265,7 @@ class SOLVESCREEN extends Component {
                     <TouchableOpacity onPress={() => {this.setState({posterRate: 4})}}>
                       {
                         this.state.posterRate > 3 ? 
-                        <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                        <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                         :
                         <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                       }
@@ -271,7 +273,7 @@ class SOLVESCREEN extends Component {
                     <TouchableOpacity onPress={() => {this.setState({posterRate: 5})}}>
                       {
                         this.state.posterRate > 4 ? 
-                        <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                        <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                         :
                         <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                       }
@@ -326,7 +328,7 @@ const styles = StyleSheet.create({
       color: BLACK_PRIMARY
     },
     modalView:{
-      backgroundColor: '#FFFFFF',
+      backgroundColor: PURPLE_MAIN,
       width: getWidth(244),
       height: getHeight(262),
       borderRadius: getHeight(10),
@@ -336,9 +338,7 @@ const styles = StyleSheet.create({
     modalLogoLeft:{
       width: getWidth(80),
       height: getHeight(67),
-      position: 'absolute',
-      top: 0,
-      left: 0
+      
     },
     modalLogoRight:{
       width: getWidth(80),
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
       height: getHeight(120)
     },
     modalMark: {
-      marginTop: -getHeight(41),
+      marginTop: getHeight(15),
     },
     modalTitleView:{
       width: '100%',
@@ -370,9 +370,9 @@ const styles = StyleSheet.create({
       height: getHeight(36)
     },
     modalTitle: {
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(20),
-      color: BLACK_PRIMARY
+      color: '#FFFFFF'
     },
     phoneNum: {
       fontFamily: 'Montserrat-Regular',
@@ -387,28 +387,29 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     modalTime: {
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(18),
-      color: BLACK_PRIMARY
+      color: '#FFFFFF'
     },
     modalBtnView: {
       flex: 1,
       width: '100%',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      marginBottom: getHeight(23)
     },
     modalBtn: {
       width: getWidth(220),
       height: getHeight(36),
-      backgroundColor: GRAY_PRIMARY,
+      backgroundColor: '#FFFFFF',
       borderRadius: getHeight(10),
       justifyContent: 'center',
       alignItems: 'center'
     },
     modalBtnText: {
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(18),
-      color: '#FFFFFF'
+      color: BLACK_PRIMARY
     },
     modalContainerView:{
       flex: 1, 

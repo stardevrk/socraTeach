@@ -7,7 +7,8 @@ import {
     Image
 } from 'react-native';
 import Page from '../components/basePage';
-import MenuPage from '../components/menuPage';
+// import MenuPage from '../components/menuPage';
+import TopBarPage from '../components/topBarPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
@@ -43,11 +44,14 @@ class HomeScreen extends Component {
 
     _renderTitle = () => {
         return (
-            <Image 
-                style={{width: getWidth(191), height: getHeight(28), paddingTop: -getHeight(80)}}
-                resizeMode={'contain'}
-                source={WORD_LOGO}
-            />
+            <View style={{flex: 1, justifyContent: 'center', alignItems: 'center', paddingLeft: getWidth(10)}}>
+                <Image 
+                    style={{width: getWidth(191), height: getHeight(28)}}
+                    resizeMode={'contain'}
+                    source={WORD_LOGO}
+                />
+            </View>
+            
         )
     }
 
@@ -61,7 +65,7 @@ class HomeScreen extends Component {
 
     render () {
         return (
-            <MenuPage renderTitle={this._renderTitle} customContainer={{paddingTop: 30}}>
+            <TopBarPage renderTitle={this._renderTitle}>
                 <View style={styles.container}>
                     <Image
                         source={LOGO_IMAGE}
@@ -78,7 +82,7 @@ class HomeScreen extends Component {
                         onClick={this.teachClick}
                     />
                 </View>
-            </MenuPage>
+            </TopBarPage>
         )
     }
 }
@@ -94,14 +98,11 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
-        marginTop: -getHeight(60),
-        // backgroundColor: 'red'
+        
     },
     logoImage: {
         width: getWidth(291),
         height: getHeight(151),
-        // position: 'absolute',
-        // top: getHeight(40)
         marginBottom: getHeight(23),
         
     }

@@ -23,7 +23,7 @@ import BStar from '../components/icons/bstar';
 import Phone from '../components/icons/phone';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
-import { BLACK_PRIMARY, GRAY_PRIMARY } from '../constants/colors';
+import { BLACK_PRIMARY, GREEN_PRIMARY, PURPLE_MAIN } from '../constants/colors';
 import {firestore} from '../constants/firebase';
 import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
 import {connect} from 'react-redux';
@@ -47,7 +47,7 @@ class LearnSolve extends Component {
     super(props);
 
     this.state={
-      modalVisible: false,
+      modalVisible: true,
       problemUri: '',
       problemData: {},
       subject: '',
@@ -72,26 +72,28 @@ class LearnSolve extends Component {
       prevProblemId: ''
     }
 
-    let tempSubject = '';
-    let tempProblemId = '';
-    let tempPosterId = '';
-    props.navigation.addListener('didFocus', payload => {
-      let problemData = payload.action.params.problem;
-      tempSubject = payload.action.params.subject;
-      tempProblemId = problemData.problemId;
-      tempPosterId = problemData.posterId;
-      // this.setState({subject: problemData.subject, problemData: problemData, problemUri: problemData.problemImage, answer: problemData.answer}, () => {
-      //   // this._getPosterName(problemData.posterId);
-      //   if (problemData.teacherId != undefined && problemData.teacherId != null) {
-      //     // this.setState({teacherName: })
-      //     // this.props.dispatch(clearChatsData());
-      //     // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
-      //     // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
-      //     this._getTeacherName(problemData.teacherId);
-      //   }
-      // });
+    /** Commented By Me*/
+    // let tempSubject = '';
+    // let tempProblemId = '';
+    // let tempPosterId = '';
+    // props.navigation.addListener('didFocus', payload => {
+    //   let problemData = payload.action.params.problem;
+    //   tempSubject = payload.action.params.subject;
+    //   tempProblemId = problemData.problemId;
+    //   tempPosterId = problemData.posterId;
+    //   // this.setState({subject: problemData.subject, problemData: problemData, problemUri: problemData.problemImage, answer: problemData.answer}, () => {
+    //   //   // this._getPosterName(problemData.posterId);
+    //   //   if (problemData.teacherId != undefined && problemData.teacherId != null) {
+    //   //     // this.setState({teacherName: })
+    //   //     // this.props.dispatch(clearChatsData());
+    //   //     // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
+    //   //     // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
+    //   //     this._getTeacherName(problemData.teacherId);
+    //   //   }
+    //   // });
       
-    })
+    // })
+    /** Commented By Me*/
   }
     
     learnClick = () => {
@@ -177,50 +179,47 @@ class LearnSolve extends Component {
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
-      const {session} = nextprops;
-      const problemData = session.problemData;
+      /** Commented By Me*/
+      // const {session} = nextprops;
+      // const problemData = session.problemData;
 
-      // this._getPosterName(nextprops.session.problemData.posterId);
+      // // this._getPosterName(nextprops.session.problemData.posterId);
 
-      let newTeacherId = problemData.teacherId == undefined ? '' : problemData.teacherId;
-      let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
+      // let newTeacherId = problemData.teacherId == undefined ? '' : problemData.teacherId;
+      // let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
 
-      if (problemData.teacherId == undefined || problemData.teacherId == null) {
-        return {
-          subject: problemData.subject,
-          problemUri: problemData.problemImage,
-          problemData: problemData,
-          answer: problemData.answer,
-          teacherName: '',
-          prevTeacherId: newTeacherId,
-          prevProblemId : newProblemId
-        }
+      // if (problemData.teacherId == undefined || problemData.teacherId == null) {
+      //   return {
+      //     subject: problemData.subject,
+      //     problemUri: problemData.problemImage,
+      //     problemData: problemData,
+      //     answer: problemData.answer,
+      //     teacherName: '',
+      //     prevTeacherId: newTeacherId,
+      //     prevProblemId : newProblemId
+      //   }
 
-      } else {
-        if (nextstate.prevTeacherId != problemData.teacherId || nextstate.prevProblemId != session.problemData.problemId ) {
-          // this._getTeacherName(problemData.teacherId);
-          // return firestore.collection('users').doc(problemData.teacherId).get().then((teacherDoc) => {
-          //   let teacherData = teacherDoc.data();
-          //     // this.setState({teacherName: teacherData.userName});
-              
-          // })
-          nextprops.dispatch(getTeacherInfo(problemData.teacherId));
-        }
+      // } else {
+      //   if (nextstate.prevTeacherId != problemData.teacherId || nextstate.prevProblemId != session.problemData.problemId ) {
+          
+      //     nextprops.dispatch(getTeacherInfo(problemData.teacherId));
+      //   }
   
-        // console.log("LeSolve Session ===== ", session);
+      //   // console.log("LeSolve Session ===== ", session);
         
   
   
-        return {
-          subject: problemData.subject,
-          problemUri: problemData.problemImage,
-          problemData: problemData,
-          answer: problemData.answer,
-          teacherName: session.teacher != undefined ? session.teacher.userName : '',
-          prevTeacherId: newTeacherId,
-          prevProblemId : newProblemId
-        }
-      }
+      //   return {
+      //     subject: problemData.subject,
+      //     problemUri: problemData.problemImage,
+      //     problemData: problemData,
+      //     answer: problemData.answer,
+      //     teacherName: session.teacher != undefined ? session.teacher.userName : '',
+      //     prevTeacherId: newTeacherId,
+      //     prevProblemId : newProblemId
+      //   }
+      // }
+      /** Commented By Me*/
 
       
 
@@ -262,34 +261,35 @@ class LearnSolve extends Component {
             renderTitle={this._renderTitle}
             renderRightItem={this._renderRightItem}
             >
-              <Image
-                  source={{uri: this.state.problemUri}}
-                  style={styles.logoImage}
-                  resizeMode={'contain'}
-              />
-              {/* <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-                
-                <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline value={this.state.answer} editable={false} />
-              </View> */}
-              {
-                this.state.problemData.teacherId !== undefined ? 
-                <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
-                  <TouchableOpacity onPress={() => this._clickChat()}>
-                    <Chat size={getHeight(30)} color={'#000000'} /> 
-                  </TouchableOpacity>
-                </View>
-                : null
-              }
+              <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                <Image
+                    source={{uri: this.state.problemUri}}
+                    style={styles.logoImage}
+                    resizeMode={'contain'}
+                />
+                {/* <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+                  
+                  <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline value={this.state.answer} editable={false} />
+                </View> */}
+                {
+                  this.state.problemData.teacherId !== undefined ? 
+                  <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
+                    <TouchableOpacity onPress={() => this._clickChat()}>
+                      <Chat size={getHeight(30)} color={'#000000'} /> 
+                    </TouchableOpacity>
+                  </View>
+                  : null
+                }
+              </View>
+              
 
               {
                 this.state.modalVisible == true ? 
                 <View style={styles.modalContainerView}>
                   <View style={styles.modalView}>
                     <View style={styles.modalMark}>
-                      <Hat width={getWidth(86)} height={getHeight(84)} color={BLACK_PRIMARY} />  
+                      <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} /> 
                     </View>
-                    <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} />
-                    <Image style={styles.modalLogoRight} source={MARK_IMAGE} resizeMode={'contain'} />
                     <View style={styles.modalTitleView}>
                       <Text style={styles.modalTitle}>Rate Your Teacher</Text>
                     </View>
@@ -297,7 +297,7 @@ class LearnSolve extends Component {
                       <TouchableOpacity onPress={() => {this.setState({teacherRate: 1})}}>
                         {
                           this.state.teacherRate > 0 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                           :
                           <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                         }
@@ -305,7 +305,7 @@ class LearnSolve extends Component {
                       <TouchableOpacity onPress={() => {this.setState({teacherRate: 2})}}>
                         {
                           this.state.teacherRate > 1 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                           :
                           <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                         }
@@ -313,7 +313,7 @@ class LearnSolve extends Component {
                       <TouchableOpacity onPress={() => {this.setState({teacherRate: 3})}}>
                         {
                           this.state.teacherRate > 2 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                           :
                           <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                         }
@@ -321,7 +321,7 @@ class LearnSolve extends Component {
                       <TouchableOpacity onPress={() => {this.setState({teacherRate: 4})}}>
                         {
                           this.state.teacherRate > 3 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                           :
                           <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                         }
@@ -329,7 +329,7 @@ class LearnSolve extends Component {
                       <TouchableOpacity onPress={() => {this.setState({teacherRate: 5})}}>
                         {
                           this.state.teacherRate > 4 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={BLACK_PRIMARY} />
+                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
                           :
                           <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                         }
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
       color: BLACK_PRIMARY
     },
     modalView:{
-      backgroundColor: '#FFFFFF',
+      backgroundColor: PURPLE_MAIN,
       width: getWidth(244),
       height: getHeight(262),
       borderRadius: getHeight(10),
@@ -393,10 +393,7 @@ const styles = StyleSheet.create({
     },
     modalLogoLeft:{
       width: getWidth(80),
-      height: getHeight(67),
-      position: 'absolute',
-      top: 0,
-      left: 0
+      height: getHeight(67)
     },
     modalLogoRight:{
       width: getWidth(80),
@@ -419,7 +416,7 @@ const styles = StyleSheet.create({
       height: getHeight(120)
     },
     modalMark: {
-      marginTop: -getHeight(41),
+      marginTop: getHeight(15),
     },
     modalTitleView:{
       width: '100%',
@@ -428,12 +425,12 @@ const styles = StyleSheet.create({
       height: getHeight(36)
     },
     modalTitle: {
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(20),
-      color: BLACK_PRIMARY
+      color: '#FFFFFF'
     },
     phoneNum: {
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(18),
       color: BLACK_PRIMARY,
       marginLeft: getWidth(12)
@@ -445,20 +442,21 @@ const styles = StyleSheet.create({
       alignItems: 'center'
     },
     modalTime: {
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(18),
-      color: BLACK_PRIMARY
+      color: '#FFFFFF'
     },
     modalBtnView: {
       flex: 1,
       width: '100%',
       justifyContent: 'center',
-      alignItems: 'center'
+      alignItems: 'center',
+      marginBottom: getHeight(23)
     },
     modalBtn: {
       width: getWidth(220),
       height: getHeight(36),
-      backgroundColor: GRAY_PRIMARY,
+      backgroundColor: '#FFFFFF',
       borderRadius: getHeight(10),
       justifyContent: 'center',
       alignItems: 'center'
@@ -466,19 +464,18 @@ const styles = StyleSheet.create({
     modalBtnText: {
       fontFamily: 'Montserrat-Regular',
       fontSize: getHeight(18),
-      color: '#FFFFFF'
+      color: BLACK_PRIMARY
     },
     modalContainerView:{
       flex: 1, 
       width: '100%',
-      height: SCREEN_HEIGHT - getHeight(100),
+      height: SCREEN_HEIGHT,
       justifyContent: 'center', 
       alignItems: 'center', 
       backgroundColor: 'rgba(0,0,0,0.4)',
       position: 'absolute',
       top: 0, 
       left: 0,
-      marginTop: getHeight(70)
     }
 })
 

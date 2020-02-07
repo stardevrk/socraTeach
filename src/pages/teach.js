@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import {BLACK_PRIMARY} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN} from '../constants/colors';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import Triangle from '../components/icons/triangle';
@@ -22,6 +22,7 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import ModalDropdown from '../components/dropDownList';
 import MenuPage from '../components/menuPage';
+import TopBarPage from '../components/topBarPage';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {fetchInitProblem} from '../controller/problem';
@@ -119,7 +120,7 @@ class TeachScreen extends Component {
 
     renderModalSeparator = () => {
       return (
-        <View></View>
+        <View style={{width: '100%', height: 2, backgroundColor: PURPLE_MAIN}}></View>
       )
     }
 
@@ -163,10 +164,14 @@ class TeachScreen extends Component {
       this.setState({subject: subject});
     }
 
+    _gotoTeach = () => {
+      navigationService.navigate(pages.TEACH_START);
+    }
+
     render () {
       const {subjects} = this.props;
       return (
-          <MenuPage forceInset={{bottom: 'never'}} titleText={'TEACH'}>
+          <TopBarPage forceInset={{bottom: 'never'}} titleText={'TEACH'} onRightClick={this._gotoTeach} notiExist={true}>
             <View style={styles.container}>
               <View style={styles.workingPart}>
                   <Text
@@ -177,16 +182,12 @@ class TeachScreen extends Component {
                   <View style={styles.modalPart}>
                     <ModalDropdown options={subjects.subject} 
                       descPart={
-                        <View style={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
-                          <Text style={styles.dropDescText}>
-                            Choose Your Subject
-                          </Text>
-                          <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                        </View>
+                        <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
                       }
                       style={{width: getWidth(283)}}
-                      textStyle={{color: '#FFFFFF', fontSize: getHeight(10), fontFamily: 'Montserrat-Regular'}}
-                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(150), marginTop: getHeight(3), height: getHeight(120)}}
+                      textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
+                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(150), marginTop: getHeight(3), height: getHeight(128)}}
+                      buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}
                       dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
                       dropdownTextHighlightStyle={{color: '#FFFFFF'}}
                       onDropdownWillShow={this.modalWillShow}
@@ -194,21 +195,22 @@ class TeachScreen extends Component {
                       renderSeparator={this.renderModalSeparator}
                       renderRow={this.renderModalListRow}
                       renderButtonText={this.renderModalListText}
+                      defaultValue={'Choose Your Subject'}
                       onExtractBtnText={this._subjectSelect}
                     >
                     </ModalDropdown>
                   </View>
                   
                 </View>
-                <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
+                <View style={{width: '100%', justifyContent: 'flex-start', alignItems: 'center', marginBottom: getHeight(57)}}>
                   <BaseButton 
-                    text={'CONTINUE'}
+                    text={'TEACH'}
                     onClick={this.goForward}
                   />
                 </View>
               </View>
             
-          </MenuPage>
+          </TopBarPage>
       )
     }
 }
@@ -238,12 +240,11 @@ const styles = StyleSheet.create({
     },
     title: {
       width: '100%',
-      fontFamily: 'Montserrat-Regular',
+      fontFamily: 'Montserrat-Medium',
       color: '#FFFFFF',
-      marginTop: getHeight(0),
-      fontSize: getHeight(40),
-      paddingLeft: getWidth(31),
-      marginBottom: getHeight(34),
+      fontSize: getHeight(30),
+      paddingLeft: getWidth(52),
+      marginBottom: getHeight(41)
     },
     dropDescText: {
       color: '#FFFFFF',
@@ -253,7 +254,7 @@ const styles = StyleSheet.create({
     },
     modalPart: {
       alignSelf: 'flex-start', 
-      marginLeft: getWidth(31)
+      marginLeft: getWidth(50)
     },
     belowPart: {
       flex: 1,

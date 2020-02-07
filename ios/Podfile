@@ -39,6 +39,7 @@ target 'socraTeach' do
   pod 'Firebase/Database'
   pod 'Firebase/Messaging'
   pod 'Firebase/Storage'
+  pod 'Firebase/Functions'
    
 
   target 'socraTeachTests' do

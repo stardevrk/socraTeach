@@ -26,6 +26,18 @@ import TeachHistory from '../pages/thHistory';
 import LearnHistory from '../pages/leHistory';
 import ChatScreen from '../pages/chat';
 import LiveLearn from '../pages/liveLearn';
+import Bank from '../pages/signup/bank';
+import SubProblem from '../pages/subProblem';
+import LearnStart from '../pages/learnStart';
+import TeachStart from '../pages/teachStart';
+import NotiStudent from '../pages/notiStudent';
+import Payments from '../pages/payments';
+import Banks from '../pages/banks';
+import TransactionHistory from '../pages/transactionHistory';
+import Transfer from '../pages/transfer';
+import TransferStarted from '../pages/transferStarted';
+import PaymentSetup from '../pages/paymentSetup';
+import BankSetup from '../pages/bankSetup';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
@@ -49,7 +61,18 @@ const AppDrawer = createDrawerNavigator(
         [pages.TEACH_HISTORY]: TeachHistory,
         [pages.LEARN_HISTORY]: LearnHistory,
         [pages.CHAT_SCREEN]: ChatScreen,
-        [pages.LIVE_LEARN]: LiveLearn
+        [pages.LIVE_LEARN]: LiveLearn,
+        [pages.PROBLEM_SUBMITTED]: SubProblem,
+        [pages.LEARN_START]: LearnStart,
+        [pages.TEACH_START]: TeachStart,
+        [pages.NOTI_STUDENT]: NotiStudent,
+        [pages.PAYMENTS]: Payments,
+        [pages.PAYMENTS_SETUP]: PaymentSetup,
+        [pages.BANKS]: Banks,
+        [pages.BANK_SETUP]: BankSetup,
+        [pages.TRANSACTION_HISTORY]: TransactionHistory,
+        [pages.TRANSFER]: Transfer,
+        [pages.TRANSFER_STARTED]: TransferStarted
     },
     {
         initialRouteName: pages.HOME_SCREEN,
@@ -66,7 +89,8 @@ const AuthStack = createStackNavigator(
         [pages.PAY_TEACHING]: PayTeaching,
         [pages.PAY_LEARNING]: PayLearning,
         [pages.PAYMENT]: Payment,
-        [pages.SINGUP_FINISH]: Finish
+        [pages.SINGUP_FINISH]: Finish,
+        [pages.BANK]: Bank
     },
     navigatorConfig
 );

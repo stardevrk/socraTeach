@@ -4,13 +4,16 @@ import {
     Image,
     View,
     ActivityIndicator,
-    Alert
+    Alert,
+    TouchableOpacity,
+    Text
 } from 'react-native';
 import Page from '../../components/basePage';
 import {getWidth, getHeight} from '../../constants/dynamicSize';
 import BaseButton from '../../components/baseButton';
 import BaseInput from '../../components/baseInput';
 import NavButton from '../../components/navButton';
+import AuthInput from '../../components/authInput';
 import navigationService from '../../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import pages from '../../constants/pages';
@@ -19,8 +22,11 @@ import {validateExp, validateCardNum} from '../../service/utils';
 import {getStripeToken} from '../../service/stripe';
 import {signupStripeInfo} from '../../model/actions/signupAC';
 import {connect} from 'react-redux';
+import { BLACK_PRIMARY } from '../../constants/colors';
 
 const LOGO_IMAGE = require('../../assets/images/logo.png');
+const BACK_BUTTON = require('../../assets/images/back-button.png');
+const FORWARD_BUTTON = require('../../assets/images/forward-button.png');
 
 class Payment extends Component {
 
@@ -74,7 +80,7 @@ class Payment extends Component {
     getStripeToken(this.state.cardNumber, exp_month, exp_year, this.state.cardSecurity).then((value) => {
       console.log("Stripe Response ", value.tokenId);
       dispatch(signupStripeInfo(value.tokenId));
-      navigationService.navigate(pages.SINGUP_FINISH);
+      navigationService.navigate(pages.BANK);
     }).catch(() => {
       Alert.alert(
         'Invalid Card',
@@ -138,7 +144,7 @@ class Payment extends Component {
 
   render () {
     return (
-        <Page>
+        <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never', bottom: 'never'}}>
           {
             this.state.loading == true ? 
             <View style={styles.wrapper}>
@@ -146,56 +152,60 @@ class Payment extends Component {
             </View>
             :
             <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
-                <NavButton 
-                  iconName={'md-arrow-back'} 
-                  buttonStyle={{position: 'absolute', left: getWidth(16), top: getHeight(15)}}
-                  onClick={this.goBack}
-                />
-                <Image
-                    source={LOGO_IMAGE}
-                    style={styles.logoImage}
-                    resizeMode={'contain'}
-                />
-                <View style={{width: '100%', paddingLeft: getWidth(45), marginBottom: getHeight(56)}}>
+                
+                <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
+                    <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
+                </TouchableOpacity>
+                <Text style={styles.pageName}>Credit/Debit</Text>
+                <View style={{width: '100%', paddingLeft: getWidth(34), marginBottom: getHeight(56)}}>
                   <Card width={getWidth(40)} height={getHeight(32)} color={'#FFFFFF'} />
                 </View>
-                
-                <BaseInput 
-                  desc={'Name on Card'}
-                  wrapperStyle={{marginBottom: getHeight(36), width: '100%'}}
-                  onChangeText={this._changeName}
-                  errorText={'Required!'}
-                  errorExist={this.state.emptyName}
+
+                <AuthInput 
+                    desc={'Name on Card'}
+                    wrapperStyle={{marginBottom: getHeight(27)}}
+                    descStyle={{marginBottom: getHeight(25)}}
+                    onChangeText={this._changeName}
+                    errorExist={this.state.emptyName}
+                    errorText={'Required!'}
                 />
-                <BaseInput 
-                  desc={'Card Number'}
-                  wrapperStyle={{marginBottom: getHeight(36)}}
-                  onChangeText={this._changeCardNumber}
-                  errorText={this.state.invalidCardNum == true ? 'Invalid Card Number' : 'Required!'}
-                  errorExist={this.state.emptyCardNumber || this.state.invalidCardNum}
-                  keyboardType={'default'}
-                />
-                <BaseInput 
-                  desc={'Expiration'}
-                  wrapperStyle={{marginBottom: getHeight(36)}}
-                  onChangeText={this._changeCardExp}
-                  errorText={this.state.invalidExp == true ? 'Invalid Expiration!' : 'Required!'}
-                  errorExist={this.state.emptyExp || this.state.invalidExp}
-                  placeholder={'08/2020'}
-                  keyboardType={'default'}
-                />
-                <BaseInput 
-                  desc={'Security Code'}
-                  wrapperStyle={{marginBottom: getHeight(63)}}
-                  onChangeText={this._changeSecurity}
-                  errorExist={this.state.emptySecurity}
-                  errorText={'Required!'}
+
+                <AuthInput 
+                    desc={'Number'}
+                    wrapperStyle={{marginBottom: getHeight(27)}}
+                    descStyle={{marginBottom: getHeight(25)}}
+                    onChangeText={this._changeCardNumber}
+                    errorExist={this.state.emptyCardNumber || this.state.invalidCardNum}
+                    errorText={this.state.invalidCardNum == true ? 'Invalid Card Number' : 'Required!'}
+                    keyboardType={'default'}
                 />
                 
-                <BaseButton 
-                    text={'CONTINUE'}
-                    onClick={this.goForward}
+                <AuthInput 
+                    desc={'Expiration'}
+                    wrapperStyle={{marginBottom: getHeight(27)}}
+                    descStyle={{marginBottom: getHeight(25)}}
+                    onChangeText={this._changeCardExp}
+                    errorExist={this.state.emptyExp || this.state.invalidExp}
+                    errorText={this.state.invalidExp == true ? 'Invalid Expiration!' : 'Required!'}
+                    placeholder={'08/2020'}
+                  keyboardType={'default'}
                 />
+
+                <AuthInput 
+                    desc={'Security Code'}
+                    wrapperStyle={{marginBottom: getHeight(27)}}
+                    descStyle={{marginBottom: getHeight(25)}}
+                    onChangeText={this._changeSecurity}
+                    errorExist={this.state.emptySecurity}
+                    errorText={'Required!'}
+                />
+                
+                
+                <View style={styles.forwardBtnView}>
+                      <TouchableOpacity style={styles.forwardBtn} onPress={this.goForward}>
+                          <Image style={styles.backBtnImage} resizeMode={'contain'} source={FORWARD_BUTTON}/>
+                      </TouchableOpacity>
+                  </View>
             </KeyboardAwareScrollView>
           }
         </Page>
@@ -217,14 +227,35 @@ const styles = StyleSheet.create({
     wrapper: {
       flex: 1,
       width: '100%',
-      height: '100%',
-      justifyContent: 'center',
-      alignItems: 'center'
+      height: '100%'
     },
     logoImage: {
         width: getWidth(291),
         height: getHeight(151),
         marginBottom: getHeight(19),
+    },
+    backBtnView: {
+      marginTop: getHeight(48),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(24)
+    },
+    backBtnImage: {
+        width: getHeight(48),
+        height: getHeight(48)
+    },
+    forwardBtnView: {
+        width: '100%', 
+        alignItems: 'flex-end',
+    },
+    forwardBtn: {
+        marginRight: getWidth(32),
+    },
+    pageName: {
+      fontFamily: 'Montserrat-Bold',
+      fontSize: getHeight(25), 
+      marginBottom: getHeight(22),
+      color: '#FFFFFF',
+      marginLeft: getWidth(34)
     }
 })
 
