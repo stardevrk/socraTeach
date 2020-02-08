@@ -170,7 +170,7 @@ class BankSetup extends Component {
               <ActivityIndicator size={'large'} />
             </View>
             :
-            <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
+            <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.container}>
                 
                 <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
                     <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
@@ -243,7 +243,9 @@ const styles = StyleSheet.create({
     wrapper: {
       flex: 1,
       width: '100%',
-      height: '100%'
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     logoImage: {
         width: getWidth(291),

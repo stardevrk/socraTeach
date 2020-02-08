@@ -2,17 +2,17 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "logo.png",
+      "filename" : "boot-logo-1.png",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "logox2.png",
+      "filename" : "boot-logo-2.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "logox3.png",
+      "filename" : "boot-logo-3.png",
       "scale" : "3x"
     }
   ],

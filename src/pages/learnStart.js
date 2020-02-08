@@ -26,8 +26,8 @@ class LearnStart extends Component {
         
     }
 
-    _gotoHome = () => {
-      // navigationService.reset(pages.LOADING);
+    _gotoPayments = () => {
+      navigationService.navigate(pages.PAYMENTS);
     }
 
     _goLearn = () => {
@@ -61,7 +61,7 @@ class LearnStart extends Component {
                       </Text>
                     </View>
                     <TouchableOpacity style={styles.btnBody}
-                    onPress={this._gotoHome}
+                    onPress={this._gotoPayments}
                     >
                       {/* <Text style={styles.btnText}>Home</Text> */}
                       <View style={{flexDirection: 'row', alignItems: 'center'}}>

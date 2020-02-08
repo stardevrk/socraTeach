@@ -84,6 +84,10 @@ class MenuContent extends Component {
       navigationService.navigate(pages.TRANSFER);
     }
 
+    _onHelp = () => {
+      navigationService.navigate(pages.HELP)
+    }
+
     static getDerivedStateFromProps (props, state) {
       if (props.user != null) {
         return {
@@ -121,7 +125,7 @@ class MenuContent extends Component {
 
                   <View style={styles.statusPart}>
                     <Text style={styles.statusText}>
-                      $24.75 in SocraTeach
+                      4.79
                     </Text>
                   </View>
 
@@ -163,7 +167,7 @@ class MenuContent extends Component {
                   <MenuItem 
                     text={'Help'}
                     icon={<Qmark size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this.onHomeClick1}
+                    onClick={this._onHelp}
                   />
                   
                   {/* <MenuItem 

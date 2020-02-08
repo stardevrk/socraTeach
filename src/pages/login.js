@@ -147,6 +147,7 @@ class Login extends Component {
                             onChangeText={this._changePassword}
                             errorExist={this.state.emptyEmail || this.state.mismatch}
                             errorText={this.state.mismatch == true ? 'Incorrect Password or Email!' : 'Required!'}
+                            autoFocus={true}
                         />
                         <TouchableOpacity style={{marginBottom: getHeight(45), paddingLeft: getWidth(33), paddingRight: getWidth(234)}}
                         onPress={this._forgotpasswordClick}
@@ -250,7 +251,6 @@ const styles = StyleSheet.create({
         fontFamily: 'Montserrat-Regular',
         fontSize: getHeight(12),
         color: '#FFFFFF',
-        marginBottom: getHeight(5)
     },
     modalWrapper: {
         width: '100%',

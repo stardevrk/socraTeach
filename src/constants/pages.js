@@ -36,5 +36,6 @@ export default {
   BANK_SETUP: 'bank_setup',
   TRANSACTION_HISTORY: 'transaction_history',
   TRANSFER: 'transfer',
-  TRANSFER_STARTED: 'transfer_started'
+  TRANSFER_STARTED: 'transfer_started',
+  HELP: 'help'
 }

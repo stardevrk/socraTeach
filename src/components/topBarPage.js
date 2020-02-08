@@ -61,7 +61,7 @@ export default class TopBarPage extends Component {
                   notiExist == true ? 
                   <View style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
                     <Image style={{width: getWidth(50), height: getHeight(37.68), position: 'absolute', left: 0, bottom: 0}} source={TOPBAR_LOGO} resizeMode={'contain'}/>
-                    <View style={{position: 'absolute', top: -12, right: 0}}>
+                    <View style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(35), paddingLeft: getWidth(35)}}>
                       <Notification size={getHeight(21)}/>
                     </View>
                   </View>

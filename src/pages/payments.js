@@ -36,14 +36,14 @@ class Payments extends Component {
           {
             id: '0',
             name: 'visa',
-            card_name: 'Chase',
+            card_name: 'Chase, 8372',
             number: '8372',
             newItem: false
           },
           {
             id: '1',
             name: 'master',
-            card_name: 'Bank of America',
+            card_name: 'Bank of America, 0874',
             number: '0874',
             newItem: false
           },
@@ -91,9 +91,7 @@ class Payments extends Component {
                   <Text style={styles.listText}>
                     {item.item.card_name}, 
                   </Text>
-                  <Text style={styles.listText}>
-                    {item.item.number}
-                  </Text>
+                  
               </TouchableOpacity>
             )
           case 'master': 
@@ -105,9 +103,7 @@ class Payments extends Component {
                   <Text style={styles.listText}>
                     {item.item.card_name},
                   </Text>
-                  <Text style={styles.listText}>
-                    {item.item.number}
-                  </Text>
+                  
               </TouchableOpacity>
             )
         }

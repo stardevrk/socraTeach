@@ -127,9 +127,17 @@ class TransactionHistory extends Component {
         )
     }
 
+    _renderTitle = () =>{
+      return (
+        <Text style={{flex: 1, alignItems: 'center', textAlign: 'center', fontFamily: 'Montserrat-Medium', fontSize: getHeight(16), color: '#FFFFFF'}}>
+          TRANSACTION HISTORY
+        </Text>
+      )
+    }
+
     render () {
         return (
-            <TopBarPage titleText={'BANK SETUP'}>
+            <TopBarPage renderTitle={this._renderTitle}>
                 <View style={styles.container}>
                     <FlatList 
                       data={this.historyData}

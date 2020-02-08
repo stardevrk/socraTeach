@@ -36,14 +36,14 @@ class Banks extends Component {
           {
             id: '0',
             name: 'chase',
-            card_name: 'Chase',
+            card_name: 'Chase, 8372',
             number: '8372',
             newItem: false
           },
           {
             id: '1',
             name: 'america',
-            card_name: 'Bank of America',
+            card_name: 'Bank of America, 0874',
             number: '0874',
             newItem: false
           },
@@ -98,9 +98,7 @@ class Banks extends Component {
                   <Text style={styles.listText}>
                     {item.item.card_name}, 
                   </Text>
-                  <Text style={styles.listText}>
-                    {item.item.number}
-                  </Text>
+                  
               </TouchableOpacity>
             )
           case 'america': 
@@ -112,9 +110,7 @@ class Banks extends Component {
                   <Text style={styles.listText}>
                     {item.item.card_name},
                   </Text>
-                  <Text style={styles.listText}>
-                    {item.item.number}
-                  </Text>
+                  
               </TouchableOpacity>
             )
         }

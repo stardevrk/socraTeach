@@ -184,9 +184,9 @@ class TeachScreen extends Component {
                       descPart={
                         <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
                       }
-                      style={{width: getWidth(283)}}
+                      style={{width: getWidth(276)}}
                       textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(150), marginTop: getHeight(3), height: getHeight(128)}}
+                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), marginTop: getHeight(3), height: getHeight(128)}}
                       buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}
                       dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
                       dropdownTextHighlightStyle={{color: '#FFFFFF'}}

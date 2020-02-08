@@ -36,7 +36,7 @@ const errorDefault = {
   paddingLeft: getWidth(10),
 }
 
-const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder, keyboardType}) => {
+const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder, keyboardType, autoFocus}) => {
   return (
     <View
       style={{...wrapperDefault, ...wrapperStyle}}
@@ -44,9 +44,9 @@ const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwd
       <Text style={{...descDefault, ...descStyle}}>{desc}</Text>
       {
         pwdType == true ? 
-        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>
+        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>
         :
-        <TextInput style={{...textDefault, ...textStyle}} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>  
+        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>  
       }
       
       <View style={{width: '100%', backgroundColor: 'rgba(88, 86, 214, 0.76)', height: 2, paddingLeft: getWidth(1)}} />
@@ -70,7 +70,8 @@ ComonInput.defaultProps = {
   errorStyle: {},
   errorText: '',
   placeholder: '',
-  keyboardType: 'default'
+  keyboardType: 'default',
+  autoFocus: false
 };
 
 ComonInput.propTypes = {
@@ -84,7 +85,8 @@ ComonInput.propTypes = {
   errorStyle: PropTypes.object,
   errorText: PropTypes.string,
   placeholder: PropTypes.string,
-  keyboardType: PropTypes.string
+  keyboardType: PropTypes.string,
+  autoFocus: PropTypes.bool
 };
 
 export default ComonInput;

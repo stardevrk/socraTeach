@@ -15,13 +15,14 @@ import {getWidth, getHeight} from '../constants/dynamicSize';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import Crop from '../components/icons/crop';
+import Aback from '../components/icons/aback';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {uploadImage} from '../service/firebase';
 import {auth, firestore} from '../constants/firebase';
 import {connect} from 'react-redux';
 import {getMyInitLearnList} from '../controller/learn';
-import {PanGestureHandler, PinchGestureHandler} from 'react-native-gesture-handler';
+import {PanGestureHandler, PinchGestureHandler, TouchableOpacity} from 'react-native-gesture-handler';
 import AmazingCropper from '../components/imageCropper';
 import PropTypes from 'prop-types';
 
@@ -166,6 +167,10 @@ class ImageCrop extends Component {
     }
   }
 
+  _goBack=() => {
+    navigationService.navigate(pages.LEARN_SUBJECT)
+  }
+
   render () {
     let imageWidth = this.props.navigation.state.params.imageWidth;
     let imageHeight = this.props.navigation.state.params.imageHeight;
@@ -177,7 +182,7 @@ class ImageCrop extends Component {
       prevImageHeight: imageHeight
     })
     return (
-        <MenuPage forceInset={{bottom: 'never'}}>
+        <Page forceInset={{bottom: 'never', top: 'never'}}>
           {
             this.state.loading == true ? 
             <View style={styles.container}>
@@ -185,6 +190,12 @@ class ImageCrop extends Component {
             </View>
              : 
             <View style={styles.container}>
+              <View style={{marginTop: getHeight(38), marginBottom: getHeight(10), width: '100%'}}>
+                <TouchableOpacity style={{marginLeft: getWidth(39)}} onPress={this._goBack}>
+                  <Aback size={getHeight(28)} color={'#FFFFFF'}/>
+                </TouchableOpacity>
+              </View>
+              
               <View style={styles.headView}>
                   <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(25), flex: 1, textAlign: 'center'}}>
                     Select Your Problem
@@ -208,7 +219,7 @@ class ImageCrop extends Component {
               
             </View>
           }
-        </MenuPage>
+        </Page>
     )
   }
 }

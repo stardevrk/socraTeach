@@ -10,10 +10,12 @@ import {
 } from 'react-native';
 import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import {BLACK_PRIMARY} from '../constants/colors';
+import {BLACK_PRIMARY, GRAY_SECONDARY, PURPLE_MAIN} from '../constants/colors';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import Triangle from '../components/icons/triangle';
+import Alert from '../components/icons/alert';
+import Aback from '../components/icons/aback';
 import Algebra from '../components/icons/algebra';
 import Geometry from '../components/icons/geometry';
 import Physics from '../components/icons/physics';
@@ -77,7 +79,8 @@ class ChooseProblem extends Component {
       swipeDirection: '',
       cardIndex: 0,
       subject: '',
-      newSubjectCards: false
+      newSubjectCards: false,
+      modalVisible: true
     }
 
     props.navigation.addListener('didFocus', payload => {
@@ -228,11 +231,20 @@ class ChooseProblem extends Component {
     navigationService.navigate(pages.TEACH_HISTORY);
   }
 
+  _goBack=() => {
+    navigationService.navigate(pages.TEACH_SUBJECT)
+  }
+
   render () {
     const {subjects} = this.props;
     return (
-        <MenuPage forceInset={{bottom: 'never'}}>
+        <Page forceInset={{bottom: 'never'}}>
           <View style={styles.workingPart}>
+            <View style={{marginTop: getHeight(38), marginBottom: getHeight(10), width: '100%'}}>
+              <TouchableOpacity style={{marginLeft: getWidth(39)}} onPress={this._goBack}>
+                <Aback size={getHeight(28)} color={'#FFFFFF'}/>
+              </TouchableOpacity>
+            </View>
              <Text
                 style={styles.title}
             >
@@ -258,111 +270,136 @@ class ChooseProblem extends Component {
               >
               </ModalDropdown>
             </View> */}
-            <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(87)}}>
-              {
-                this.state.cards.length != 0 ?
-                <Swiper
-                  ref={swiper => {
-                    this.swiper = swiper
-                  }}
-                  onSwiped={() => this.onSwiped('general')}
-                  onSwipedLeft={() => this.onSwiped('left')}
-                  onSwipedRight={this._swipeSelect}
-                  onSwipedTop={() => this.onSwiped('top')}
-                  onSwipedBottom={() => this.onSwiped('bottom')}
-                  onTapCard={this.swipeLeft}
-                  cards={this.state.cards}
-                  cardLength={this.state.cardLength}
-                  cardIndex={this.state.cardIndex}
-                  cardVerticalMargin={0}
-                  renderCard={this.renderCard}
-                  onSwipedAll={this.onSwipedAllCards}
-                  stackSize={3}
-                  stackSeparation={15}
-                  useViewOverflow={true}
-                  disableBottomSwipe={true}
-                  newSubjectCards={this.state.newSubjectCards}
-                  containerStyle={{justifyContent: 'center', alignItems: 'center', flex: 1, width: '100%'}}
-                  overlayLabels={{
-                    bottom: {
-                      title: 'BLEAH',
-                      style: {
-                        label: {
-                          backgroundColor: 'black',
-                          borderColor: 'black',
-                          color: 'white',
-                          borderWidth: 1
-                        },
-                        wrapper: {
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }
-                      }
-                    },
-                    left: {
-                      title: 'NOPE',
-                      style: {
-                        label: {
-                          backgroundColor: 'black',
-                          borderColor: 'black',
-                          color: 'white',
-                          borderWidth: 1
-                        },
-                        wrapper: {
-                          flexDirection: 'column',
-                          alignItems: 'flex-end',
-                          justifyContent: 'flex-start',
-                          marginTop: 30,
-                          marginLeft: -80
-                        }
-                      }
-                    },
-                    right: {
-                      title: 'LIKE',
-                      style: {
-                        label: {
-                          backgroundColor: 'black',
-                          borderColor: 'black',
-                          color: 'white',
-                          borderWidth: 1
-                        },
-                        wrapper: {
-                          flexDirection: 'column',
-                          alignItems: 'flex-start',
-                          justifyContent: 'flex-start',
-                          marginTop: 30,
-                          marginLeft: 30
-                        }
-                      }
-                    },
-                    top: {
-                      title: 'SKIP',
-                      style: {
-                        label: {
-                          backgroundColor: 'black',
-                          borderColor: 'black',
-                          color: 'white',
-                          borderWidth: 1
-                        },
-                        wrapper: {
-                          flexDirection: 'column',
-                          alignItems: 'center',
-                          justifyContent: 'center'
-                        }
-                      }
-                    }
-                  }}
-                  animateOverlayLabelsOpacity
-                  animateCardOpacity
-                >
-                  <TouchableOpacity onPress={() => this.swiper.swipeBack()} title='Swipe Back' />
-                </Swiper>
-                : 
-                null
-              }
             
-            </View>
+              <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(87)}}>
+                {
+                  this.state.cards.length != 0 ?
+                  <Swiper
+                    ref={swiper => {
+                      this.swiper = swiper
+                    }}
+                    onSwiped={() => this.onSwiped('general')}
+                    onSwipedLeft={() => this.onSwiped('left')}
+                    onSwipedRight={this._swipeSelect}
+                    onSwipedTop={() => this.onSwiped('top')}
+                    onSwipedBottom={() => this.onSwiped('bottom')}
+                    onTapCard={this.swipeLeft}
+                    cards={this.state.cards}
+                    cardLength={this.state.cardLength}
+                    cardIndex={this.state.cardIndex}
+                    cardVerticalMargin={0}
+                    renderCard={this.renderCard}
+                    onSwipedAll={this.onSwipedAllCards}
+                    stackSize={3}
+                    stackSeparation={15}
+                    useViewOverflow={true}
+                    disableBottomSwipe={true}
+                    newSubjectCards={this.state.newSubjectCards}
+                    containerStyle={{justifyContent: 'center', alignItems: 'center', flex: 1, width: '100%'}}
+                    overlayLabels={{
+                      bottom: {
+                        title: 'BLEAH',
+                        style: {
+                          label: {
+                            backgroundColor: 'black',
+                            borderColor: 'black',
+                            color: 'white',
+                            borderWidth: 1
+                          },
+                          wrapper: {
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }
+                        }
+                      },
+                      left: {
+                        title: 'NOPE',
+                        style: {
+                          label: {
+                            backgroundColor: 'black',
+                            borderColor: 'black',
+                            color: 'white',
+                            borderWidth: 1
+                          },
+                          wrapper: {
+                            flexDirection: 'column',
+                            alignItems: 'flex-end',
+                            justifyContent: 'flex-start',
+                            marginTop: 30,
+                            marginLeft: -80
+                          }
+                        }
+                      },
+                      right: {
+                        title: 'LIKE',
+                        style: {
+                          label: {
+                            backgroundColor: 'black',
+                            borderColor: 'black',
+                            color: 'white',
+                            borderWidth: 1
+                          },
+                          wrapper: {
+                            flexDirection: 'column',
+                            alignItems: 'flex-start',
+                            justifyContent: 'flex-start',
+                            marginTop: 30,
+                            marginLeft: 30
+                          }
+                        }
+                      },
+                      top: {
+                        title: 'SKIP',
+                        style: {
+                          label: {
+                            backgroundColor: 'black',
+                            borderColor: 'black',
+                            color: 'white',
+                            borderWidth: 1
+                          },
+                          wrapper: {
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center'
+                          }
+                        }
+                      }
+                    }}
+                    animateOverlayLabelsOpacity
+                    animateCardOpacity
+                  >
+                    <TouchableOpacity onPress={() => this.swiper.swipeBack()} title='Swipe Back' />
+                  </Swiper>
+                  : 
+                  null
+                }
+              
+              </View> 
+              {
+              this.state.modalVisible == true ?
+              <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, paddingTop: getHeight(87)}}>
+                <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
+                  <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                    <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
+                    <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
+                      Have Problem Solved
+                    </Text>
+                    <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                      Before Processing Teach
+                    </Text>
+                  </View>
+                  <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
+                  onPress={() =>{this.setState({modalVisible: false})}}
+                  >
+                    <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
+                  </TouchableOpacity>
+                </View>
+
+              </View>
+              : null
+            }
+            
           </View>
           <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
             <BaseButton 
@@ -370,7 +407,7 @@ class ChooseProblem extends Component {
               onClick={this._teachClick}
             />
           </View>
-        </MenuPage>
+        </Page>
     )
   }
 }

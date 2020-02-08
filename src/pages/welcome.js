@@ -170,6 +170,7 @@ class Welcome extends Component {
                                 errorExist={this.state.errorEmail || this.state.emptyEmail}
                                 errorText={this.state.emptyEmail == true ? 'Required!' : 'Invalid Email!'}
                                 keyboardType={'email-address'}
+                                autoFocus={this.state.emailInputable}
                             />
                             <View style={styles.forwardBtnView}>
                                 <TouchableOpacity style={styles.forwardBtn} onPress={this._forwardClick}>
