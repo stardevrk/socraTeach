@@ -37,5 +37,6 @@ export default {
   TRANSACTION_HISTORY: 'transaction_history',
   TRANSFER: 'transfer',
   TRANSFER_STARTED: 'transfer_started',
-  HELP: 'help'
+  HELP: 'help',
+  SESSION: 'session'
 }

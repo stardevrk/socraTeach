@@ -66,3 +66,14 @@ export function validateExp(exp) {
 export const validateCardNum = (number) => {
   return /^(?=.*\d)[\d ]+$/.test(number);
 }
+
+export const validatePhoneNumber = (number) => {
+  var phoneno = /^\+?([0-9]{2})\)?[-. ]?([0-9]{4})[-. ]?([0-9]{4})$/;
+  if(number.match(phoneno)) {
+    return true;
+  }  
+  else {  
+    // alert("message");
+    return false;
+  }
+}

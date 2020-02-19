@@ -1,22 +1,11 @@
 import * as types from '../actionTypes';
 
-export function fetchProblem (subject, problems, lastProblem, blockIndex = 0) {
+export function fetchProblem (subject, problems, lastProblem) {
     return {
         type: types.RETRIVE_PROBLMES,
         subject,
         problems,
-        lastProblem,
-        blockIndex
-    }
-}
-
-export function fetchMoreProblems (subject, problems, lastProblem, blockIndex) {
-    return {
-        type: types.RETRIVE_PROBLMES,
-        subject,
-        problems,
-        lastProblem,
-        blockIndex
+        lastProblem
     }
 }
 

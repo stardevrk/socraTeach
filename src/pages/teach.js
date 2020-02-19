@@ -171,7 +171,7 @@ class TeachScreen extends Component {
     render () {
       const {subjects} = this.props;
       return (
-          <TopBarPage forceInset={{bottom: 'never'}} titleText={'TEACH'} onRightClick={this._gotoTeach} notiExist={true}>
+          <TopBarPage forceInset={{bottom: 'never'}} titleText={'TEACH'} onRightClick={this._gotoTeach} notiExist={true} rightExist={true}>
             <View style={styles.container}>
               <View style={styles.workingPart}>
                   <Text

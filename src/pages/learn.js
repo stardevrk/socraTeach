@@ -218,13 +218,14 @@ class LearnScreen extends Component {
   }
 
   _gotoLearn = () => {
-    navigationService.navigate(pages.LEARN_START);
+    // navigationService.navigate(pages.LEARN_START);
+    navigationService.navigate(pages.SESSION);
   }
 
   render () {
     const {subjects} = this.props;
     return (
-        <TopBarPage titleText={'LEARN'} forceInset={{bottom: 'never'}} onRightClick={this._gotoLearn} notiExist={true}>
+        <TopBarPage titleText={'LEARN'} forceInset={{bottom: 'never'}} onRightClick={this._gotoLearn} notiExist={true} rightExist={true}>
           <View style={styles.workingPart}>
             <Text
               style={styles.title}

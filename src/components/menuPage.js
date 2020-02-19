@@ -102,13 +102,11 @@ const styles = StyleSheet.create({
     paddingTop: getHeight(80)
   },
   headerTitle: {
-    width: '100%',
+    flex: 1,
     textAlign: 'center',
     fontSize: getHeight(24),
     fontFamily: 'Montserrat-Regular',
     color: '#FFFFFF',
-    position: 'absolute',
-    top: getHeight(20)
   },
   rightTitle: {
     position: 'absolute', 

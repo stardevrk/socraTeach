@@ -28,6 +28,7 @@ import {firestore} from '../constants/firebase';
 import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
 import {connect} from 'react-redux';
 import {getTeacherInfo} from '../controller/user';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -41,13 +42,14 @@ let timerDuration = 60 * 1;
 let timerDisplay = '05:00';
 let myTimer;
 
+@withMappedNavigationParams()
 class LearnSolve extends Component {
 
   constructor(props) {
     super(props);
 
     this.state={
-      modalVisible: true,
+      modalVisible: false,
       problemUri: '',
       problemData: {},
       subject: '',
@@ -68,6 +70,7 @@ class LearnSolve extends Component {
           },
         }
       ],
+      phoneNumber: '',
       displayTimer: '',
       prevProblemId: ''
     }
@@ -107,19 +110,14 @@ class LearnSolve extends Component {
     _renderTitle = () => {
       if (this.state.problemData.teacherId !== undefined) {
         return (
-          <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', top: getHeight(20)}}
+          <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', flex: 1, paddingRight: getWidth(66)}}
           onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}
           >
             <Text style={styles.titleText}>
               {this.state.teacherName}
             </Text>
             <Text style={styles.titleText}>
-              {
-                this.state.teacherName != '' ? 
-                '(630)-772-1212'
-                : 
-                ''
-              }
+              {this.state.phoneNumber}
             </Text>
           </TouchableOpacity>
         )
@@ -153,7 +151,7 @@ class LearnSolve extends Component {
     }
 
     _clickChat =() =>{
-      navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'leSolve'});
+      navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'leSolve', sessionData: this.props.sessionData});
       // this.setState({chatting: true});  
     }
 
@@ -238,20 +236,34 @@ class LearnSolve extends Component {
       //   return;
       // }
 
-      if (this.state.modalVisible == true) {
-        clearInterval(myTimer);
-      }
+      // if (this.state.modalVisible == true) {
+      //   clearInterval(myTimer);
+      // }
 
-      if (this.state.prevProblemId != prevState.prevProblemId) {
-        this.setState({modalVisible: false});
-        clearInterval(myTimer)
-        // console.log("TimerDuration ==== ", timerDuration );
-        this.startTimer(timerDuration, timerDisplay);
-      }
+      // if (this.state.prevProblemId != prevState.prevProblemId) {
+      //   this.setState({modalVisible: false});
+      //   clearInterval(myTimer)
+      //   // console.log("TimerDuration ==== ", timerDuration );
+      //   this.startTimer(timerDuration, timerDisplay);
+      // }
     }
 
     componentDidMount() {
-      this.startTimer(timerDuration, timerDisplay);
+      // this.startTimer(timerDuration, timerDisplay);
+      const {sessionData} = this.props;
+      this.setState({subject: sessionData.subject, teacherId: sessionData.userId});
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).get().then(doc => {
+        this.setState({
+          problemData: doc.data(),
+          problemUri: doc.data().problemImage
+        })
+      })
+      firestore.collection('users').doc(sessionData.userId).get().then((doc) => {
+        this.setState({
+          teacherName: doc.data().userName,
+          phoneNumber: doc.data().phoneNumber,
+        })
+      })
     }
 
     render () {
@@ -280,81 +292,80 @@ class LearnSolve extends Component {
                   </View>
                   : null
                 }
-              </View>
-              
-
-              {
-                this.state.modalVisible == true ? 
-                <View style={styles.modalContainerView}>
-                  <View style={styles.modalView}>
-                    <View style={styles.modalMark}>
-                      <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} /> 
-                    </View>
-                    <View style={styles.modalTitleView}>
-                      <Text style={styles.modalTitle}>Rate Your Teacher</Text>
-                    </View>
-                    <View style={styles.starView}>
-                      <TouchableOpacity onPress={() => {this.setState({teacherRate: 1})}}>
-                        {
-                          this.state.teacherRate > 0 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
-                          :
-                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
-                        }
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => {this.setState({teacherRate: 2})}}>
-                        {
-                          this.state.teacherRate > 1 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
-                          :
-                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
-                        }
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => {this.setState({teacherRate: 3})}}>
-                        {
-                          this.state.teacherRate > 2 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
-                          :
-                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
-                        }
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => {this.setState({teacherRate: 4})}}>
-                        {
-                          this.state.teacherRate > 3 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
-                          :
-                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
-                        }
-                      </TouchableOpacity>
-                      <TouchableOpacity onPress={() => {this.setState({teacherRate: 5})}}>
-                        {
-                          this.state.teacherRate > 4 ? 
-                          <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
-                          :
-                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
-                        }
-                      </TouchableOpacity>
-                    </View>
-                    
-                    <View style={styles.modalTimeView}>
-                      <Text style={styles.modalTime}>
-                        $3.30
-                      </Text>
-                    </View>
-                    <View style={{flex: 1}}>
+                {
+                  this.state.modalVisible == true ? 
+                  <View style={styles.modalContainerView}>
+                    <View style={styles.modalView}>
+                      <View style={styles.modalMark}>
+                        <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} /> 
+                      </View>
+                      <View style={styles.modalTitleView}>
+                        <Text style={styles.modalTitle}>Rate Your Teacher</Text>
+                      </View>
+                      <View style={styles.starView}>
+                        <TouchableOpacity onPress={() => {this.setState({teacherRate: 1})}}>
+                          {
+                            this.state.teacherRate > 0 ? 
+                            <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
+                            :
+                            <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                          }
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {this.setState({teacherRate: 2})}}>
+                          {
+                            this.state.teacherRate > 1 ? 
+                            <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
+                            :
+                            <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                          }
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {this.setState({teacherRate: 3})}}>
+                          {
+                            this.state.teacherRate > 2 ? 
+                            <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
+                            :
+                            <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                          }
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {this.setState({teacherRate: 4})}}>
+                          {
+                            this.state.teacherRate > 3 ? 
+                            <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
+                            :
+                            <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                          }
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => {this.setState({teacherRate: 5})}}>
+                          {
+                            this.state.teacherRate > 4 ? 
+                            <Star width={getWidth(28)} height={getHeight(27)} color={GREEN_PRIMARY} />
+                            :
+                            <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                          }
+                        </TouchableOpacity>
+                      </View>
                       
-                    </View>
-                    <View style={styles.modalBtnView}>
-                      <TouchableOpacity style={styles.modalBtn} onPress={() => {this._finishSession()}}>
-                        <Text style={styles.modalBtnText}>
-                          Home
+                      <View style={styles.modalTimeView}>
+                        <Text style={styles.modalTime}>
+                          $3.30
                         </Text>
-                      </TouchableOpacity>
+                      </View>
+                      <View style={{flex: 1}}>
+                        
+                      </View>
+                      <View style={styles.modalBtnView}>
+                        <TouchableOpacity style={styles.modalBtn} onPress={() => {this._finishSession()}}>
+                          <Text style={styles.modalBtnText}>
+                            Home
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
-                </View>
-                : null
-              }  
+                  : null
+                }
+              </View>
+                
           </MenuPage>
         )
     }
@@ -467,15 +478,14 @@ const styles = StyleSheet.create({
       color: BLACK_PRIMARY
     },
     modalContainerView:{
-      flex: 1, 
-      width: '100%',
-      height: SCREEN_HEIGHT,
       justifyContent: 'center', 
       alignItems: 'center', 
-      backgroundColor: 'rgba(0,0,0,0.4)',
       position: 'absolute',
       top: 0, 
       left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.4)'
     }
 })
 

@@ -1,4 +1,4 @@
-import {auth, firestore} from '../constants/firebase';
+import {auth, firestore, message, notifications} from '../constants/firebase';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import store from '../model/store';
@@ -7,6 +7,8 @@ import {fetchSubjects} from '../model/actions/subjectAC';
 import {clearListeners, clearUserListener, hasListener, addListener} from './listeners';
 import {getMyInitTeachList} from './teach';
 import {getMyInitLearnList} from './learn';
+import AsyncStorage from '@react-native-community/async-storage';
+import _ from 'lodash';
 
 let firstAuth = true;
 
@@ -27,14 +29,57 @@ async function getSubjectInfo() {
   }
 }
 
+async function setFCMToken(authData) {
+  try {
+    const enabled = await message.hasPermission();
+    if (!enabled) {
+      await message.requestPermission();
+    } 
+    message.getToken().then((value) => {
+      console.log("FCM Token === ", value);
+      firestore.collection('users').doc(authData.uid).update({
+        fcmToken: value
+      })
+    })
+  } catch (e) {
+    console.log("Get FCM Token Error = ", e);
+  }
+}
+
 async function getUserInfo (authData) {
   try {
     console.log('fetchUser', authData.uid)
     const userId = authData.uid
-    
+    const enabled = await message.hasPermission();
+      if (!enabled) {
+        await message.requestPermission();
+      } 
+    let fcmToken = await message.getToken();
+    console.log("FCM Token === ", fcmToken);
     firestore.collection('users').doc(userId).get().then(doc => {
-      console.log("User Data = ", doc.data());
-      store.dispatch(fetchUser(doc.data()));
+      
+      if (doc.exists) {
+        store.dispatch(fetchUser(doc.data()));
+        firestore.collection('users').doc(userId).update({
+          fcmToken: fcmToken
+        })
+      } else { //Signup
+        let currentState = store.getState();
+        let signupInfo = _.get(currentState, 'signupInfo', {});
+        firestore.collection('users').doc(userId).set({
+          phoneNumber: signupInfo.phoneNumber != undefined ? signupInfo.phoneNumber : '',
+          email: signupInfo.email != undefined ? signupInfo.email : '',
+          userName: signupInfo.userName != undefined ? signupInfo.userName : '',
+          stripeToken: signupInfo.stripeToken != undefined ? signupInfo.stripeToken : '',
+          routeNumber: signupInfo.routeNumber != undefined ? signupInfo.routeNumber : null,
+          accountNumber: signupInfo.accountNumber != undefined ? signupInfo.accountNumber : null,
+          secondAccount: signupInfo.secondAccount != undefined ? signupInfo.secondAccount : null,
+          bankSkipped: signupInfo.bankSkipped != undefined ? signupInfo.bankSkipped : true,
+          userId: userId,
+          lastLogin: Date.now(),
+          fcmToken: fcmToken
+        });
+      }
     });
     
   } catch (e) {
@@ -47,6 +92,7 @@ async function onAuthStateChanged (authData) {
   if (authData) {
     await getUserInfo(authData);
     await getSubjectInfo();
+    // setFCMToken(authData);
     navigationService.navigate(pages.APP)
   } else {
     console.log('onAuthStateChanged authData null')

@@ -69,21 +69,22 @@ class BankSetup extends Component {
     dispatch(signupUserInfo({
       routeNumber: this.state.routeName,
       accountNumber: this.state.accountNumber,
-      secondAccount: this.state.secondAccount
+      secondAccount: this.state.secondAccount,
+      bankSkipped: false
     }));
     auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
       console.log("Signup Result = ", result);
-      firestore.collection('users').doc(result.user.uid).set({
-        country: signupInfo.country,
-        email: signupInfo.email,
-        userName: signupInfo.userName,
-        stripeToken: signupInfo.stripeToken,
-        routeNumber: this.state.routeName,
-        accountNumber: this.state.accountNumber,
-        secondAccount: this.state.secondAccount,
-        bankSkipped: false,
-        lastLogin: Date.now()
-      })
+      // firestore.collection('users').doc(result.user.uid).set({
+      //   country: signupInfo.country,
+      //   email: signupInfo.email,
+      //   userName: signupInfo.userName,
+      //   stripeToken: signupInfo.stripeToken,
+      //   routeNumber: this.state.routeName,
+      //   accountNumber: this.state.accountNumber,
+      //   secondAccount: this.state.secondAccount,
+      //   bankSkipped: false,
+      //   lastLogin: Date.now()
+      // })
     }).finally(() => {
       this.setState({loading: false});
     })
@@ -108,18 +109,21 @@ class BankSetup extends Component {
       return;
     }
 
-    const {signupInfo} = this.props;
+    const {dispatch, signupInfo} = this.props;
     this.setState({loading: true});
+    dispatch(signupUserInfo({
+      bankSkipped: true
+    }));
     auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
       console.log("Signup Result = ", result);
-      firestore.collection('users').doc(result.user.uid).set({
-        country: signupInfo.country,
-        email: signupInfo.email,
-        userName: signupInfo.userName,
-        stripeToken: signupInfo.stripeToken,
-        bankSkipped: true,
-        lastLogin: Date.now()
-      })
+      // firestore.collection('users').doc(result.user.uid).set({
+      //   country: signupInfo.country,
+      //   email: signupInfo.email,
+      //   userName: signupInfo.userName,
+      //   stripeToken: signupInfo.stripeToken,
+      //   bankSkipped: true,
+      //   lastLogin: Date.now()
+      // })
     }).finally(() => {
       this.setState({loading: false});
     })

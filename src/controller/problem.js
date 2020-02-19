@@ -3,7 +3,7 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import store from '../model/store';
 // import {fetchUser, logoutUser} from '../model/actions/userAC';
-import {fetchProblem, fetchMoreProblems, clearProblems} from '../model/actions/problemAC';
+import {fetchProblem, clearProblems} from '../model/actions/problemAC';
 import {clearListeners, clearUserListener, hasListener, addListener, offListenerWithPrefix} from './listeners';
 import _ from 'lodash';
 
@@ -17,17 +17,18 @@ export function fetchInitProblem(subject) {
         
         var listener = firestore.collection(subject)
         .where('sessionExist', '==', false)
-        .orderBy('updateTime', 'ASC')
-        .limit(10)
+        .orderBy('updateTime', 'DESC')
+        .limit(20)
         .onSnapshot((snapShot) => {
           if (snapShot.docs.length > 0) {
-            let problemArray = [];
+            
+            let problems = {};
             let lastProblem = snapShot.docs[snapShot.docs.length - 1];
             snapShot.forEach((doc) => {
               // dispatch(fetchProblem(subject, doc.data()));
-              problemArray.push(doc.data());
+              problems[doc.id] = doc.data();
             })
-            dispatch(fetchProblem(subject, problemArray, lastProblem, 0));
+            dispatch(fetchProblem(subject, problems, lastProblem));
           }
         });
         addListener('problems_' + subject + '_' + 0, listener);
@@ -38,34 +39,34 @@ export function fetchInitProblem(subject) {
   }
 }
 
-export function getMoreProblems(subject) {
+export function fetchMoreProblems(subject) {
   return async function (dispatch, getState) {
+    
     try {
       const currentState = getState();
-      const subjectObject = _.get(currentState, subject, {});
+      const subjectObject = _.get(currentState, 'problem', {});
       const prevLastProblem = _.get(subjectObject, 'lastProblem', null);
-      const prevBlockIndex = _.get(subjectObject, 'blockIndex', 0);
-      const currentBlockIndex = prevBlockIndex + 1;
-
-      if (lastProblem != null) {
-        if(!hasListener('problems_' + subject + '_' + currentBlockIndex)) {
+      
+      if (prevLastProblem != null) {
+        
+        if(!hasListener('problems_' + subject + '_' + prevLastProblem.id)) {
           var listener = firestore.collection(subject)
           .where('sessionExist', '==', false)
-          .orderBy('updateTime', 'ASC')
+          .orderBy('updateTime', 'DESC')
           .startAfter(prevLastProblem)
           .limit(20)
           .onSnapshot((snapShot) => {
             if (snapShot.docs.length > 0) {
-              let problemArray = [];
+              let problems = {};
               let lastProblem = snapShot.docs[snapShot.docs.length - 1];
               snapShot.forEach((doc) => {
                 // dispatch(fetchProblem(subject, doc.data()));
-                problemArray.push(doc.data());
+                problems[doc.id] = doc.data();
               })
-              dispatch(fetchMoreProblems(subject, problemArray, lastProblem, currentBlockIndex));
+              dispatch(fetchProblem(subject, problems, lastProblem));
             }
           });
-          addListener('problems_' + subject + '_' + currentBlockIndex, listener);
+          addListener('problems_' + subject + '_' + prevLastProblem.id, listener);
         }
       }
     } catch (e) {

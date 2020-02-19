@@ -39,6 +39,7 @@ import TransferStarted from '../pages/transferStarted';
 import PaymentSetup from '../pages/paymentSetup';
 import BankSetup from '../pages/bankSetup';
 import Help from '../pages/help';
+import Session from '../pages/session';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
@@ -74,7 +75,8 @@ const AppDrawer = createDrawerNavigator(
         [pages.TRANSACTION_HISTORY]: TransactionHistory,
         [pages.TRANSFER]: Transfer,
         [pages.TRANSFER_STARTED]: TransferStarted,
-        [pages.HELP]: Help
+        [pages.HELP]: Help,
+        [pages.SESSION]: Session
     },
     {
         initialRouteName: pages.HOME_SCREEN,

@@ -6,13 +6,13 @@ const initialState = null;
 export default function user (state = initialState, action = '') {
   switch (action.type) {
     case types.RETRIVE_PROBLMES:
-      let problemLength = action.problems.length;
       return {
         subject: action.subject,
-        problems: action.problems,
+        problems: {
+          ..._.get(state, 'problems', {}),
+          ...action.problems
+        },
         lastProblem: action.lastProblem,
-        blockIndex: action.blockIndex,
-        problemLength: problemLength
       }
     case types.RETRIVE_MORE_PROBLEMS:
       // let prevProblemObject = _.get(state, action.subject, {});

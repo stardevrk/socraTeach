@@ -32,6 +32,7 @@ import {GiftedChat} from 'react-native-gifted-chat';
 import {sendMessage} from '../controller/chat';
 import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
 import {getPosterInfo} from '../controller/user';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -45,6 +46,7 @@ let timerDuration = 60 * 1;
 let timerDisplay = '05:00';
 let myTimer;
 
+@withMappedNavigationParams()
 class SOLVESCREEN extends Component {
 
   constructor(props) {
@@ -59,7 +61,8 @@ class SOLVESCREEN extends Component {
       posterRate: 0,
       prevPosterId: '',
       displayTimer: '',
-      prevProblemId: ''
+      prevProblemId: '',
+      phoneNumber: ''
     }
 
     /** Commented By Me*/
@@ -93,14 +96,14 @@ class SOLVESCREEN extends Component {
 
     _renderTitle = () => {
       return (
-        <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', width: '100%', position: 'absolute', top: getHeight(20)}}
+        <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', flex: 1, paddingRight: getWidth(66)}}
         onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}
         >
           <Text style={styles.titleText}>
             {this.state.posterName}
           </Text>
           <Text style={styles.titleText}>
-            (630)-772-1212
+            {this.state.phoneNumber}
           </Text>
         </TouchableOpacity>
       )
@@ -195,12 +198,20 @@ class SOLVESCREEN extends Component {
 
     _clickChat =() =>{
       // clearInterval(myTimer);
-      navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'thSolve', timer: myTimer});
+      navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'thSolve', sessionData: this.props.sessionData});
       // this.setState({chatting: true});  
     }
 
     componentDidMount() {
       // this.startTimer(timerDuration, timerDisplay);
+      const {sessionData} =  this.props;
+      this.setState({subject: sessionData.subject});
+      firestore.collection('users').doc(sessionData.userId).get().then(doc => {
+        this.setState({posterName: doc.data().userName, phoneNumber: doc.data().phoneNumber});
+      })
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).get().then(doc => {
+        this.setState({problemData: doc.data(), problemUri: doc.data().problemImage});
+      })
     }
 
     render () {
@@ -210,7 +221,7 @@ class SOLVESCREEN extends Component {
           renderTitle={this._renderTitle}
           renderRightItem={this._renderRightItem}
           >
-            <KeyboardAwareScrollView style={{flex: 1, width: '100%'}} contentContainerStyle={{alignItems: 'center'}}>
+            <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
               <Image
                   source={{uri: this.state.problemUri}}
                   style={styles.logoImage}
@@ -220,7 +231,7 @@ class SOLVESCREEN extends Component {
                 
                 <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline/>
               </View> */}
-            </KeyboardAwareScrollView>
+            
             <View style={{width: '100%', height: getHeight(50), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
               <TouchableOpacity onPress={() => this._clickChat()}>
                 <Chat size={getHeight(30)} color={'#000000'} /> 
@@ -299,6 +310,7 @@ class SOLVESCREEN extends Component {
               </View>
               : null
             }
+          </View>
         </MenuPage>
       )  
     }
@@ -412,16 +424,14 @@ const styles = StyleSheet.create({
       color: BLACK_PRIMARY
     },
     modalContainerView:{
-      flex: 1, 
-      width: '100%',
-      height: SCREEN_HEIGHT - getHeight(100),
       justifyContent: 'center', 
       alignItems: 'center', 
       backgroundColor: 'rgba(0,0,0,0.4)',
       position: 'absolute',
       top: 0, 
       left: 0,
-      marginTop: getHeight(70)
+      right: 0,
+      bottom: 0
     }
 })
 

@@ -28,7 +28,7 @@ import Swiper from '../components/Swiper/index';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 // import {clearProblems} from '../model/actions/problemAC';
-import {fetchInitProblem, clearSubjectProblems} from '../controller/problem';
+import {fetchInitProblem, clearSubjectProblems, fetchMoreProblems} from '../controller/problem';
 import {selectProblem, getMyInitTeachList, getMyMoreTeachList, clearMyTeachList} from '../controller/teach';
 import {auth} from '../constants/firebase';
 import {updateSession, clearSession} from '../model/actions/sessionAC';
@@ -80,7 +80,9 @@ class ChooseProblem extends Component {
       cardIndex: 0,
       subject: '',
       newSubjectCards: false,
-      modalVisible: true
+      modalVisible: true,
+      prevProblems: {},
+      swippedCards: 0
     }
 
     props.navigation.addListener('didFocus', payload => {
@@ -103,46 +105,46 @@ class ChooseProblem extends Component {
     // closeOverlay();
   }
 
-    renderModalListRow = (rowData, rowID, highlighted) => {
-      switch (rowData.iconName) {
-        case 'algebra': 
-          return (
-            <View style={styles.mListItem}>
-              <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'physics': 
-          return (
-            <View style={styles.mListItem}>
-              <Physics size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'geometry': 
-          return (
-            <View style={styles.mListItem}>
-              <Geometry size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'chemistry': 
-          return (
-            <View style={styles.mListItem}>
-              <Chemistry size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        default:
-          return (
-            <View style={styles.mListItem}>
-              <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-      }
-      
+  renderModalListRow = (rowData, rowID, highlighted) => {
+    switch (rowData.iconName) {
+      case 'algebra': 
+        return (
+          <View style={styles.mListItem}>
+            <Algebra size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'physics': 
+        return (
+          <View style={styles.mListItem}>
+            <Physics size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'geometry': 
+        return (
+          <View style={styles.mListItem}>
+            <Geometry size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'chemistry': 
+        return (
+          <View style={styles.mListItem}>
+            <Chemistry size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      default:
+        return (
+          <View style={styles.mListItem}>
+            <Algebra size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
     }
+    
+  }
   
     renderCard = (card, index) => {
       return (
@@ -159,13 +161,22 @@ class ChooseProblem extends Component {
   
     onSwiped = (type) => {
       this.setState({newSubjectCards: false});
-      // console.log(`on swiped ${type}`)
+      let currentSwipped = this.state.swippedCards;
+      currentSwipped++;
+      console.log(`on swiped ${currentSwipped}`);
+      if (this.state.cardLength > 3 && currentSwipped == this.state.cardLength - 3 && this.state.cardLength % 20 == 0) {
+        const {dispatch} = this.props;
+        console.log("Fetch More Problems");
+        dispatch(fetchMoreProblems(this.state.subject.toLowerCase()));
+      }
+      this.setState({swippedCards: currentSwipped});
     }
   
     onSwipedAllCards = () => {
       this.setState({
         swipedAllCards: true
-      })
+      });
+      
     };
   
     swipeLeft = () => {
@@ -189,17 +200,23 @@ class ChooseProblem extends Component {
 
   static getDerivedStateFromProps (props, state) {
     // const problems = props.problem;
-    let problems = _.get(props.problem, 'problems', []);
-    let newProblems = _.filter(problems, function (item) {
-      return item.posterId != auth.currentUser.uid
-    })
-    // console.log("Problems ==== ", problems);
-    // const currentSubject = state.subject.toLowerCase();
-    // const problemObject = _.get(problems, currentSubject, {});
-    // const problemList = _.get(problemObject, 'problems', []);
-    
-    return {
-      cards: newProblems,
+    let problems = _.get(props.problem, 'problems', {});
+    if (problems != state.prevProblems) {
+      let arrayProblems = _.map(problems, (item) => {
+        return item;
+      });
+      let filteredArray = _.filter(arrayProblems, function(item) {
+        return item.posterId != auth.currentUser.uid  
+      });
+      let sortedArray = _.orderBy(filteredArray, ['updateTime'], 'desc');
+      console.log("New Cards Length = ", sortedArray.length);
+      return {
+        cards: sortedArray,
+        prevProblems: problems,
+        cardLength: sortedArray.length
+      }
+    } else {
+      return null;
     }
     
   }
@@ -232,6 +249,7 @@ class ChooseProblem extends Component {
   }
 
   _goBack=() => {
+    this.setState({swippedCards: 0});
     navigationService.navigate(pages.TEACH_SUBJECT)
   }
 

@@ -29,6 +29,8 @@ import {AppContainer} from './navigation/index';
 import navigationService from './navigation/navigationService';
 import store from './model/store';
 
+console.ignoredYellowBox = ['Warning: Each', 'Warning: Failed'];
+
 const App: () => React$Node = () => {
 
   let init = async () => {

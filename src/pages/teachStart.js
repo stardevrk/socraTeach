@@ -16,14 +16,30 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import Star from '../components/icons/star';
 import BStar from '../components/icons/bstar';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
+import {firestore, auth} from '../constants/firebase';
 
 const ICON_LOGO = require('../assets/images/icon-logo.png');
 const MASTER_IMAGE = require('../assets/images/master.png')
 
+@withMappedNavigationParams()
 class TeachStart extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      problemData: {},
+      posterId: ''
+    }
+  }
+
     componentDidMount() {
-        
+      const {sessionData} = this.props;
+      this.setState({posterId: sessionData.userId});
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).get().then(doc => {
+        this.setState({problemData: doc.data()});
+      })
     }
 
     _gotoHome = () => {
@@ -31,11 +47,13 @@ class TeachStart extends Component {
     }
 
     _goTeach = () => {
-      navigationService.navigate(pages.TEACH_SOLVE, {problem: {}, posterId: ''});
-    }
+      const {sessionData} = this.props;
 
-    _cancelLearn = () => {
-      navigationService.reset(pages.LOADING);
+      firestore.collection('users').doc(auth.currentUser.uid).collection('teach_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+        confirmed: true,
+        lastUpdate: Date.now()
+      })
+      navigationService.navigate(pages.TEACH_SOLVE, {sessionData: this.props.sessionData});
     }
 
     render () {
@@ -45,7 +63,7 @@ class TeachStart extends Component {
                   <Image style={{width: getWidth(155), height: getHeight(82)}} resizeMode={'contain'} source={ICON_LOGO}/>
                   <View style={styles.modal}>
                     <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(40)}}>
-                      <Text style={styles.bodyText}>Salmon</Text>
+                      <Text style={styles.bodyText}>{this.props.sessionData.name}</Text>
                       <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/>
                         <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/>
@@ -136,6 +154,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
+  user: state.user
 })
 
 export default connect(mapStateToProps)(TeachStart);

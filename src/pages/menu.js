@@ -120,12 +120,14 @@ class MenuContent extends Component {
                     <Text style={styles.markTitle}>
                       4.79
                     </Text>
-                    <Star width={getHeight(15)} height={getHeight(14)} color={'#FFFFFF'} />
                   </View>
 
                   <View style={styles.statusPart}>
                     <Text style={styles.statusText}>
-                      4.79
+                      $24.72 in Socra
+                    </Text>
+                    <Text style={styles.statusBold}>
+                      Teach
                     </Text>
                   </View>
 
@@ -155,14 +157,14 @@ class MenuContent extends Component {
                     onClick={this._onTransactionHistory}
                   />
                   <MenuItem 
-                    text={'Payment Method'}
-                    icon={<Scard size={getHeight(20)} color={'#FFFFFF'} />}
-                    onClick={this._onPayments}
-                  />
-                  <MenuItem 
                     text={'Bank Setup'}
                     icon={<Bank size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onBanks}
+                  />
+                  <MenuItem 
+                    text={'Payments'}
+                    icon={<Scard size={getHeight(20)} color={'#FFFFFF'} />}
+                    onClick={this._onPayments}
                   />
                   <MenuItem 
                     text={'Help'}
@@ -253,12 +255,19 @@ const styles = StyleSheet.create({
       height: getHeight(30),
       backgroundColor: PURPLE_MAIN,
       paddingLeft: getWidth(18),
-      justifyContent: 'center',
-      marginBottom: getHeight(26)
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginBottom: getHeight(26),
+      flexDirection: 'row'
     },
     statusText: {
       fontFamily: 'Montserrat-Regular',
-      fontSize: getHeight(14),
+      fontSize: getHeight(17),
+      color: '#FFFFFF',
+    },
+    statusBold: {
+      fontFamily: 'Montserrat-Bold',
+      fontSize: getHeight(17),
       color: '#FFFFFF',
     },
     logoView: {

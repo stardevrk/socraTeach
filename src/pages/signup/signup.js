@@ -14,7 +14,7 @@ import NavButton from '../../components/navButton';
 import navigationService from '../../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import pages from '../../constants/pages';
-import {validateEmail} from '../../service/utils';
+import {validateEmail, validatePhoneNumber} from '../../service/utils';
 import {connect} from 'react-redux';
 import {signupUserInfo} from '../../model/actions/signupAC';
 import { BLACK_PRIMARY } from '../../constants/colors';
@@ -36,6 +36,9 @@ class Signup extends Component {
       errorEmail: false,
       passwordDismatch: false,
       country: '',
+      phoneNumber: '',
+      emptyPhoneNumber: false,
+      errorPhoneNumber: false,
       emptyName: false,
       emptyEmail: false,
       emptyCountry: false,
@@ -50,8 +53,8 @@ class Signup extends Component {
         return;
       }
 
-      if (this.state.country == '') {
-        this.setState({emptyCountry: true});
+      if (this.state.phoneNumber == '') {
+        this.setState({emptyPhoneNumber: true});
         return;
       }
       if (this.state.password == '') {
@@ -65,7 +68,7 @@ class Signup extends Component {
       const {dispatch} = this.props;
       dispatch(signupUserInfo({
         userName: this.state.userName,
-        country: this.state.country,
+        phoneNumber: this.state.phoneNumber,
         password: this.state.password
       }));
       navigationService.navigate(pages.PAYMENT);
@@ -131,6 +134,20 @@ class Signup extends Component {
       
     }
 
+    _changePhoneNumber = (number) => {
+      this.setState({phoneNumber: number});
+      if (number != '') {
+        this.setState({emptyPhoneNumber: false});
+      }
+
+      // if (!validatePhoneNumber(number)) {
+      //   this.setState({errorPhoneNumber: true});
+      // } else {
+      //   this.setState({errorPhoneNumber: false});
+      // }
+
+    }
+
     render () {
         return (
             <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
@@ -149,12 +166,12 @@ class Signup extends Component {
                       errorText={'Required!'}
                   />
                   <AuthInput 
-                      desc={'Country'}
+                      desc={'Phone Number'}
                       
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
-                      onChangeText={this._changeCountry}
-                      errorExist={this.state.emptyCountry}
+                      onChangeText={this._changePhoneNumber}
+                      errorExist={this.state.emptyPhoneNumber}
                       errorText={'Required!'}
                   />
                   <AuthInput 

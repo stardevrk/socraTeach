@@ -153,7 +153,7 @@ class Login extends Component {
                         onPress={this._forgotpasswordClick}
                         >
                             <Text style={styles.forgotText}>Forgot Password?</Text>
-                            <View style={{height: 1, width: '100%', backgroundColor: '#FFFFFF'}}></View>
+                            <View style={{height: 1, width: '100%', backgroundColor: '#FFFFFF', marginTop: -getHeight(2)}}></View>
                         </TouchableOpacity>
                         <View style={styles.forwardBtnView}>
                             <TouchableOpacity style={styles.forwardBtn} onPress={this._forwardClick}>

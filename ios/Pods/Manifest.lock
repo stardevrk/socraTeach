@@ -548,6 +548,10 @@ PODS:
     - ReactCommon/jscallinvoker (= 0.61.5)
   - rn-fetch-blob (0.12.0):
     - React-Core
+  - RNCAsyncStorage (1.7.1):
+    - React
+  - RNCPushNotificationIOS (1.0.6):
+    - React
   - RNFirebase (5.6.0):
     - Firebase/Core
     - React
@@ -612,6 +616,8 @@ DEPENDENCIES:
   - ReactCommon/jscallinvoker (from `../node_modules/react-native/ReactCommon`)
   - ReactCommon/turbomodule/core (from `../node_modules/react-native/ReactCommon`)
   - rn-fetch-blob (from `../node_modules/rn-fetch-blob`)
+  - "RNCAsyncStorage (from `../node_modules/@react-native-community/async-storage`)"
+  - "RNCPushNotificationIOS (from `../node_modules/@react-native-community/push-notification-ios`)"
   - RNFirebase (from `../node_modules/react-native-firebase/ios`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNImageRotate (from `../node_modules/react-native-image-rotate`)
@@ -716,6 +722,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon"
   rn-fetch-blob:
     :path: "../node_modules/rn-fetch-blob"
+  RNCAsyncStorage:
+    :path: "../node_modules/@react-native-community/async-storage"
+  RNCPushNotificationIOS:
+    :path: "../node_modules/@react-native-community/push-notification-ios"
   RNFirebase:
     :path: "../node_modules/react-native-firebase/ios"
   RNGestureHandler:
@@ -792,6 +802,8 @@ SPEC CHECKSUMS:
   React-RCTVibration: a49a1f42bf8f5acf1c3e297097517c6b3af377ad
   ReactCommon: 198c7c8d3591f975e5431bec1b0b3b581aa1c5dd
   rn-fetch-blob: f065bb7ab7fb48dd002629f8bdcb0336602d3cba
+  RNCAsyncStorage: 8539fc80a0075fcc9c8e2dff84cd22dc5bf1dacf
+  RNCPushNotificationIOS: aebf40b34047cf24642f68a79efd8d3347795ec8
   RNFirebase: 37daa9a346d070f9f6ee1f3b4aaf4c8e3b1d5d1c
   RNGestureHandler: 946a7691e41df61e2c4b1884deab41a4cdc3afff
   RNImageRotate: 61c62c5a907405821e28dc8c0e04e4fdc909b1fa
@@ -801,6 +813,6 @@ SPEC CHECKSUMS:
   tipsi-stripe: 3e0073c7eec0b2bfd1d1d5736d843c22e3024485
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
-PODFILE CHECKSUM: f50e16f0d8b4bb81540a5c9c1e885605c1811765
+PODFILE CHECKSUM: a8b2f0659008efebef43dd788e2604eb96a7cf22
 
 COCOAPODS: 1.8.4

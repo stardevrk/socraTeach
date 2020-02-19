@@ -13,17 +13,33 @@ import {getHeight, getWidth} from '../constants/dynamicSize';
 import {connect} from 'react-redux';
 import BaseButton from '../components/baseButton';
 import navigationService from '../navigation/navigationService';
-import pages from '../constants/pages';
+import Pages from '../constants/pages';
 import Star from '../components/icons/star';
 import BStar from '../components/icons/bstar';
+import {firestore, auth} from '../constants/firebase';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
+import {getMyLiveLearnSession, getMyLiveTeachSession, clearMyLTSession} from '../controller/ltsession';
 
 const ICON_LOGO = require('../assets/images/icon-logo.png');
-const MASTER_IMAGE = require('../assets/images/master.png')
+const MASTER_IMAGE = require('../assets/images/master.png');
 
+@withMappedNavigationParams()
 class LearnStart extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state= {
+      problemData: {}
+    }
+  }
+
     componentDidMount() {
-        
+      console.log("Navigation Params =", this.props.sessionData);
+      const {sessionData} = this.props;
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).get().then(doc => {
+        this.setState({problemData: doc.data()});
+      })
     }
 
     _gotoPayments = () => {
@@ -31,11 +47,25 @@ class LearnStart extends Component {
     }
 
     _goLearn = () => {
-      navigationService.navigate(pages.LEARN_SOLVE);
+      const {sessionData, user, dispatch} = this.props;
+      
+      firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+        acceptance: true,
+        lastUpdate: Date.now()
+      });
+      navigationService.navigate(Pages.LEARN_SOLVE, {sessionData: this.props.sessionData});
     }
 
     _cancelLearn = () => {
-      navigationService.reset(pages.LOADING);
+      // navigationService.reset(pages.LOADING);
+      const {sessionData, user, dispatch} = this.props;
+      console.log("Cancel Learn = ", user.userId, sessionData);
+      firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).delete().then((value) => {
+        dispatch(clearMyLTSession());
+        dispatch(getMyLiveLearnSession());
+        dispatch(getMyLiveTeachSession());
+      });
+      navigationService.navigate(Pages.SESSION);
     }
 
     render () {
@@ -45,7 +75,7 @@ class LearnStart extends Component {
                   <Image style={{width: getWidth(155), height: getHeight(82)}} resizeMode={'contain'} source={ICON_LOGO}/>
                   <View style={styles.modal}>
                     <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                      <Text style={styles.bodyText}>Abraham</Text>
+                      <Text style={styles.bodyText}>{this.props.sessionData.name}</Text>
                       <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/>
                         <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/>
@@ -54,7 +84,7 @@ class LearnStart extends Component {
                         <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
                       </View>
                       <Text style={styles.bodySecText}>
-                        (630) - 772 - xxxx
+                        {this.props.sessionData.phoneNumber}
                       </Text>
                       <Text style={styles.bodyThirdText}>
                         $3.00
@@ -149,6 +179,7 @@ const styles = StyleSheet.create({
 });
 
 const mapStateToProps = (state) => ({
+  user: state.user
 })
 
 export default connect(mapStateToProps)(LearnStart);

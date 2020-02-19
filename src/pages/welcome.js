@@ -22,7 +22,7 @@ import {connect} from 'react-redux';
 import {loginUserInfo} from '../model/actions/loginAC';
 import {signupUserInfo} from '../model/actions/signupAC';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-
+import AsyncStorage from '@react-native-community/async-storage';
 
 const LOGO_IMAGE = require('../assets/images/icon-logo.png');
 const BACK_BUTTON = require('../assets/images/back-button.png');
@@ -126,6 +126,10 @@ class Welcome extends Component {
                 }
             }
         }
+    }
+
+    componentDidMount() {
+        AsyncStorage.setItem('SocraTeach', 'appInstalled');
     }
 
     render () {

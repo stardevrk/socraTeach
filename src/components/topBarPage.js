@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import {StatusBar, View, StyleSheet, Text, Platform, TouchableOpacity, Image} from 'react-native';
-import {SafeAreaView} from 'react-navigation';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 import {PURPLE_MAIN, BLUE_PRIMARY} from '../constants/colors';
 import navigationService from '../navigation/navigationService';
@@ -9,6 +8,9 @@ import Page from './basePage';
 import NavMenuButton from '../components/navMenuButton';
 import Notification from '../components/icons/notification';
 import {isIphoneX} from '../service/utils';
+import {connect} from 'react-redux';
+import Pages from '../constants/pages';
+import _ from 'lodash';
 
 const TOPBAR_LOGO = require('../assets/images/topbar-logo.png');
 
@@ -31,14 +33,58 @@ const forceInsetDefault ={
   top: 'never'
 }
 
-export default class TopBarPage extends Component {
+class TopBarPage extends Component {
+
+  constructor(props) {
+    super (props);
+
+    this.state = {
+      notiExist: false,
+      prevLearnSession: {},
+      prevTeachSession: {}
+    }
+  }
+
+  static getDerivedStateFromProps (props, state) {
+    let learnSessionData = props.learnSession;
+    let teachSessionData = props.teachSession;
+    if (_.isNil(learnSessionData) && _.isNil(teachSessionData)) 
+      return {
+        notiExist: false,
+        prevLearnSession: learnSessionData,
+        prevTeachSession: teachSessionData
+      }
+    if (state.prevLearnSession == learnSessionData && state.prevTeachSession == teachSessionData)
+      return null;
+    let filteredLearn = _.filter(learnSessionData, ['acceptance', false]);
+    let filteredTeach = _.filter(teachSessionData, ['acceptance', true]);
+    let secondTeach = _.filter(filteredTeach, ['confirmed', false]);
+    console.log("Filtered Learn =", filteredLearn);
+    
+    if(!_.isEmpty(filteredLearn) || !_.isEmpty(secondTeach))
+      return {
+        notiExist: true,
+        prevLearnSession: learnSessionData,
+        prevTeachSession: teachSessionData
+      }
+    else
+      return {
+        notiExist: false,
+        prevLearnSession: learnSessionData,
+        prevTeachSession: teachSessionData
+      }
+  }
 
   toggleMenu = () => {
     navigationService.openDrawer();
   }
 
+  _navigateSession = () => {
+    navigationService.navigate(Pages.SESSION);
+  }
+
   render () {
-    const {titleText, renderTitle, children, backgroundColor, menuBtnColor, customContainer, customeTopView, notiExist, forceInset, onRightClick} = this.props
+    const {titleText, renderTitle, children, backgroundColor, menuBtnColor, customContainer, customeTopView, notiExist, forceInset, onRightClick, rightExist} = this.props
     return (
       <Page forceInset={{...forceInsetDefault, ...forceInset}} backgroundColor={backgroundColor}>
         
@@ -56,21 +102,27 @@ export default class TopBarPage extends Component {
                   {titleText}
                 </Text>
               }
-              <TouchableOpacity style={styles.rightBtn} onPress={onRightClick}>
-                {
-                  notiExist == true ? 
-                  <View style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                    <Image style={{width: getWidth(50), height: getHeight(37.68), position: 'absolute', left: 0, bottom: 0}} source={TOPBAR_LOGO} resizeMode={'contain'}/>
-                    <View style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(35), paddingLeft: getWidth(35)}}>
-                      <Notification size={getHeight(21)}/>
+              {
+                rightExist == true ?
+                <TouchableOpacity style={styles.rightBtn} onPress={this._navigateSession}>
+                  {
+                    this.state.notiExist == true ? 
+                    <View style={{width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                      <Image style={{width: getWidth(50), height: getHeight(37.68), position: 'absolute', left: 0, bottom: 0}} source={TOPBAR_LOGO} resizeMode={'contain'}/>
+                      <View style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(35), paddingLeft: getWidth(35)}}>
+                        <Notification size={getHeight(21)}/>
+                      </View>
                     </View>
-                  </View>
-                  :
-                  
+                    :
                     <Image style={{width: getWidth(50), height: getHeight(37.68), position: 'absolute', left: 0, bottom: 0}} source={TOPBAR_LOGO} resizeMode={'contain'}/>
-                  
-                }
-              </TouchableOpacity>
+                  }
+                </TouchableOpacity>
+                : 
+                <View style={styles.rightBtn}>
+
+                </View>
+              }
+              
             </View>
           </View>
           
@@ -94,6 +146,7 @@ TopBarPage.defaultProps = {
   backgroundColor: PURPLE_MAIN,
   menuBtnColor: '#FFFFFF',
   notiExist: false,
+  rightExist: false,
   onRightClick: null
 };
 
@@ -108,6 +161,7 @@ TopBarPage.propTypes = {
   backgroundColor: PropTypes.string,
   menuBtnColor: PropTypes.string,
   notiExist: PropTypes.bool,
+  rightExist: PropTypes.bool,
   onRightClick: PropTypes.func
 };
 
@@ -142,3 +196,10 @@ const styles = StyleSheet.create({
     alignItems: 'center'
   }
 });
+
+const mapStateToProps = (state) => ({
+  learnSession: state.ltSession.learn_session,
+  teachSession: state.ltSession.teach_session
+})
+
+export default connect(mapStateToProps)(TopBarPage);

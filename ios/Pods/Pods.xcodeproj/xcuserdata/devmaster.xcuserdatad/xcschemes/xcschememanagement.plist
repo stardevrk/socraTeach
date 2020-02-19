@@ -84,6 +84,11 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>FirebaseFunctions.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>FirebaseInstanceID.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -164,12 +169,27 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>RNCAsyncStorage.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RNCPushNotificationIOS.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>RNFirebase.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>RNGestureHandler.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>RNImageRotate.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -335,6 +355,11 @@
 			<false/>
 		</dict>
 		<key>react-native-cameraroll.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>react-native-image-editor.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

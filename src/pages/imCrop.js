@@ -183,12 +183,7 @@ class ImageCrop extends Component {
     })
     return (
         <Page forceInset={{bottom: 'never', top: 'never'}}>
-          {
-            this.state.loading == true ? 
-            <View style={styles.container}>
-              <ActivityIndicator size={'large'} />
-            </View>
-             : 
+          
             <View style={styles.container}>
               <View style={{marginTop: getHeight(38), marginBottom: getHeight(10), width: '100%'}}>
                 <TouchableOpacity style={{marginLeft: getWidth(39)}} onPress={this._goBack}>
@@ -218,7 +213,13 @@ class ImageCrop extends Component {
               </View>
               
             </View>
-          }
+            {
+              this.state.loading == true ? 
+              <View style={styles.loadingWrapper}>
+                <ActivityIndicator size={'large'} />
+              </View>
+             : null
+            }
         </Page>
     )
   }
@@ -269,6 +270,15 @@ const styles = StyleSheet.create({
       top: 0,
       left: 0,
       backgroundColor: 'rgba(0,0,0,0.8)'
+    },
+    loadingWrapper: {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      justifyContent: 'center',
+      alignItems: 'center'
     }
 })
 

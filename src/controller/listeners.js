@@ -14,9 +14,12 @@ export function hasListener (key) {
 export function clearListeners () {
   console.log('clear listeners:')
   for (const key in listeners) {
-    const l = listeners[key]
-    console.log('unsubscribe:', l)
-    l()
+    const l = _.get(listeners, key)
+    console.log('unsubscribe:', key, l)
+    if (l) {
+      l()
+      delete listeners[key]
+    }
   }
 
   listeners = {}

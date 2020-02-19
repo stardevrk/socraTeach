@@ -14,7 +14,7 @@ import {getWidth, getHeight} from '../constants/dynamicSize';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import navigationService from '../navigation/navigationService';
-import pages from '../constants/pages';
+import Pages from '../constants/pages';
 import NavButton from '../components/navButton';
 import {connect} from 'react-redux';
 import {GiftedChat, Actions} from 'react-native-gifted-chat';
@@ -24,9 +24,11 @@ import {getChatUsers, getInitChats, clearChatsData, getMoreChats, sendMessage} f
 import ActionSheet from 'react-native-action-sheet';
 import ImagePicker from 'react-native-image-picker';
 import {uploadImage} from '../service/firebase';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
+@withMappedNavigationParams()
 class ChatScreen extends Component {
     
     constructor(props) {
@@ -41,9 +43,10 @@ class ChatScreen extends Component {
           loadingEarlier: false,
           earlierLodable: false,
           // session: {},
-          prevSession: {},
+          // prevSession: {},
           sessionTimer: null,
-          loading: false
+          loading: false,
+          prevSessionData: {}
         }
 
         props.navigation.addListener('didFocus', payload => {
@@ -72,120 +75,121 @@ class ChatScreen extends Component {
     
     static getDerivedStateFromProps (props, state) {
         /** Commented By Me*/
-        // const subject = props.session.subject;
-        // const problemId = props.session.problemId;
-        // // let newSession = props.session;
+        const subject = props.sessionData.subject;
+        const problemId = props.sessionData.problemId;
+        // let newSession = props.session;
 
-        // if (props.chat == null || props.chat == undefined) {
-        //   return null;
-        // }
+        if (props.chat == null || props.chat == undefined) {
+          return null;
+        }
         
-        // if (state.prevSession !== props.session) {
-        //   props.dispatch(clearChatsData(subject.toLowerCase(), problemId));
-        //   props.dispatch(getInitChats(subject.toLowerCase(), problemId));
-        //   return {
-        //     prevSession: props.session,
-        //     subject: subject,
-        //     problemData: props.session.problemData
-        //   }
-        // }
+        if (state.prevSessionData !== props.sessionData) {
+          props.dispatch(clearChatsData(subject.toLowerCase(), problemId));
+          props.dispatch(getInitChats(subject.toLowerCase(), problemId));
+          return {
+            prevSessionData: props.sessionData,
+            subject: subject,
+            problemData: props.problem
+          }
+        }
 
-        // if (props.chat.messages == undefined) {
-        //   return {
-        //     messages: []
-        //   }
-        // }
+        if (props.chat.messages == undefined) {
+          return {
+            messages: []
+          }
+        }
 
-        // const loading = props.chat.loading != undefined ? props.chat.loading : false;
-        // const earlierLodable = props.chat.earlierLodable != undefined ? props.chat.earlierLodable : true;
-        // // console.log("Session next ********************", props.session); 
-        // const {messages} = props.chat;
-        // console.log("Message Item $$$$$$$$$$=", messages);
+        const loading = props.chat.loading != undefined ? props.chat.loading : false;
+        const earlierLodable = props.chat.earlierLodable != undefined ? props.chat.earlierLodable : true;
+        // console.log("Session next ********************", props.session); 
+        const {messages} = props.chat;
+        console.log("Message Item $$$$$$$$$$=", messages);
 
-        // let chatUserName = '';
-        // if (props.session.sessionType == 'teach_session') {
-        //   chatUserName = props.session.poster != undefined ? props.session.poster.userName : '';
-        // }
+        let chatUserName = '';
+        if (props.sessionData.type == 'teach') {
+          chatUserName = props.sessionData.name != undefined ? props.sessionData.name : '';
+        }
 
-        // if (props.session.sessionType == 'learn_session') {
-        //   chatUserName = props.session.teacher != undefined ? props.session.teacher.userName : '';
-        // }
+        if (props.sessionData.type == 'learn') {
+          chatUserName = props.sessionData.name != undefined ? props.sessionData.name : '';
+        }
         
-        // if (messages !== state.prevMessages) {
+        if (messages !== state.prevMessages) {
           
-        //   const messagesRaw = _.map(messages, item => {
-        //     let newItem = {
-        //         _id: item._id,
-        //         text: item.text,
-        //         image: item.image,
-        //         createdAt: item.createdAt,
-        //         timestamp: item.timestamp,
-        //         user: {
-        //           _id: item.sentBy,
-        //           name: chatUserName
-        //         }
-        //       }
-        //     return newItem;
-        //   });
+          const messagesRaw = _.map(messages, item => {
+            let newItem = {
+                _id: item._id,
+                text: item.text,
+                image: item.image,
+                createdAt: item.createdAt,
+                timestamp: item.timestamp,
+                user: {
+                  _id: item.sentBy,
+                  name: chatUserName
+                }
+              }
+            return newItem;
+          });
           
-        //   const sortedMessages = _.orderBy(messagesRaw, ['timestamp'], ['desc']);
-        //   return {
-        //     messages: sortedMessages,
-        //     prevMessages: messages,
-        //     loadingEarlier: loading,
-        //     earlierLodable: earlierLodable,
-        //   }
-        // }
-        // else {
-        //   return {
-        //     loadingEarlier: loading,
-        //     earlierLodable: earlierLodable,
-        //   };
-        // }
+          const sortedMessages = _.orderBy(messagesRaw, ['timestamp'], ['desc']);
+          return {
+            messages: sortedMessages,
+            prevMessages: messages,
+            loadingEarlier: loading,
+            earlierLodable: earlierLodable,
+          }
+        }
+        else {
+          return {
+            loadingEarlier: loading,
+            earlierLodable: earlierLodable,
+          };
+        }
         /** Commented By Me*/
     }
 
     goBack = () => {
       if (this.state.prevScreen == 'thSolve') {
-        navigationService.navigate(pages.TEACH_SOLVE, {subject: this.props.session.subject, problem: this.props.session.problemData});
+        // navigationService.navigate(pages.TEACH_SOLVE, {subject: this.props.session.subject, problem: this.props.session.problemData});
+        navigationService.navigate(Pages.TEACH_SOLVE, {sessionData: this.props.sessionData});
       } else {
-        navigationService.navigate(pages.LEARN_SOLVE, {subject: this.props.session.subject, problem: this.props.session.problemData});
+        // navigationService.navigate(pages.LEARN_SOLVE, {subject: this.props.session.subject, problem: this.props.session.problemData});
+        navigationService.navigate(Pages.LEARN_SOLVE, {sessionData: this.props.sessionData});
       }
     }
 
     onSend = (messages = []) => {
       /** Commented By Me*/
-      // const {dispatch, session}  = this.props;
-      // if (this.state.sessionTimer != null) {
-      //   // clearInterval(this.state.sessionTimer);  
-      // }
+      const {dispatch, sessionData}  = this.props;
+      if (this.state.sessionTimer != null) {
+        // clearInterval(this.state.sessionTimer);  
+      }
       
-      // // this.setState(previousState => ({
-      // //   messages: GiftedChat.append(previousState.messages, messages),
-      // // }));
-      // if (this.state.messages.length > 0) {
-      //   for (const message of messages) {
-      //     dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, message, false));
-      //   }
-      // } else {
+      // this.setState(previousState => ({
+      //   messages: GiftedChat.append(previousState.messages, messages),
+      // }));
+      if (this.state.messages.length > 0) {
+        for (const message of messages) {
+          dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, message, false));
+        }
+      } else {
         
-      //   for (const message of messages) {
-      //     dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, message, true));
-      //   }
-      // }
+        for (const message of messages) {
+          dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, message, true));
+        }
+      }
       
-      // this.giftedChatRef.scrollToBottom();
+      this.giftedChatRef.scrollToBottom();
       /** Commented By Me*/
       //  sendMessage(this.state.subject.toLocaleUpperCase(), this.state.problemId, messages)
     }
 
     _loadEarlierMessages = () => {
       this.setState({loadingEarlier: true});
-      const {dispatch} = this.props;
-      const {session} =  this.props;
+      const {sessionData, dispatch} =  this.props;
       // console.log("Load More Chats! !!!!!!!1", session.subject, session.problemData.problemId);
       /** Commented By Me*/
-      // dispatch(getMoreChats(session.subject.toLowerCase(), session.problemData.problemId));
+      dispatch(getMoreChats(sessionData.subject.toLowerCase(), sessionData.problemId));
       /** Commented By Me*/
     }
 
@@ -222,37 +226,37 @@ class ChatScreen extends Component {
       ImagePicker.launchImageLibrary(options, (response) => {
         console.log("Image Picker Response = ", response);
         /** Commented By Me*/
-        // if (response.uri != undefined && response.uri != null && response.uri != '' ) {
-        //   this.setState({loading: true});
-        //   let imageToBeUploaded = '';
-        //   if (Platform.OS == 'ios') {
-        //     imageToBeUploaded = response.uri;
-        //   } else if (Platform.OS == 'android') {
-        //     let absPath = 'file://' + response.path;
-        //     imageToBeUploaded = absPath;
-        //   } else {
-        //     imageToBeUploaded = response.uri;
-        //   }
+        if (response.uri != undefined && response.uri != null && response.uri != '' ) {
+          this.setState({loading: true});
+          let imageToBeUploaded = '';
+          if (Platform.OS == 'ios') {
+            imageToBeUploaded = response.uri;
+          } else if (Platform.OS == 'android') {
+            let absPath = 'file://' + response.path;
+            imageToBeUploaded = absPath;
+          } else {
+            imageToBeUploaded = response.uri;
+          }
 
-        //   const {dispatch, session} = this.props;
-        //   uploadImage(imageToBeUploaded).then((data) => {
-        //     const newMessage = {
-        //       _id: 'image_message_' + Date.now(),
-        //       createdAt: new Date(),
-        //       image: data,
-        //       user: 
-        //       {_id: auth.currentUser.uid}
-        //     }
-        //     if (this.state.messages.length > 0) {
+          const {dispatch, sessionData} = this.props;
+          uploadImage(imageToBeUploaded).then((data) => {
+            const newMessage = {
+              _id: 'image_message_' + Date.now(),
+              createdAt: new Date(),
+              image: data,
+              user: 
+              {_id: auth.currentUser.uid}
+            }
+            if (this.state.messages.length > 0) {
               
-        //         dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, false));
-        //     } else {
-        //         dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, true));
-        //     }
-        //   }).finally(() => {
-        //     this.setState({loading: false});
-        //   })
-        // }
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, false));
+            } else {
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, true));
+            }
+          }).finally(() => {
+            this.setState({loading: false});
+          })
+        }
         /** Commented By Me*/
       })
     }
@@ -282,7 +286,7 @@ class ChatScreen extends Component {
             imageToBeUploaded = response.uri;
           }
 
-          const {dispatch, session} = this.props;
+          const {dispatch, sessionData} = this.props;
           uploadImage(imageToBeUploaded).then((data) => {
             const newMessage = {
               _id: 'image_message_' + Date.now(),
@@ -292,9 +296,9 @@ class ChatScreen extends Component {
               {_id: auth.currentUser.uid}
             }
             if (this.state.messages.length > 0) {
-                dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, false));
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, false));
             } else {
-                dispatch(sendMessage(session.subject.toLowerCase(), session.problemData.problemId, newMessage, true));
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, true));
             }
           }).finally(() => {
             this.setState({loading: false});
@@ -332,6 +336,11 @@ class ChatScreen extends Component {
           }
         },
       )
+    }
+
+    componentDidMount() {
+      const {subject, problem, prevScreen} = this.props;
+      this.setState({subject: subject, problemData: problem, prevScreen: prevScreen});
     }
 
     render () {
