@@ -687,7 +687,7 @@
 				CODE_SIGN_ENTITLEMENTS = socraTeach/SocraTeach.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.8;
+				CURRENT_PROJECT_VERSION = 1.15;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = SF47AY2WUX;
 				HEADER_SEARCH_PATHS = (
@@ -735,7 +735,7 @@
 				CODE_SIGN_ENTITLEMENTS = socraTeach/SocraTeach.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.8;
+				CURRENT_PROJECT_VERSION = 1.15;
 				DEVELOPMENT_TEAM = SF47AY2WUX;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

@@ -7,6 +7,7 @@ import {PURPLE_MAIN} from '../constants/colors';
 import navigationService from '../navigation/navigationService';
 import Page from './basePage';
 import MenuButton from '../components/menuButton';
+import NavMenuButton from '../components/navMenuButton';
 import {isIphoneX} from '../service/utils';
 
 const containerDefault = {
@@ -36,7 +37,7 @@ export default class MenuPage extends Component {
       <Page forceInset={forceInset} backgroundColor={backgroundColor}>
         <View style={{...containerDefault, ...customContainer}}>
           <View style={{...headerDefault, ...customHeaderBar}}>
-            <MenuButton buttonStyle={{marginLeft: getWidth(30)}}
+            <NavMenuButton buttonStyle={{marginLeft: getWidth(30)}}
                         buttonColor={menuBtnColor}
                         onClick={this.toggleMenu} 
             />

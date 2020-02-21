@@ -179,6 +179,26 @@ export function sendMessage (subject, problemId, message, shouldGetInitChats) {
   }
 }
 
+export function updateReadStatus(subject, problemId) {
+  return async function(dispatch, getState) {
+    try {
+      firestore.collection(subject).doc(problemId).collection('readBy').doc(auth.currentUser.uid).get().then((doc) => {
+        if (doc.exists){
+          firestore.collection(subject).doc(problemId).collection('readBy').doc(auth.currentUser.uid).update({
+            timestamp: (new Date()).getTime()
+          })
+        } else {
+          firestore.collection(subject).doc(problemId).collection('readBy').doc(auth.currentUser.uid).set({
+            timestamp: (new Date()).getTime()
+          })
+        }
+      })
+    } catch (e) {
+      console.log("Update Message Read Status Error = ", e);
+    }
+  }
+}
+
 export function clearChatsData(subject, problemId) {
   return async function (dispatch, getState) {
     try {

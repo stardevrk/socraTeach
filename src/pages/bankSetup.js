@@ -22,11 +22,13 @@ import {signupStripeInfo, signupUserInfo} from '../model/actions/signupAC';
 import {connect} from 'react-redux';
 import { BLACK_PRIMARY } from '../constants/colors';
 import {auth} from '../constants/firebase';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const BACK_BUTTON = require('../assets/images/back-button.png');
 const FORWARD_BUTTON = require('../assets/images/forward-button.png');
 
+@withMappedNavigationParams()
 class BankSetup extends Component {
 
   constructor(props) {
@@ -88,7 +90,10 @@ class BankSetup extends Component {
   }
 
   goBack = () => {
-    navigationService.navigate(pages.BANKS);
+    if (this.props.prevScreen == 'transfer')
+      navigationService.navigate(pages.TRANSFER);
+    else 
+      navigationService.navigate(pages.BANKS);
   }
 
   goSKIP = () => {
@@ -189,7 +194,7 @@ class BankSetup extends Component {
             </KeyboardAwareScrollView>
             <View style={styles.bottomBtnView}>
                   <BaseButton 
-                    text={'REMOVE'}
+                    text={'ADD'}
                     onClick={this._onREMOVE}
                   />
                 </View>

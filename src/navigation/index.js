@@ -40,6 +40,8 @@ import PaymentSetup from '../pages/paymentSetup';
 import BankSetup from '../pages/bankSetup';
 import Help from '../pages/help';
 import Session from '../pages/session';
+import PaymentEdit from '../pages/paymentEdit';
+import BankEdit from '../pages/bankEdit';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
@@ -70,13 +72,16 @@ const AppDrawer = createDrawerNavigator(
         [pages.NOTI_STUDENT]: NotiStudent,
         [pages.PAYMENTS]: Payments,
         [pages.PAYMENTS_SETUP]: PaymentSetup,
+        [pages.PAYMENTS_EDIT]: PaymentEdit,
         [pages.BANKS]: Banks,
         [pages.BANK_SETUP]: BankSetup,
+        [pages.BANK_EDIT]: BankEdit,
         [pages.TRANSACTION_HISTORY]: TransactionHistory,
         [pages.TRANSFER]: Transfer,
         [pages.TRANSFER_STARTED]: TransferStarted,
         [pages.HELP]: Help,
         [pages.SESSION]: Session
+
     },
     {
         initialRouteName: pages.HOME_SCREEN,

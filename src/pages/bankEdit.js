@@ -15,107 +15,98 @@ import AuthInput from '../components/authInput';
 import navigationService from '../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import pages from '../constants/pages';
-import Card from '../components/icons/card';
+import Bank from '../components/icons/bank';
 import {validateExp, validateCardNum} from '../service/utils';
 import {getStripeToken} from '../service/stripe';
-import {signupStripeInfo} from '../model/actions/signupAC';
+import {signupStripeInfo, signupUserInfo} from '../model/actions/signupAC';
 import {connect} from 'react-redux';
 import { BLACK_PRIMARY } from '../constants/colors';
+import {auth} from '../constants/firebase';
 
-
+const LOGO_IMAGE = require('../assets/images/logo.png');
 const BACK_BUTTON = require('../assets/images/back-button.png');
 const FORWARD_BUTTON = require('../assets/images/forward-button.png');
 
-class PaymentSetup extends Component {
+class BankSetup extends Component {
 
   constructor(props) {
     super(props);
 
     this.state = {
-      cardName: '',
-      emptyName: false,
-      cardNumber: '',
-      emptyCardNumber: false,
+      routeName: '',
+      emptyRoute: false,
+      accountNumber: '',
+      emptyAccountNumber: false,
       cardExp: '',
       emptyExp: false,
-      cardSecurity: '',
-      emptySecurity: false,
+      secondAccount: '',
+      emptySecond: false,
       invalidExp: false,
-      invalidCardNum: false,
+      invalidAccountNum: false,
       loading: false
     }
   }
     
   goForward = () => {
-    if (this.state.cardName == '') {
-      this.setState({emptyName: true});
+    if (this.state.routeName == '') {
+      this.setState({emptyRoute: true});
       return;
     }
-    if (this.state.cardNumber == '') {
-      this.setState({emptyCardNumber: true});
+    if (this.state.accountNumber == '') {
+      this.setState({emptyAccountNumber: true});
       return;
     }
-    if (this.state.cardExp == '') {
-      this.setState({emptyExp: true});
+    
+    if (this.state.secondAccount == '') {
+      this.setState({emptySecond: true});
       return;
     }
-    if (this.state.cardSecurity == '') {
-      this.setState({emptySecurity: true});
-      return;
-    }
-    if (this.state.invalidExp == true) {
-      return;
-    }
-    if(this.state.invalidCardNum == true) {
-      return;
-    }
-    let expArray = this.state.cardExp.split('/');
-    let exp_month = expArray[0];
-    let exp_year = expArray[1];
 
-    const {dispatch} = this.props;
+    const {dispatch, signupInfo} = this.props;
     this.setState({loading: true});
-    getStripeToken(this.state.cardNumber, exp_month, exp_year, this.state.cardSecurity).then((value) => {
-      console.log("Stripe Response ", value.tokenId);
-      dispatch(signupStripeInfo(value.tokenId));
-      navigationService.navigate(pages.BANK);
-    }).catch(() => {
-      Alert.alert(
-        'Invalid Card',
-        'Please use correct Card',
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel'
-          }
-        ],
-        {cancelable: false}
-      )
-    })
-    .finally(() => {
+    dispatch(signupUserInfo({
+      routeNumber: this.state.routeName,
+      accountNumber: this.state.accountNumber,
+      secondAccount: this.state.secondAccount
+    }));
+    auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
+      console.log("Signup Result = ", result);
+      firestore.collection('users').doc(result.user.uid).set({
+        country: signupInfo.country,
+        email: signupInfo.email,
+        userName: signupInfo.userName,
+        stripeToken: signupInfo.stripeToken,
+        routeNumber: this.state.routeName,
+        accountNumber: this.state.accountNumber,
+        secondAccount: this.state.secondAccount,
+        bankSkipped: false,
+        lastLogin: Date.now()
+      })
+    }).finally(() => {
       this.setState({loading: false});
-    });
-
-    // navigationService.navigate(pages.SINGUP_FINISH);
+    })
   }
 
   goBack = () => {
-    navigationService.navigate(pages.PAYMENTS);
+    navigationService.navigate(pages.BANKS);
   }
 
-  _changeName = (name) => {
-    this.setState({cardName: name});
+  goSKIP = () => {
+    
+  }
+
+  _changeRoute = (name) => {
+    this.setState({routeName: name});
     if (name != '') {
-      this.setState({emptyName: false});
+      this.setState({emptyRoute: false});
     }
   }
 
-  _changeCardNumber = (number) => {
-    this.setState({cardNumber: number});
-    this.setState({invalidCardNum: !validateCardNum(number)});
+  _changeAccountNumber = (number) => {
+    this.setState({accountNumber: number});
+    this.setState({invalidAccountNum: !validateCardNum(number)});
     if (number != '') {
-      this.setState({emptyCardNumber: false});
+      this.setState({emptyAccountNumber: false});
     }
   }
 
@@ -133,16 +124,20 @@ class PaymentSetup extends Component {
     }
   }
 
-  _changeSecurity = (security) => {
-    this.setState({cardSecurity: security});
+  _changeSecond = (security) => {
+    this.setState({secondAccount: security});
     if (security != '') {
-      this.setState({emptySecurity: false});
+      this.setState({emptySecond: false});
     }
+  }
+
+  _onREMOVE = () => {
+
   }
 
   render () {
     return (
-        <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never', bottom: 'never'}}>
+        <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
           {
             this.state.loading == true ? 
             <View style={styles.wrapper}>
@@ -150,66 +145,65 @@ class PaymentSetup extends Component {
             </View>
             :
             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-              <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
+            <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
                 
                 <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
                     <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
                 </TouchableOpacity>
-                <Text style={styles.pageName}>Credit/Debit</Text>
+                <Text style={styles.pageName}>Bank</Text>
                 <View style={{width: '100%', paddingLeft: getWidth(34), marginBottom: getHeight(56)}}>
-                  <Card width={getWidth(40)} height={getHeight(32)} color={'#FFFFFF'} />
+                  <Bank size={getWidth(48)} color={'#FFFFFF'} />
                 </View>
 
                 <AuthInput 
-                    desc={'Name on Card'}
+                    desc={'Routing Number'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
                     descStyle={{marginBottom: getHeight(25)}}
-                    onChangeText={this._changeName}
-                    errorExist={this.state.emptyName}
+                    onChangeText={this._changeRoute}
+                    placeholder={'Tom Smith'}
+                    errorExist={this.state.emptyRoute}
                     errorText={'Required!'}
                 />
 
                 <AuthInput 
-                    desc={'Number'}
+                    desc={'Account Number'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
                     descStyle={{marginBottom: getHeight(25)}}
-                    onChangeText={this._changeCardNumber}
-                    errorExist={this.state.emptyCardNumber || this.state.invalidCardNum}
-                    errorText={this.state.invalidCardNum == true ? 'Invalid Card Number' : 'Required!'}
-                    keyboardType={'default'}
+                    placeholder={'394994948372'}
+                    onChangeText={this._changeAccountNumber}
+                    errorExist={this.state.emptyAccountNumber || this.state.invalidAccountNum}
+                    errorText={this.state.invalidAccountNum == true ? 'Invalid Card Number' : 'Required!'}
+                    keyboardType={'numeric'}
                 />
                 
-                <AuthInput 
-                    desc={'Expiration'}
-                    wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
-                    onChangeText={this._changeCardExp}
-                    errorExist={this.state.emptyExp || this.state.invalidExp}
-                    errorText={this.state.invalidExp == true ? 'Invalid Expiration!' : 'Required!'}
-                    placeholder={'08/2020'}
-                  keyboardType={'default'}
-                />
 
                 <AuthInput 
-                    desc={'Security Code'}
+                    desc={'Account Number'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
                     descStyle={{marginBottom: getHeight(25)}}
-                    onChangeText={this._changeSecurity}
-                    errorExist={this.state.emptySecurity}
+                    onChangeText={this._changeSecond}
+                    errorExist={this.state.emptySecond}
+                    placeholder={'394994948372'}
                     errorText={'Required!'}
+                    keyboardType={'numeric'}
                 />
                 
-              </KeyboardAwareScrollView>
-              <BaseButton text={'ADD'} onClick={this._onRemove} buttonStyle={{marginBottom: getHeight(20), marginTop: getHeight(20)}}/>
+                
+            </KeyboardAwareScrollView>
+            <View style={styles.bottomBtnView}>
+                  <BaseButton 
+                    text={'REMOVE'}
+                    onClick={this._onREMOVE}
+                  />
+                </View>
             </View>
-            
           }
         </Page>
     )
   }
 }
 
-PaymentSetup.navigatorStyle = {
+BankSetup.navigatorStyle = {
     navBarHidden: false,
     statusBarBlur: false
 }
@@ -241,16 +235,22 @@ const styles = StyleSheet.create({
     forwardBtnView: {
         width: '100%', 
         alignItems: 'flex-end',
+        marginBottom: getHeight(27)
     },
     forwardBtn: {
         marginRight: getWidth(32),
     },
     pageName: {
-      fontFamily: 'Montserrat-Bold',
+      fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(25), 
       marginBottom: getHeight(22),
       color: '#FFFFFF',
       marginLeft: getWidth(34)
+    },
+    bottomBtnView: {
+      width: '100%', 
+      alignItems: 'center',
+      marginBottom: getHeight(20)
     }
 })
 
@@ -258,4 +258,4 @@ const mapStateToProps = (state) => ({
   signupInfo: state.signupInfo
 });
 
-export default connect(mapStateToProps)(PaymentSetup)
+export default connect(mapStateToProps)(BankSetup)

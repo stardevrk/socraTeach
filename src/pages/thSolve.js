@@ -7,17 +7,14 @@ import {
     Image,
     TouchableOpacity,
     Dimensions,
-    Platform,
+    TouchableHighlight,
     TextInput,
-    KeyboardAvoidingView
+    Modal
 } from 'react-native';
 import Page from '../components/basePage';
 import MenuPage from '../components/menuPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import BaseButton from '../components/baseButton';
-import NavButton from '../components/navButton';
 import Chat from '../components/icons/chat';
-import Hat from '../components/icons/hat';
 import Star from '../components/icons/star';
 import BStar from '../components/icons/bstar';
 import Phone from '../components/icons/phone';
@@ -26,25 +23,13 @@ import pages from '../constants/pages';
 import { BLACK_PRIMARY, GRAY_PRIMARY, PURPLE_MAIN, GREEN_PRIMARY } from '../constants/colors';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {firestore} from '../constants/firebase';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {GiftedChat} from 'react-native-gifted-chat';
-import {sendMessage} from '../controller/chat';
-import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
-import {getPosterInfo} from '../controller/user';
+import {auth, firestore} from '../constants/firebase';
+import Close from '../components/icons/close';
 import {withMappedNavigationParams} from 'react-navigation-props-mapper';
+import Notification from '../components/icons/notification';
 
-
-const LOGO_IMAGE = require('../assets/images/logo.png');
-const EXAMPLE_IMAGE = require('../assets/images/example.png');
 const MARK_IMAGE = require('../assets/images/square-logo.png');
-const SOLUTION_EXAMPLE = require('../assets/images/solution-example.png');
 
-const SCREEN_HEIGHT = Dimensions.get('window').height > Dimensions.get('window').width ? Dimensions.get('window').height : Dimensions.get('window').width;
-
-let timerDuration = 60 * 1;
-let timerDisplay = '05:00';
-let myTimer;
 
 @withMappedNavigationParams()
 class SOLVESCREEN extends Component {
@@ -62,28 +47,15 @@ class SOLVESCREEN extends Component {
       prevPosterId: '',
       displayTimer: '',
       prevProblemId: '',
-      phoneNumber: ''
+      phoneNumber: '',
+      imageModalVisible: false,
+      messageExist: false,
     }
 
-    /** Commented By Me*/
-    // let tempSubject = '';
-    // let tempProblemId = '';
-    // let tempPosterId = '';
-    // this.startTimer(timerDuration, timerDisplay);
-    // props.navigation.addListener('didFocus', payload => {
-    //   let problemData = payload.action.params.problem;
-    //   tempSubject = payload.action.params.subject;
-    //   tempProblemId = problemData.problemId;
-    //   tempPosterId = problemData.posterId;
-    //   // this.setState({subject: payload.action.params.subject, problemData: problemData, problemUri: problemData.problemImage}, () => {
-    //   //   // this.props.dispatch(clearChatsData());
-    //   //   // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
-    //   //   // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
-    //   //   this._getPosterName(tempPosterId);
-    //   // });
-    //   // this.setState({timerDisplay: '', timeDuration: })
-    // })
-    /** Commented By Me*/
+    this.timerDuration = 60 * 10;
+    this.timerDisplay = '10:00';
+    this.myTimer = null;
+    this.messageListener = null;
   }
     
     learnClick = () => {
@@ -97,7 +69,7 @@ class SOLVESCREEN extends Component {
     _renderTitle = () => {
       return (
         <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', flex: 1, paddingRight: getWidth(66)}}
-        onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}
+        
         >
           <Text style={styles.titleText}>
             {this.state.posterName}
@@ -128,8 +100,8 @@ class SOLVESCREEN extends Component {
 
     startTimer = (duration, display) => {
         var timer = duration, minutes, seconds;
-        let self = this;
-        myTimer = setInterval(() => {
+        // let self = this;
+        this.myTimer = setInterval(() => {
           //  console.log("Count Down ////////");
             minutes = parseInt(timer / 60, 10);
             seconds = parseInt(timer % 60, 10);
@@ -138,11 +110,17 @@ class SOLVESCREEN extends Component {
             seconds = seconds < 10 ? "0" + seconds : seconds;
     
             display = minutes + ":" + seconds;
-            self.setState({displayTimer: display});
+            this.setState({displayTimer: display});
     
             if (--timer < 0) {
-              self.setState({modalVisible: true});
-                timer = duration;
+              this.setState({modalVisible: true});
+              this.messageListener();
+              timer = duration;
+              clearInterval(this.myTimer);
+              const {sessionData} = this.props;
+              firestore.collection('users').doc(auth.currentUser.uid).collection('teach_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+                sessionEnded: true
+              })
             }
         }, 1000);
     }
@@ -150,7 +128,11 @@ class SOLVESCREEN extends Component {
     _finishSession = () => {
       this.setState({modalVisible: false})
       //Save session Result & navigate to Home page
-      navigationService.navigate(pages.HOME_SCREEN);
+      const {sessionData} = this.props;
+      firestore.collection('users').doc(auth.currentUser.uid).collection('teach_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+        sessionEnded: true
+      })
+      navigationService.reset(pages.LOADING);
     }
 
     componentDidUpdate(prevProps, prevState, snapShot) {
@@ -159,16 +141,16 @@ class SOLVESCREEN extends Component {
       //   return;
       // }
 
-      if (this.state.modalVisible == true) {
-        // clearInterval(myTimer);
-      }
+      // if (this.state.modalVisible == true) {
+      //   // clearInterval(myTimer);
+      // }
 
-      if (this.state.prevProblemId != prevState.prevProblemId) {
-        this.setState({modalVisible: false});
-        // clearInterval(myTimer)
-        // console.log("TimerDuration ==== ", timerDuration );
-        // this.startTimer(timerDuration, timerDisplay);
-      }
+      // if (this.state.prevProblemId != prevState.prevProblemId) {
+      //   this.setState({modalVisible: false});
+      //   // clearInterval(myTimer)
+      //   // console.log("TimerDuration ==== ", timerDuration );
+      //   // this.startTimer(timerDuration, timerDisplay);
+      // }
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
@@ -210,8 +192,31 @@ class SOLVESCREEN extends Component {
         this.setState({posterName: doc.data().userName, phoneNumber: doc.data().phoneNumber});
       })
       firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).get().then(doc => {
-        this.setState({problemData: doc.data(), problemUri: doc.data().problemImage});
+        if (doc.exists) {
+          this.setState({problemData: doc.data(), problemUri: doc.data().problemImage});
+          this.messageListener = firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).collection('messages').onSnapshot(sn => {
+            if (sn.docs.length > 0)
+              this.setState({messageExist: true})
+            else
+              this.setState({messageExist: false});
+          })  
+        }
+        
       })
+
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).update({
+        sessionStarted: 10
+      }).then((value) => {
+        this.startTimer(this.timerDuration, this.timerDisplay);
+      })
+    }
+
+    setModalVisible(visible) {
+      this.setState({imageModalVisible: visible});
+    }
+
+    componentWillUnmount() {
+      this.messageListener();
     }
 
     render () {
@@ -221,20 +226,57 @@ class SOLVESCREEN extends Component {
           renderTitle={this._renderTitle}
           renderRightItem={this._renderRightItem}
           >
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={this.state.imageModalVisible}
+            onRequestClose={() => {
+              Alert.alert('Modal has been closed.');
+            }}>
+            <View style={{flex: 1, width: '100%'}}>
+              <Image style={styles.modalImage} source={{uri: this.state.problemUri}} resizeMode={'contain'}/>
+                
+
+                <TouchableHighlight
+                  onPress={() => {
+                    this.setModalVisible(!this.state.imageModalVisible);
+                  }}
+                  style={styles.imageCloseBtn}
+                  >
+                  <Close size={getHeight(36)}/>
+                </TouchableHighlight>
+              
+            </View>
+          </Modal>
             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-              <Image
-                  source={{uri: this.state.problemUri}}
-                  style={styles.logoImage}
-                  resizeMode={'contain'}
-              />
+              <TouchableOpacity style={styles.logoImage} onPress={() => {
+                    this.setModalVisible(!this.state.imageModalVisible);
+                  }}>
+                <Image
+                    source={{uri: this.state.problemUri}}
+                    style={styles.problemImage}
+                    resizeMode={'contain'}
+                />
+              </TouchableOpacity>
+              
               {/* <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                 
                 <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline/>
               </View> */}
             
             <View style={{width: '100%', height: getHeight(50), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
-              <TouchableOpacity onPress={() => this._clickChat()}>
-                <Chat size={getHeight(30)} color={'#000000'} /> 
+              <TouchableOpacity style={{width: getWidth(50), height: getHeight(40), justifyContent: 'center', alignItems: 'center'}} onPress={() => this._clickChat()}>
+                <View>
+                  <Chat size={getHeight(30)} color={'#000000'} /> 
+                </View>
+                {
+                  this.state.messageExist == true ?
+                  <View style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(35), paddingLeft: getWidth(30)}}>
+                    <Notification size={getHeight(21)}/>
+                  </View> 
+                  :
+                  null
+                }
               </TouchableOpacity>
               
             </View>
@@ -293,7 +335,7 @@ class SOLVESCREEN extends Component {
                   
                   <View style={styles.modalTimeView}>
                     <Text style={styles.modalTime}>
-                      $3.30
+                      $3.00
                     </Text>
                   </View>
                   <View style={{flex: 1}}>
@@ -333,6 +375,10 @@ const styles = StyleSheet.create({
         height: getHeight(600),
         marginBottom: getHeight(23),
         
+    },
+    problemImage: {
+      width: getWidth(291),
+      height: getHeight(600),
     },
     titleText:{
       fontFamily: 'Montserrat-Regular',
@@ -432,6 +478,15 @@ const styles = StyleSheet.create({
       left: 0,
       right: 0,
       bottom: 0
+    },
+    imageCloseBtn: {
+      position: 'absolute',
+      top: getHeight(30),
+      left: getWidth(20),
+    },
+    modalImage: {
+      flex: 1,
+      width: '100%'
     }
 })
 

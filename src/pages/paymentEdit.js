@@ -164,6 +164,7 @@ class PaymentSetup extends Component {
                     desc={'Name on Card'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
                     descStyle={{marginBottom: getHeight(25)}}
+                    placeholder={'Tom Smith'}
                     onChangeText={this._changeName}
                     errorExist={this.state.emptyName}
                     errorText={'Required!'}
@@ -173,6 +174,7 @@ class PaymentSetup extends Component {
                     desc={'Number'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
                     descStyle={{marginBottom: getHeight(25)}}
+                    placeholder={'394994948372'}
                     onChangeText={this._changeCardNumber}
                     errorExist={this.state.emptyCardNumber || this.state.invalidCardNum}
                     errorText={this.state.invalidCardNum == true ? 'Invalid Card Number' : 'Required!'}
@@ -187,7 +189,7 @@ class PaymentSetup extends Component {
                     errorExist={this.state.emptyExp || this.state.invalidExp}
                     errorText={this.state.invalidExp == true ? 'Invalid Expiration!' : 'Required!'}
                     placeholder={'08/2020'}
-                  keyboardType={'default'}
+                    keyboardType={'default'}
                 />
 
                 <AuthInput 
@@ -196,11 +198,12 @@ class PaymentSetup extends Component {
                     descStyle={{marginBottom: getHeight(25)}}
                     onChangeText={this._changeSecurity}
                     errorExist={this.state.emptySecurity}
+                    placeholder={'334'}
                     errorText={'Required!'}
                 />
                 
               </KeyboardAwareScrollView>
-              <BaseButton text={'ADD'} onClick={this._onRemove} buttonStyle={{marginBottom: getHeight(20), marginTop: getHeight(20)}}/>
+              <BaseButton text={'REMOVE'} onClick={this._onRemove} buttonStyle={{marginBottom: getHeight(20), marginTop: getHeight(20)}}/>
             </View>
             
           }

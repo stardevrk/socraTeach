@@ -34,14 +34,14 @@ class Transfer extends Component {
           {
             id: '0',
             name: 'chase',
-            card_name: 'Chase',
+            card_name: 'Chase, 8372',
             number: '8372',
             newItem: false
           },
           {
             id: '1',
             name: 'america',
-            card_name: 'Bank of America',
+            card_name: 'Bank of America, 0874',
             number: '0874',
             newItem: false
           },
@@ -93,11 +93,9 @@ class Transfer extends Component {
                     resizeMode={'contain'} source={CHASE_IMAGE}
                   />
                   <Text style={styles.listText}>
-                    {item.item.card_name}, 
+                    {item.item.card_name}
                   </Text>
-                  <Text style={styles.listText}>
-                    {item.item.number}
-                  </Text>
+                  
                 </View>
                   {
                     this.state.selected == 'chase' ?
@@ -116,11 +114,9 @@ class Transfer extends Component {
                     resizeMode={'contain'} source={AMERICA_IMAGE}
                   />
                   <Text style={styles.listText}>
-                    {item.item.card_name},
+                    {item.item.card_name}
                   </Text>
-                  <Text style={styles.listText}>
-                    {item.item.number}
-                  </Text>
+                  
                 </View>
                   {
                     this.state.selected == 'america' ?
@@ -135,7 +131,7 @@ class Transfer extends Component {
         
       } else {
         return (
-          <TouchableOpacity style={{width: '100%', height: getHeight(40), flexDirection: 'row', alignItems: 'center', borderBottomColor: PURPLE_MAIN, borderBottomWidth: 2, backgroundColor: BLACK_PRIMARY}}>
+          <TouchableOpacity style={{width: '100%', height: getHeight(40), flexDirection: 'row', alignItems: 'center', borderBottomColor: PURPLE_MAIN, borderBottomWidth: 2, backgroundColor: BLACK_PRIMARY}} onPress={this._addBank}>
             <Text style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16), color: '#FFFFFF', fontSize: getHeight(18)}}>+1</Text>
             <Text style={styles.newListText}>
               Add Bank Account
@@ -144,6 +140,10 @@ class Transfer extends Component {
         )
       }
 
+    }
+
+    _addBank = () => {
+      navigationService.navigate(pages.BANK_SETUP, {prevScreen: 'transfer'});
     }
 
     _clickTransfer = () => {

@@ -81,34 +81,37 @@ class Banks extends Component {
     }
 
     _goSetup = () => {
-      navigationService.navigate(pages.BANK_SETUP);
+      navigationService.navigate(pages.BANK_SETUP, {prevScreen: 'banks'});
+    }
+
+    _goEdit = () => {
+      navigationService.navigate(pages.BANK_EDIT);
     }
 
     _renderListItem =(item) => {
       console.log(item.item);
       if (item.item.newItem == false) {
-        
         switch (item.item.name) {
           case 'chase':
             return (
-              <TouchableOpacity style={styles.listItem} onPress={this._goSetup}>
+              <TouchableOpacity style={styles.listItem} onPress={this._goEdit}>
                   <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
                     resizeMode={'contain'} source={CHASE_IMAGE}
                   />
                   <Text style={styles.listText}>
-                    {item.item.card_name}, 
+                    {item.item.card_name}
                   </Text>
                   
               </TouchableOpacity>
             )
           case 'america': 
             return (
-              <TouchableOpacity style={styles.listItem} onPress={this._goSetup}>
+              <TouchableOpacity style={styles.listItem} onPress={this._goEdit}>
                   <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
                     resizeMode={'contain'} source={AMERICA_IMAGE}
                   />
                   <Text style={styles.listText}>
-                    {item.item.card_name},
+                    {item.item.card_name}
                   </Text>
                   
               </TouchableOpacity>

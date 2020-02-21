@@ -7,7 +7,7 @@ export function getMyLiveLearnSession() {
   return async function (dispatch, getState) {
     try {
       if (!hasListener('my_livelearn_session')) {
-        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').where('sessionEnded', '==', false).onSnapshot(sn => {
+        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').onSnapshot(sn => {
           let sessionData = {};
           sn.forEach(doc => {
             let docData = doc.data();
@@ -15,9 +15,10 @@ export function getMyLiveLearnSession() {
             // let teacherDoc = await firestore.collection('users').doc(teacherId).get();
             // let teacherName = teacherDoc.data().userName;
             // docData['teacherName'] = teacherName;
-            sessionData[doc.id] = docData;
+            if (docData.sessionEnded == false)
+              sessionData[doc.id] = docData;
           });
-          console.log("LiveLearn Session Data = ", sn.docs.length);
+          console.log("LiveLearn Session Data = ", sessionData);
           dispatch(getLearnSession(sessionData));
         })
         addListener('my_livelearn_session', listener);
@@ -32,7 +33,7 @@ export function getMyLiveTeachSession() {
   return async function (dispatch, getState) {
     try {
       if (!hasListener('my_liveteach_session')) {
-        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('teach_session').where('sessionEnded', '==', false).onSnapshot(sn => {
+        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('teach_session').onSnapshot(sn => {
           let sessionData = {};
           sn.forEach(doc => {
             let docData = doc.data();
@@ -40,7 +41,8 @@ export function getMyLiveTeachSession() {
             // let posterDoc = await firestore.collection('users').doc(posterId).get();
             // let studentName = posterDoc.data().userName;
             // docData['studentName'] = studentName;
-            sessionData[doc.id] = docData;
+            if (docData.sessionEnded == false)
+              sessionData[doc.id] = docData;
           });
           dispatch(getTeachSession(sessionData));
         });

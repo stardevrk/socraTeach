@@ -7,9 +7,9 @@ import {
     Image,
     TouchableOpacity,
     Dimensions,
-    Platform,
-    TextInput,
-    KeyboardAvoidingView
+    Modal,
+    TouchableHighlight,
+    KeyboardAvoidingView,
 } from 'react-native';
 import Page from '../components/basePage';
 import MenuPage from '../components/menuPage';
@@ -24,11 +24,12 @@ import Phone from '../components/icons/phone';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import { BLACK_PRIMARY, GREEN_PRIMARY, PURPLE_MAIN } from '../constants/colors';
-import {firestore} from '../constants/firebase';
-import {getChatUsers, getInitChats, clearChatsData} from '../controller/chat';
+import {firestore, auth} from '../constants/firebase';
+import {updateReadStatus} from '../controller/chat';
 import {connect} from 'react-redux';
-import {getTeacherInfo} from '../controller/user';
+import Close from '../components/icons/close';
 import {withMappedNavigationParams} from 'react-navigation-props-mapper';
+import Notification from '../components/icons/notification';
 
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
@@ -38,9 +39,7 @@ const SOLUTION_EXAMPLE = require('../assets/images/solution-example.png');
 
 const SCREEN_HEIGHT = Dimensions.get('window').height > Dimensions.get('window').width ? Dimensions.get('window').height : Dimensions.get('window').width;
 
-let timerDuration = 60 * 1;
-let timerDisplay = '05:00';
-let myTimer;
+
 
 @withMappedNavigationParams()
 class LearnSolve extends Component {
@@ -72,31 +71,18 @@ class LearnSolve extends Component {
       ],
       phoneNumber: '',
       displayTimer: '',
-      prevProblemId: ''
+      prevProblemId: '',
+      imageModalVisible: false,
+      sessionEnded: false,
+      messageExist: false,
     }
 
-    /** Commented By Me*/
-    // let tempSubject = '';
-    // let tempProblemId = '';
-    // let tempPosterId = '';
-    // props.navigation.addListener('didFocus', payload => {
-    //   let problemData = payload.action.params.problem;
-    //   tempSubject = payload.action.params.subject;
-    //   tempProblemId = problemData.problemId;
-    //   tempPosterId = problemData.posterId;
-    //   // this.setState({subject: problemData.subject, problemData: problemData, problemUri: problemData.problemImage, answer: problemData.answer}, () => {
-    //   //   // this._getPosterName(problemData.posterId);
-    //   //   if (problemData.teacherId != undefined && problemData.teacherId != null) {
-    //   //     // this.setState({teacherName: })
-    //   //     // this.props.dispatch(clearChatsData());
-    //   //     // this.props.dispatch(getChatUsers(tempSubject.toLowerCase(), tempProblemId));
-    //   //     // this.props.dispatch(getInitChats(tempSubject.toLowerCase(), tempProblemId));
-    //   //     this._getTeacherName(problemData.teacherId);
-    //   //   }
-    //   // });
-      
-    // })
-    /** Commented By Me*/
+    this.sessionListener = null;
+    this.myTimer = null;
+    this.timerDuration = 60 * 10;
+    this.timerDisplay = '10:00';
+    this.messageListener = null;
+   
   }
     
     learnClick = () => {
@@ -110,8 +96,8 @@ class LearnSolve extends Component {
     _renderTitle = () => {
       if (this.state.problemData.teacherId !== undefined) {
         return (
-          <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', flex: 1, paddingRight: getWidth(66)}}
-          onPress={() => {this.setState({modalVisible: !this.state.modalVisible})}}
+          <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', flex: 1}}
+          
           >
             <Text style={styles.titleText}>
               {this.state.teacherName}
@@ -129,7 +115,7 @@ class LearnSolve extends Component {
 
     _renderRightItem = () => {
       return (
-        <View style={{position: 'absolute', right: getWidth(16), top: getHeight(23)}}>
+        <View style={{width: getWidth(50), marginRight: getWidth(33), marginTop: getHeight(10)}}>
           <Text style={styles.titleText}>
             {this.state.displayTimer}
           </Text>
@@ -147,33 +133,52 @@ class LearnSolve extends Component {
     _finishSession = () => {
       this.setState({modalVisible: false})
       //Save session Result & navigate to Home page
-      navigationService.navigate(pages.HOME_SCREEN);
+      const {sessionData} = this.props;
+      firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+        sessionEnded: true
+      })
+      navigationService.reset(pages.LOADING);
     }
 
     _clickChat =() =>{
+      const{dispatch, sessionData} = this.props;
+      dispatch(updateReadStatus(sessionData.subject.toLowerCase(), sessionData.problemId));
       navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'leSolve', sessionData: this.props.sessionData});
       // this.setState({chatting: true});  
     }
 
     startTimer = (duration, display) => {
-      var timer = duration, minutes, seconds;
-      let self = this;
-      myTimer = setInterval(() => {
-        //  console.log("Count Down ////////");
-          minutes = parseInt(timer / 60, 10);
-          seconds = parseInt(timer % 60, 10);
-  
-          minutes = minutes < 10 ? "0" + minutes : minutes;
-          seconds = seconds < 10 ? "0" + seconds : seconds;
-  
-          display = minutes + ":" + seconds;
-          self.setState({displayTimer: display});
-  
-          if (--timer < 0) {
-            self.setState({modalVisible: true});
-              timer = duration;
-          }
-      }, 1000);
+      let timer = duration, minutes, seconds;      
+      
+        this.myTimer = setInterval(() => {
+            minutes = parseInt(timer / 60, 10);
+            seconds = parseInt(timer % 60, 10);
+    
+            minutes = minutes < 10 ? "0" + minutes : minutes;
+            seconds = seconds < 10 ? "0" + seconds : seconds;
+    
+            display = minutes + ":" + seconds;
+            
+            this.setState({displayTimer: display});
+    
+            if (--timer < 0) {
+              this.setState({modalVisible: true});
+                timer = duration;
+              this.sessionListener();
+              this.messageListener();
+              clearInterval(this.myTimer);
+              this.setState({displayTimer: ''});
+              //Reset sessionStarted Flag in the firestore
+              const {sessionData} = this.props;
+              firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).update({
+                sessionStarted: 0
+              })
+              firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+                sessionEnded: true
+              })
+            }
+        }, 1000);
+      
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
@@ -253,10 +258,25 @@ class LearnSolve extends Component {
       const {sessionData} = this.props;
       this.setState({subject: sessionData.subject, teacherId: sessionData.userId});
       firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).get().then(doc => {
-        this.setState({
-          problemData: doc.data(),
-          problemUri: doc.data().problemImage
-        })
+        if (doc.exists) {
+          this.setState({
+            problemData: doc.data(),
+            problemUri: doc.data().problemImage
+          })
+          this.sessionListener = firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).onSnapshot((sn) => {
+            let currentProblem = sn.data();
+            if (currentProblem.sessionStarted == 10) {
+              this.startTimer(this.timerDuration, this.timerDisplay);
+            }
+          })
+
+          this.messageListener = firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).collection('messages').onSnapshot(sn => {
+            if (sn.docs.length > 0)
+              this.setState({messageExist: true})
+            else
+              this.setState({messageExist: false});
+          })
+        }
       })
       firestore.collection('users').doc(sessionData.userId).get().then((doc) => {
         this.setState({
@@ -266,6 +286,16 @@ class LearnSolve extends Component {
       })
     }
 
+
+
+    setModalVisible(visible) {
+      this.setState({imageModalVisible: visible});
+    }
+
+    componentWillUnmount() {
+      this.messageListener();
+    }
+
     render () {
         return (
           <MenuPage 
@@ -273,12 +303,36 @@ class LearnSolve extends Component {
             renderTitle={this._renderTitle}
             renderRightItem={this._renderRightItem}
             >
+              <Modal
+                animationType="slide"
+                transparent={false}
+                visible={this.state.imageModalVisible}
+                >
+                <View style={{flex: 1, width: '100%'}}>
+                  <Image style={styles.modalImage} source={{uri: this.state.problemUri}} resizeMode={'contain'}/>
+                    
+
+                    <TouchableHighlight
+                      onPress={() => {
+                        this.setModalVisible(!this.state.imageModalVisible);
+                      }}
+                      style={styles.imageCloseBtn}
+                      >
+                      <Close size={getHeight(20)}/>
+                    </TouchableHighlight>
+                  
+                </View>
+              </Modal>
               <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                <Image
-                    source={{uri: this.state.problemUri}}
-                    style={styles.logoImage}
-                    resizeMode={'contain'}
-                />
+                <TouchableOpacity style={styles.logoImage} onPress={() => {
+                      this.setModalVisible(!this.state.imageModalVisible);
+                    }}>
+                  <Image
+                      source={{uri: this.state.problemUri}}
+                      style={styles.problemImage}
+                      resizeMode={'contain'}
+                  />
+                </TouchableOpacity>
                 {/* <View style={{width: '100%', flex: 1, justifyContent: 'center', alignItems: 'center'}}>
                   
                   <TextInput style={{width: '80%', fontFamily: 'Montserrat-Bold', fontSize: getHeight(18), backgroundColor: '#E0E0E0', height: getHeight(350)}} multiline value={this.state.answer} editable={false} />
@@ -286,8 +340,18 @@ class LearnSolve extends Component {
                 {
                   this.state.problemData.teacherId !== undefined ? 
                   <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
-                    <TouchableOpacity onPress={() => this._clickChat()}>
-                      <Chat size={getHeight(30)} color={'#000000'} /> 
+                    <TouchableOpacity style={{width: getWidth(50), height: getHeight(40), justifyContent: 'center', alignItems: 'center'}} onPress={() => this._clickChat()}>
+                      <View>
+                        <Chat size={getHeight(30)} color={'#000000'} /> 
+                      </View>
+                      {
+                        this.state.messageExist == true ?
+                        <View style={{position: 'absolute', top: 0, right: 0, bottom: 0, left: 0, justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(35), paddingLeft: getWidth(30)}}>
+                          <Notification size={getHeight(21)}/>
+                        </View> 
+                        :
+                        null
+                      }
                     </TouchableOpacity>
                   </View>
                   : null
@@ -347,7 +411,7 @@ class LearnSolve extends Component {
                       
                       <View style={styles.modalTimeView}>
                         <Text style={styles.modalTime}>
-                          $3.30
+                          $3.00
                         </Text>
                       </View>
                       <View style={{flex: 1}}>
@@ -388,6 +452,10 @@ const styles = StyleSheet.create({
         height: getHeight(600),
         marginBottom: getHeight(23),
         
+    },
+    problemImage: {
+      width: getWidth(291),
+      height: getHeight(600),
     },
     titleText:{
       fontFamily: 'Montserrat-Regular',
@@ -486,6 +554,15 @@ const styles = StyleSheet.create({
       right: 0,
       bottom: 0,
       backgroundColor: 'rgba(0,0,0,0.4)'
+    },
+    imageCloseBtn: {
+      position: 'absolute',
+      top: getHeight(40),
+      left: getWidth(20),
+    },
+    modalImage: {
+      flex: 1,
+      width: '100%'
     }
 })
 

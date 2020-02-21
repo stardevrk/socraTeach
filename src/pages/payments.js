@@ -77,6 +77,10 @@ class Payments extends Component {
       navigationService.navigate(pages.PAYMENTS_SETUP);
     }
 
+    _editPayment = () => {
+      navigationService.navigate(pages.PAYMENTS_EDIT);
+    }
+
     _renderListItem =(item) => {
       console.log(item.item);
       if (item.item.newItem == false) {
@@ -84,24 +88,24 @@ class Payments extends Component {
         switch (item.item.name) {
           case 'visa':
             return (
-              <TouchableOpacity style={styles.listItem} onPress={this._addPayment}>
+              <TouchableOpacity style={styles.listItem} onPress={this._editPayment}>
                   <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
                     resizeMode={'contain'} source={VISA_IMAGE}
                   />
                   <Text style={styles.listText}>
-                    {item.item.card_name}, 
+                    {item.item.card_name}
                   </Text>
                   
               </TouchableOpacity>
             )
           case 'master': 
             return (
-              <TouchableOpacity style={styles.listItem} onPress={this._addPayment}>
+              <TouchableOpacity style={styles.listItem} onPress={this._editPayment}>
                   <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
                     resizeMode={'contain'} source={MASTER_IMAGE}
                   />
                   <Text style={styles.listText}>
-                    {item.item.card_name},
+                    {item.item.card_name}
                   </Text>
                   
               </TouchableOpacity>
