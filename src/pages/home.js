@@ -22,6 +22,8 @@ import {getMyInitTeachList, clearMyTeachList} from '../controller/teach';
 import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
 import {getMyLiveLearnSession, getMyLiveTeachSession, clearMyLTSession} from '../controller/ltsession';
 import PushNotificationIOS from "@react-native-community/push-notification-ios"
+import CountDown from 'react-native-countdown-component';
+import PushNotification from 'react-native-push-notification';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const WORD_LOGO = require('../assets/images/word-logo.png');
@@ -113,7 +115,15 @@ class HomeScreen extends Component {
                alertBody: notification.body,
                alertTitle: notification.title,  
             })
+            // PushNotificationIOS.getApplicationIconBadgeNumber((number) => {
+            //     PushNotificationIOS.setApplicationIconBadgeNumber(number + 1);
+            // })
+            
         })
+        // PushNotificationIOS.checkPermissions((permissions) => {
+        //     console.log("IOS Push Permission = ", permissions);
+        // })
+        
     }
 
     componentWillUnmount() {

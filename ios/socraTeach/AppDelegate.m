@@ -11,6 +11,8 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 #import "RNSplashScreen.h"
+#import <RNFirebaseNotifications.h>
+#import <RNFirebaseMessaging.h>
 #import <RNCPushNotificationIOS.h>
 #import <Firebase.h>
 #if RCT_DEV
@@ -37,6 +39,7 @@
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   [FIRApp configure];
+  [RNFirebaseNotifications configure];
   [RNSplashScreen show];
   return YES;
 }

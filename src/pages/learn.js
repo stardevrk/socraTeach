@@ -178,11 +178,8 @@ class LearnScreen extends Component {
         } else {
           navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject});
         }
-
-        
       }
     })
-    
   }
 
   cameraClick = () => {
@@ -267,13 +264,6 @@ class LearnScreen extends Component {
                     text={'CAMERA ROLL'}
                     onClick={this.libraryClick}
                   />
-                  {/* <TouchableOpacity style={{position: 'absolute', bottom: getHeight(30)}}
-                    onPress={() => this._skipUpload()}
-                  >
-                    <Text style={{textDecorationColor: '#E0E0E0', color: '#FFFFFF', fontFamily: 'Montserrat-Regular', fontSize: getHeight(18), textDecorationLine: 'underline'}}>
-                      {'SKIP UPLOAD'}
-                    </Text>
-                  </TouchableOpacity> */}
                 </View>
             </View>
           </View>

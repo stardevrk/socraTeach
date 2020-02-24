@@ -11,16 +11,11 @@ import {
     TouchableHighlight,
     KeyboardAvoidingView,
 } from 'react-native';
-import Page from '../components/basePage';
 import MenuPage from '../components/menuPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import BaseButton from '../components/baseButton';
-import NavButton from '../components/navButton';
 import Chat from '../components/icons/chat';
-import Hat from '../components/icons/hat';
 import Star from '../components/icons/star';
 import BStar from '../components/icons/bstar';
-import Phone from '../components/icons/phone';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import { BLACK_PRIMARY, GREEN_PRIMARY, PURPLE_MAIN } from '../constants/colors';
@@ -30,7 +25,7 @@ import {connect} from 'react-redux';
 import Close from '../components/icons/close';
 import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 import Notification from '../components/icons/notification';
-
+import TimerComponent from '../components/timeComponent';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const EXAMPLE_IMAGE = require('../assets/images/example.png');
@@ -75,6 +70,7 @@ class LearnSolve extends Component {
       imageModalVisible: false,
       sessionEnded: false,
       messageExist: false,
+      timerStarted: false
     }
 
     this.sessionListener = null;
@@ -115,10 +111,20 @@ class LearnSolve extends Component {
 
     _renderRightItem = () => {
       return (
-        <View style={{width: getWidth(50), marginRight: getWidth(33), marginTop: getHeight(10)}}>
-          <Text style={styles.titleText}>
-            {this.state.displayTimer}
-          </Text>
+        <View style={{width: getWidth(50), marginRight: getWidth(33)}}>
+          {
+            this.state.timerStarted == true ?
+            <TimerComponent 
+              until={600}
+              onFinish={() => this.timerFinish()}
+              size={20}
+              timeToShow={['M', 'S']}
+              showSeparator={true}
+              timeLabels={{m: '', s: ''}}
+              digitStyle={{backgroundColor: 'transparent'}}
+            />
+            : null
+          }
         </View>
       )
     }
@@ -136,6 +142,11 @@ class LearnSolve extends Component {
       const {sessionData} = this.props;
       firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
         sessionEnded: true
+      });
+      let partenerData = sessionData.userData;
+      firestore.collection('users').doc(partenerData.userId).update({
+        sessionNum: parseInt(partenerData.sessionNum) + 1,
+        rating: (partenerData.rating * partenerData.sessionNum + this.state.teacherRate)/(partenerData.sessionNum + 1)
       })
       navigationService.reset(pages.LOADING);
     }
@@ -179,6 +190,22 @@ class LearnSolve extends Component {
             }
         }, 1000);
       
+    }
+
+    timerFinish = () => {
+      this.setState({modalVisible: true, timerStarted: false});
+        // timer = duration;
+      this.sessionListener();
+      this.messageListener();
+
+      //Reset sessionStarted Flag in the firestore
+      const {sessionData} = this.props;
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).update({
+        sessionStarted: 0
+      });
+      firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+        sessionEnded: true
+      });
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
@@ -266,7 +293,8 @@ class LearnSolve extends Component {
           this.sessionListener = firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).onSnapshot((sn) => {
             let currentProblem = sn.data();
             if (currentProblem.sessionStarted == 10) {
-              this.startTimer(this.timerDuration, this.timerDisplay);
+              // this.startTimer(this.timerDuration, this.timerDisplay);
+              this.setState({timerStarted: true});
             }
           })
 

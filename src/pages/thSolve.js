@@ -27,6 +27,7 @@ import {auth, firestore} from '../constants/firebase';
 import Close from '../components/icons/close';
 import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 import Notification from '../components/icons/notification';
+import TimerComponent from '../components/timeComponent';
 
 const MARK_IMAGE = require('../assets/images/square-logo.png');
 
@@ -50,6 +51,7 @@ class SOLVESCREEN extends Component {
       phoneNumber: '',
       imageModalVisible: false,
       messageExist: false,
+      timerStarted: false
     }
 
     this.timerDuration = 60 * 10;
@@ -83,10 +85,20 @@ class SOLVESCREEN extends Component {
 
     _renderRightItem = () => {
       return (
-        <View style={{position: 'absolute', right: getWidth(16), top: getHeight(23)}}>
-          <Text style={styles.titleText}>
-            {this.state.displayTimer}
-          </Text>
+        <View style={{position: 'absolute', right: getWidth(16)}}>
+          {
+            this.state.timerStarted == true ?
+            <TimerComponent 
+              until={600}
+              onFinish={() => this.timerFinish()}
+              size={20}
+              timeToShow={['M', 'S']}
+              showSeparator={true}
+              timeLabels={{m: '', s: ''}}
+              digitStyle={{backgroundColor: 'transparent'}}
+            />
+            : null
+          }
         </View>
       )
     }
@@ -125,12 +137,27 @@ class SOLVESCREEN extends Component {
         }, 1000);
     }
 
+    timerFinish = () => {
+      this.setState({modalVisible: true, timerStarted: false});
+      this.messageListener();
+      
+      const {sessionData} = this.props;
+      firestore.collection('users').doc(auth.currentUser.uid).collection('teach_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+        sessionEnded: true
+      })
+    }
+
     _finishSession = () => {
       this.setState({modalVisible: false})
       //Save session Result & navigate to Home page
       const {sessionData} = this.props;
       firestore.collection('users').doc(auth.currentUser.uid).collection('teach_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
         sessionEnded: true
+      })
+      let partenerData = sessionData.userData;
+      firestore.collection('users').doc(partenerData.userId).update({
+        sessionNum: parseInt(partenerData.sessionNum) + 1,
+        rating: (partenerData.rating * partenerData.sessionNum + this.state.posterRate)/(partenerData.sessionNum + 1)
       })
       navigationService.reset(pages.LOADING);
     }
@@ -207,7 +234,8 @@ class SOLVESCREEN extends Component {
       firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).update({
         sessionStarted: 10
       }).then((value) => {
-        this.startTimer(this.timerDuration, this.timerDisplay);
+        // this.startTimer(this.timerDuration, this.timerDisplay);
+        this.setState({timerStarted: true});
       })
     }
 

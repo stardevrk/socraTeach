@@ -77,7 +77,10 @@ async function getUserInfo (authData) {
           bankSkipped: signupInfo.bankSkipped != undefined ? signupInfo.bankSkipped : true,
           userId: userId,
           lastLogin: Date.now(),
-          fcmToken: fcmToken
+          fcmToken: fcmToken,
+          badge: 0,
+          sessionNum: 0,
+          rating: 0
         });
       }
     });

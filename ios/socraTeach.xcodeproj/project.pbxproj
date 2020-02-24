@@ -711,6 +711,7 @@
 					"\"${PODS_ROOT}/Headers/Public/react-native-splash-screen\"",
 					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 					"\"$(SRCROOT)/../node_modules/react-native-splash-screen/ios\"",
+					"\"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase\"",
 				);
 				INFOPLIST_FILE = socraTeach/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -758,6 +759,7 @@
 					"\"${PODS_ROOT}/Headers/Public/react-native-splash-screen\"",
 					"\"$(PODS_ROOT)/Headers/Private/React-Core\"",
 					"\"$(SRCROOT)/../node_modules/react-native-splash-screen/ios\"",
+					"\"$(SRCROOT)/../node_modules/react-native-firebase/ios/RNFirebase\"",
 				);
 				INFOPLIST_FILE = socraTeach/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

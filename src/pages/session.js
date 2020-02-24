@@ -20,9 +20,10 @@ import Pages from '../constants/pages';
 import SessionListItem from '../components/sessionListItem';
 import {connect} from 'react-redux';
 import Person from '../components/icons/person';
-import {firestore} from '../constants/firebase';
+import {firestore, auth} from '../constants/firebase';
 import { BLACK_SECONDARY, BLACK_PRIMARY, PURPLE_MAIN, GREEN_PRIMARY } from '../constants/colors';
 import _ from 'lodash';
+import PushNotificationIOS from "@react-native-community/push-notification-ios"
 
 
 
@@ -121,14 +122,6 @@ class Session extends Component {
       }
       if (oneItem.newExist == true) {
         return (
-          // <SessionListItem
-          //   itemStyle={oneItem.type == 'learn' ? learnStyle : teachStyle} 
-          //   subject={newSubject}
-          //   name={oneItem.name}
-          //   newExist={oneItem.newExist}
-          //   sessionType={oneItem.type}
-          //   onClick={() => this._navigateForward(oneItem)}
-          // />
           <TouchableOpacity style={styles.listItem} onPress={() => this._navigateForward(oneItem)}>
                 <View style={{flexDirection: 'row'}}>
                   <View style={{justifyContent: 'flex-start', marginRight: getWidth(8)}}>
@@ -195,13 +188,18 @@ class Session extends Component {
       
     }
 
-    _navigateForward = (sessionItem) => {
+    _navigateForward = async (sessionItem) => {
       console.log(sessionItem);
+      let userDoc = await firestore.collection('users').doc(sessionItem.userId).get();
+      let newSessionItem = {
+        ...sessionItem,
+        userData: userDoc.data()
+      }
       if (sessionItem.type == 'learn') {
         if (sessionItem.newExist == true) {
-          navigationService.navigate(Pages.LEARN_START, {sessionData: sessionItem});
+          navigationService.navigate(Pages.LEARN_START, {sessionData: newSessionItem});
         } else {
-          navigationService.navigate(Pages.LEARN_SOLVE, {sessionData: sessionItem});
+          navigationService.navigate(Pages.LEARN_SOLVE, {sessionData: newSessionItem});
         }
       } if (sessionItem.type == 'teach') {
         if (sessionItem.newExist == true) {
@@ -209,15 +207,19 @@ class Session extends Component {
             confirmed: true,
             lastUpdate: Date.now()
           });
-          navigationService.navigate(Pages.TEACH_START, {sessionData: sessionItem});
+          navigationService.navigate(Pages.TEACH_START, {sessionData: newSessionItem});
         } else {
-          navigationService.navigate(Pages.TEACH_SOLVE, {sessionData: sessionItem});
+          navigationService.navigate(Pages.TEACH_SOLVE, {sessionData: newSessionItem});
         }
       } 
       
     }
 
     async componentDidMount() {
+      PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      firestore.collection('users').doc(auth.currentUser.uid).update({
+        badge: 0
+      })
       let stateArray = this.state.sessionData;
       let newArray = []
       for (const item of stateArray) {
@@ -225,7 +227,8 @@ class Session extends Component {
         let newItem = {
           ...item,
           name: userDoc.data().userName,
-          phoneNumber: userDoc.data().phoneNumber
+          phoneNumber: userDoc.data().phoneNumber,
+          // userData: userDoc.data()
         };
         newArray.push(newItem);
       }
