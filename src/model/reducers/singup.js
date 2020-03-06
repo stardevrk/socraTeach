@@ -29,7 +29,10 @@ export default function singup (state = initialState, action = '') {
     case types.SIGNUP_STRIPE:
       return {
         ...state,
-        stripeToken: action.stripeToken
+        stripeToken: action.stripeToken,
+        card: {
+          ...action.card
+        }
       }
     default :
       return state

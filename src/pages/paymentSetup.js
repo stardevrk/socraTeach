@@ -21,6 +21,7 @@ import {getStripeToken} from '../service/stripe';
 import {signupStripeInfo} from '../model/actions/signupAC';
 import {connect} from 'react-redux';
 import { BLACK_PRIMARY } from '../constants/colors';
+import {auth, firestore} from '../constants/firebase';
 
 
 const BACK_BUTTON = require('../assets/images/back-button.png');
@@ -76,10 +77,21 @@ class PaymentSetup extends Component {
     const {dispatch} = this.props;
     this.setState({loading: true});
     getStripeToken(this.state.cardNumber, exp_month, exp_year, this.state.cardSecurity).then((value) => {
-      console.log("Stripe Response ", value.tokenId);
-      dispatch(signupStripeInfo(value.tokenId));
-      navigationService.navigate(pages.BANK);
+      firestore.collection('users').doc(auth.currentUser.uid).collection('cards').add({
+        name: this.state.cardName,
+        number: this.state.cardNumber,
+        exp_month: parseInt(exp_month),
+        exp_year: parseInt(exp_year),
+        cvc: this.state.cardSecurity
+      }).then((value) => {
+        this.setState({loading: false});
+        navigationService.navigate(pages.PAYMENTS);
+      }).catch((error) => {
+        this.setState({loading: false});
+      })
+      
     }).catch(() => {
+      this.setState({loading: false});
       Alert.alert(
         'Invalid Card',
         'Please use correct Card',
@@ -94,7 +106,7 @@ class PaymentSetup extends Component {
       )
     })
     .finally(() => {
-      this.setState({loading: false});
+      
     });
 
     // navigationService.navigate(pages.SINGUP_FINISH);
@@ -145,8 +157,9 @@ class PaymentSetup extends Component {
         <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never', bottom: 'never'}}>
           {
             this.state.loading == true ? 
-            <View style={styles.wrapper}>
+            <View style={styles.loadingWrapper}>
               <ActivityIndicator size={'large'} />
+              <Text style={{color: 'white', fontFamily: 'Montserrat-Medium', fontSize: getHeight(14), width: '100%', textAlign: 'center'}}>New Card maybe appear after a few seconds.</Text>
             </View>
             :
             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
@@ -163,7 +176,7 @@ class PaymentSetup extends Component {
                 <AuthInput 
                     desc={'Name on Card'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
+                    descStyle={{marginBottom: getHeight(20)}}
                     onChangeText={this._changeName}
                     errorExist={this.state.emptyName}
                     errorText={'Required!'}
@@ -172,7 +185,7 @@ class PaymentSetup extends Component {
                 <AuthInput 
                     desc={'Number'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
+                    descStyle={{marginBottom: getHeight(20)}}
                     onChangeText={this._changeCardNumber}
                     errorExist={this.state.emptyCardNumber || this.state.invalidCardNum}
                     errorText={this.state.invalidCardNum == true ? 'Invalid Card Number' : 'Required!'}
@@ -182,7 +195,7 @@ class PaymentSetup extends Component {
                 <AuthInput 
                     desc={'Expiration'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
+                    descStyle={{marginBottom: getHeight(20)}}
                     onChangeText={this._changeCardExp}
                     errorExist={this.state.emptyExp || this.state.invalidExp}
                     errorText={this.state.invalidExp == true ? 'Invalid Expiration!' : 'Required!'}
@@ -193,14 +206,14 @@ class PaymentSetup extends Component {
                 <AuthInput 
                     desc={'Security Code'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
+                    descStyle={{marginBottom: getHeight(20)}}
                     onChangeText={this._changeSecurity}
                     errorExist={this.state.emptySecurity}
                     errorText={'Required!'}
                 />
                 
               </KeyboardAwareScrollView>
-              <BaseButton text={'ADD'} onClick={this._onRemove} buttonStyle={{marginBottom: getHeight(20), marginTop: getHeight(20)}}/>
+              <BaseButton text={'ADD'} onClick={this.goForward} buttonStyle={{marginBottom: getHeight(20), marginTop: getHeight(20)}}/>
             </View>
             
           }
@@ -223,6 +236,13 @@ const styles = StyleSheet.create({
       flex: 1,
       width: '100%',
       height: '100%'
+    },
+    loadingWrapper: {
+      flex: 1,
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     logoImage: {
         width: getWidth(291),

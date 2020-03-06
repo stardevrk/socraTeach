@@ -6,23 +6,18 @@ import {
     ActivityIndicator,
     Image,
     FlatList,
-    TouchableOpacity
+    TouchableOpacity,
+    Linking
 } from 'react-native';
-import Page from '../components/basePage';
-// import MenuPage from '../components/menuPage';
 import TopBarPage from '../components/topBarPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import BaseButton from '../components/baseButton';
-import MenuButton from '../components/menuButton';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {connect} from 'react-redux';
-import {fetchInitProblem} from '../controller/problem';
-import {getMyInitTeachList, clearMyTeachList} from '../controller/teach';
-import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
 import { GREEN_PRIMARY, PURPLE_MAIN, BLACK_PRIMARY } from '../constants/colors';
+import {auth, firestore} from '../constants/firebase';
+import Bank from '../components/icons/bank';
 
-const LOGO_IMAGE = require('../assets/images/logo.png');
 const WORD_LOGO = require('../assets/images/word-logo.png');
 const CHASE_IMAGE = require('../assets/images/bank-chase.png');
 const AMERICA_IMAGE = require('../assets/images/bank-america.png');
@@ -34,25 +29,13 @@ class Banks extends Component {
 
         this.paymentsData = [
           {
-            id: '0',
-            name: 'chase',
-            card_name: 'Chase, 8372',
-            number: '8372',
-            newItem: false
-          },
-          {
-            id: '1',
-            name: 'america',
-            card_name: 'Bank of America, 0874',
-            number: '0874',
-            newItem: false
-          },
-          {
             id: 'new',
             newItem: true
           }
         ]
-        this.state = {}
+        this.state = {
+          hasBank : false
+        }
     }
     learnClick = () => {
         navigationService.navigate(pages.LEARN_SUBJECT);
@@ -63,8 +46,16 @@ class Banks extends Component {
     }
     
     static getDerivedStateFromProps (props, state) {
-        
-        return null;
+        if (props.user.account == null) {
+          return {
+            hasBank: false
+          };
+        }
+        else {
+          return {
+            hasBank: true
+          }
+        }
     }
 
     _renderTitle = () => {
@@ -76,12 +67,22 @@ class Banks extends Component {
                     source={WORD_LOGO}
                 />
             </View>
-            
         )
     }
 
     _goSetup = () => {
-      navigationService.navigate(pages.BANK_SETUP, {prevScreen: 'banks'});
+      // navigationService.navigate(pages.BANK_SETUP, {prevScreen: 'banks'});
+      // ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM
+      let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM&state=${auth.currentUser.uid}`;
+      Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log("Can't handle url: " + url);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
     }
 
     _goEdit = () => {
@@ -90,38 +91,45 @@ class Banks extends Component {
 
     _renderListItem =(item) => {
       console.log(item.item);
-      if (item.item.newItem == false) {
-        switch (item.item.name) {
-          case 'chase':
-            return (
-              <TouchableOpacity style={styles.listItem} onPress={this._goEdit}>
-                  <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
-                    resizeMode={'contain'} source={CHASE_IMAGE}
-                  />
-                  <Text style={styles.listText}>
-                    {item.item.card_name}
-                  </Text>
+      if (this.state.hasBank == true) {
+        // switch (item.item.name) {
+        //   case 'chase':
+        //     return (
+        //       <TouchableOpacity style={styles.listItem} onPress={this._goEdit}>
+        //           <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+        //             resizeMode={'contain'} source={CHASE_IMAGE}
+        //           />
+        //           <Text style={styles.listText}>
+        //             {item.item.card_name}
+        //           </Text>
                   
-              </TouchableOpacity>
-            )
-          case 'america': 
-            return (
-              <TouchableOpacity style={styles.listItem} onPress={this._goEdit}>
-                  <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
-                    resizeMode={'contain'} source={AMERICA_IMAGE}
-                  />
-                  <Text style={styles.listText}>
-                    {item.item.card_name}
-                  </Text>
+        //       </TouchableOpacity>
+        //     )
+        //   case 'america': 
+        //     return (
+        //       <TouchableOpacity style={styles.listItem} onPress={this._goEdit}>
+        //           <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+        //             resizeMode={'contain'} source={AMERICA_IMAGE}
+        //           />
+        //           <Text style={styles.listText}>
+        //             {item.item.card_name}
+        //           </Text>
                   
-              </TouchableOpacity>
-            )
-        }
-        
+        //       </TouchableOpacity>
+        //     )
+        // }
+        return (
+          <TouchableOpacity style={styles.listItem} onPress={this._goSetup}>
+            <Text style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16), color: '#FFFFFF', fontSize: getHeight(18)}}></Text>
+            <Text style={styles.newListText}>
+              Edit Bank Account
+            </Text>
+          </TouchableOpacity>
+        )
       } else {
         return (
           <TouchableOpacity style={styles.listItem} onPress={this._goSetup}>
-            <Text style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16), color: '#FFFFFF', fontSize: getHeight(18)}}>+1</Text>
+            <Text style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16), color: '#FFFFFF', fontSize: getHeight(18)}}></Text>
             <Text style={styles.newListText}>
               Add Bank Account
             </Text>
@@ -135,13 +143,30 @@ class Banks extends Component {
         return (
             <TopBarPage titleText={'BANK SETUP'}>
                 <View style={styles.container}>
-                    <FlatList 
+                    {/* <FlatList 
                       data={this.paymentsData}
                       renderItem={item => this._renderListItem(item)}
                       keyExtractor={item => item.id}
                       contentContainerStyle={{flex: 1, width: '100%'}}
                       style={{flex: 1, width: '100%'}}
-                    />
+                    /> */}
+                    <View style={styles.modal}>
+                      <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(40)}}>
+                        <Bank size={getHeight(48)} color={BLACK_PRIMARY} />
+                        <Text style={styles.bodyText}>Add or change bank</Text>
+                        <Text style={styles.secondText}>account through </Text>
+                        <Text style={styles.secondText}>Stripe</Text>
+                      </View>
+                      <TouchableOpacity style={styles.btnBody}
+                      onPress={this._goSetup}
+                      >
+                        {/* <Text style={styles.btnText}>Home</Text> */}
+                        
+                        <Text style={styles.btnText}>
+                          Bank Setup
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
                 </View>
             </TopBarPage>
         )
@@ -158,8 +183,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        width: '100%',
-        paddingTop: getHeight(56)
+        width: '100%'
     },
     logoImage: {
         width: getWidth(291),
@@ -185,11 +209,58 @@ const styles = StyleSheet.create({
       borderBottomColor: PURPLE_MAIN, 
       borderBottomWidth: 2, 
       backgroundColor: BLACK_PRIMARY
+    },
+    modal: {
+      width: getWidth(244),
+      height: getHeight(262),
+      backgroundColor: '#FFFFFF',
+      alignItems: 'center',
+      borderRadius: getHeight(10),
+      alignSelf: 'center'
+    },
+    btnText: {
+      fontFamily: 'Montserrat-Medium',
+      color: '#FFFFFF',
+      fontSize: getHeight(18)
+    },
+    bodyText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: BLACK_PRIMARY,
+      marginTop: getHeight(29)
+    },
+    secondText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: BLACK_PRIMARY,
+    },
+    bodySecText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(15),
+      color: BLACK_PRIMARY
+    },
+    bodyThirdText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: BLACK_PRIMARY
+    },
+    btnBody: {
+      width: getWidth(220), 
+      height: getHeight(36), 
+      borderRadius: getHeight(10), 
+      backgroundColor: PURPLE_MAIN, 
+      justifyContent: 'center',
+      alignItems: 'center', 
+      flexDirection: 'row',
+      paddingLeft: getWidth(13),
+      paddingRight: getWidth(25),
+      marginBottom: getHeight(23)
     }
 })
 
 const mapStateToProps = (state) => ({
-    subjects: state.subject
+    subjects: state.subject,
+    user: state.user
   })
   
   export default connect(mapStateToProps)(Banks);

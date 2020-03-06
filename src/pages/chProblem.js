@@ -12,8 +12,6 @@ import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
 import {BLACK_PRIMARY, GRAY_SECONDARY, PURPLE_MAIN} from '../constants/colors';
 import BaseButton from '../components/baseButton';
-import MenuButton from '../components/menuButton';
-import Triangle from '../components/icons/triangle';
 import Alert from '../components/icons/alert';
 import Aback from '../components/icons/aback';
 import Algebra from '../components/icons/algebra';
@@ -22,28 +20,13 @@ import Physics from '../components/icons/physics';
 import Chemistry from '../components/icons/chemistry';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
-import ModalDropdown from '../components/dropDownCategory';
-import MenuPage from '../components/menuPage';
 import Swiper from '../components/Swiper/index';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-// import {clearProblems} from '../model/actions/problemAC';
 import {fetchInitProblem, clearSubjectProblems, fetchMoreProblems} from '../controller/problem';
-import {selectProblem, getMyInitTeachList, getMyMoreTeachList, clearMyTeachList} from '../controller/teach';
+import {selectProblem, getMyInitTeachList} from '../controller/teach';
 import {auth} from '../constants/firebase';
 import {updateSession, clearSession} from '../model/actions/sessionAC';
-
-
-const LOGO_IMAGE = require('../assets/images/logo.png');
-
-const { height, width } = Dimensions.get('window');
-
-// demo purposes only
-function * range (start, end) {
-  for (let i = start; i <= end; i++) {
-    yield i
-  }
-}
 
 class ChooseProblem extends Component {
 

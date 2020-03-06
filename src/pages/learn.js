@@ -219,6 +219,11 @@ class LearnScreen extends Component {
     navigationService.navigate(pages.SESSION);
   }
 
+  static getDerivedStateFromProps (props, state) {
+    console.log("Learn Start Props User = ", props.user);
+    return null;
+  }
+
   render () {
     const {subjects} = this.props;
     return (
@@ -350,7 +355,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => ({
-  subjects: state.subject
+  subjects: state.subject,
+  user: state.user
 })
 
 export default connect(mapStateToProps)(LearnScreen);

@@ -23,9 +23,7 @@ import {connect} from 'react-redux';
 import { BLACK_PRIMARY } from '../constants/colors';
 import {auth} from '../constants/firebase';
 
-const LOGO_IMAGE = require('../assets/images/logo.png');
 const BACK_BUTTON = require('../assets/images/back-button.png');
-const FORWARD_BUTTON = require('../assets/images/forward-button.png');
 
 class BankSetup extends Component {
 
@@ -70,7 +68,6 @@ class BankSetup extends Component {
       secondAccount: this.state.secondAccount
     }));
     auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
-      console.log("Signup Result = ", result);
       firestore.collection('users').doc(result.user.uid).set({
         country: signupInfo.country,
         email: signupInfo.email,

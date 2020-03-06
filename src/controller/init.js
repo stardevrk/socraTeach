@@ -63,6 +63,14 @@ async function getUserInfo (authData) {
         firestore.collection('users').doc(userId).update({
           fcmToken: fcmToken
         })
+        if (!hasListener(userId + 'my_user_info')) {
+          let listener = firestore.collection('users').doc(userId).onSnapshot(sn => {
+            let userData = sn.data();
+            store.dispatch(fetchUser(userData));
+          });
+          addListener(userId + 'my_user_info',  listener);
+        }
+        
       } else { //Signup
         let currentState = store.getState();
         let signupInfo = _.get(currentState, 'signupInfo', {});
@@ -75,12 +83,19 @@ async function getUserInfo (authData) {
           accountNumber: signupInfo.accountNumber != undefined ? signupInfo.accountNumber : null,
           secondAccount: signupInfo.secondAccount != undefined ? signupInfo.secondAccount : null,
           bankSkipped: signupInfo.bankSkipped != undefined ? signupInfo.bankSkipped : true,
+          card: signupInfo.card != undefined ? signupInfo.card : {},
           userId: userId,
           lastLogin: Date.now(),
           fcmToken: fcmToken,
           badge: 0,
           sessionNum: 0,
           rating: 0
+        }).then((value) => {
+          if (signupInfo.card != undefined) {
+            firestore.collection('users').doc(userId).collection('cards').add({
+              ...signupInfo.card
+            })
+          }
         });
       }
     });

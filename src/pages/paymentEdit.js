@@ -21,11 +21,14 @@ import {getStripeToken} from '../service/stripe';
 import {signupStripeInfo} from '../model/actions/signupAC';
 import {connect} from 'react-redux';
 import { BLACK_PRIMARY } from '../constants/colors';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
+import {auth, firestore} from '../constants/firebase';
 
 
 const BACK_BUTTON = require('../assets/images/back-button.png');
 const FORWARD_BUTTON = require('../assets/images/forward-button.png');
 
+@withMappedNavigationParams()
 class PaymentSetup extends Component {
 
   constructor(props) {
@@ -140,13 +143,24 @@ class PaymentSetup extends Component {
     }
   }
 
+  _removeCard = () => {
+    this.setState({loading: true});
+    firestore.collection('users').doc(auth.currentUser.uid).collection('stripe_paymentMethods').doc(this.props.cardId).delete().then(() => {
+      this.setState({loading: false})
+      firestore.collection('users').doc(auth.currentUser.uid).collection('cards').doc(this.props.cardId).delete().then(() => {
+        navigationService.reset(pages.PAYMENTS);
+      })
+    })
+  }
+
   render () {
     return (
         <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never', bottom: 'never'}}>
           {
             this.state.loading == true ? 
-            <View style={styles.wrapper}>
+            <View style={styles.loadingWrapper}>
               <ActivityIndicator size={'large'} />
+              <Text style={{color: 'white', fontFamily: 'Montserrat-Medium', fontSize: getHeight(14), width: '100%', textAlign: 'center'}}>Card maybe disappear after a few seconds.</Text>
             </View>
             :
             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
@@ -164,7 +178,7 @@ class PaymentSetup extends Component {
                     desc={'Name on Card'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
                     descStyle={{marginBottom: getHeight(25)}}
-                    placeholder={'Tom Smith'}
+                    defaultValue={this.props.cardInfo.name}
                     onChangeText={this._changeName}
                     errorExist={this.state.emptyName}
                     errorText={'Required!'}
@@ -174,7 +188,7 @@ class PaymentSetup extends Component {
                     desc={'Number'}
                     wrapperStyle={{marginBottom: getHeight(27)}}
                     descStyle={{marginBottom: getHeight(25)}}
-                    placeholder={'394994948372'}
+                    defaultValue={this.props.cardInfo.number}
                     onChangeText={this._changeCardNumber}
                     errorExist={this.state.emptyCardNumber || this.state.invalidCardNum}
                     errorText={this.state.invalidCardNum == true ? 'Invalid Card Number' : 'Required!'}
@@ -188,7 +202,7 @@ class PaymentSetup extends Component {
                     onChangeText={this._changeCardExp}
                     errorExist={this.state.emptyExp || this.state.invalidExp}
                     errorText={this.state.invalidExp == true ? 'Invalid Expiration!' : 'Required!'}
-                    placeholder={'08/2020'}
+                    defaultValue={this.props.cardInfo.exp_month + '/' + this.props.cardInfo.exp_year}
                     keyboardType={'default'}
                 />
 
@@ -198,12 +212,12 @@ class PaymentSetup extends Component {
                     descStyle={{marginBottom: getHeight(25)}}
                     onChangeText={this._changeSecurity}
                     errorExist={this.state.emptySecurity}
-                    placeholder={'334'}
+                    defaultValue={this.props.cardInfo.cvc}
                     errorText={'Required!'}
                 />
                 
               </KeyboardAwareScrollView>
-              <BaseButton text={'REMOVE'} onClick={this._onRemove} buttonStyle={{marginBottom: getHeight(20), marginTop: getHeight(20)}}/>
+              <BaseButton text={'REMOVE'} onClick={this._removeCard} buttonStyle={{marginBottom: getHeight(20), marginTop: getHeight(20)}}/>
             </View>
             
           }
@@ -226,6 +240,13 @@ const styles = StyleSheet.create({
       flex: 1,
       width: '100%',
       height: '100%'
+    },
+    loadingWrapper: {
+      flex: 1,
+      width: '100%',
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     logoImage: {
         width: getWidth(291),

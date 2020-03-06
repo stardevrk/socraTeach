@@ -146,12 +146,26 @@ class TeachScreen extends Component {
         return;
       }
 
+      if(this.props.bank.express == null) {
+        Alert.alert(
+          'Missing Bank Setup',
+          'You did not setup bank to get paid.',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel'
+            }
+          ],
+          {cancelable: false}
+        )
+        return;
+      }
       const problems = this.props.problem;
       const currentSubject = this.state.subject.toLowerCase();
       const problemObject = _.get(problems, currentSubject, {});
       const problemList = _.get(problemObject, 'problems', []);
       const cardLength = _.get(problemObject, 'problemLength', 0);
-      // console.log("Problem Length ==== ", problemList.length);
       
       navigationService.navigate(pages.CHOOSE_PROBLEM, {subject: this.state.subject, cardLength: cardLength});
       
@@ -165,7 +179,24 @@ class TeachScreen extends Component {
     }
 
     _gotoTeach = () => {
-      navigationService.navigate(pages.TEACH_START);
+      if(this.props.bank.express == null) {
+        Alert.alert(
+          'Missing Bank Setup',
+          'You did not setup bank to get paid.',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel'
+            }
+          ],
+          {cancelable: false}
+        )
+        
+      } else {
+        navigationService.navigate(pages.TEACH_START);
+      }
+      
     }
 
     render () {
@@ -293,7 +324,8 @@ const styles = StyleSheet.create({
 
 const mapStateToProps = (state) => ({
   subjects: state.subject,
-  problem: state.problem
+  problem: state.problem,
+  bank: state.bank
 })
 
 export default connect(mapStateToProps)(TeachScreen);

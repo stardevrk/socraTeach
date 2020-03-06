@@ -76,7 +76,6 @@ export default class Camera extends Component {
     this.getSelectedImages = this.getSelectedImages.bind(this);
 
     props.navigation.addListener('didFocus', payload => {
-      // console.log("Navigation Event Payload === ", payload);
       this.setState({subject: payload.action.params.subject});
     })
   }

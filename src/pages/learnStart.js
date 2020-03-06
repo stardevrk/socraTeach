@@ -5,9 +5,10 @@ import {
     Text,
     ActivityIndicator,
     TouchableOpacity,
-    Image
+    Image,
+    FlatList
 } from 'react-native';
-import {BLACK_PRIMARY, PURPLE_MAIN} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN, GREEN_PRIMARY} from '../constants/colors';
 import Page from '../components/basePage';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 import {connect} from 'react-redux';
@@ -19,9 +20,15 @@ import BStar from '../components/icons/bstar';
 import {firestore, auth} from '../constants/firebase';
 import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 import {getMyLiveLearnSession, getMyLiveTeachSession, clearMyLTSession} from '../controller/ltsession';
+import _ from 'lodash';
 
 const ICON_LOGO = require('../assets/images/icon-logo.png');
+const VISA_IMAGE = require('../assets/images/visa.png');
 const MASTER_IMAGE = require('../assets/images/master.png');
+const AMEX_IMAGE = require('../assets/images/americanexpress.png');
+const JCB_IMAGE = require('../assets/images/jcb.png');
+const DISCOVER_IMAGE = require('../assets/images/discover.png');
+const DINERS_IMAGE = require('../assets/images/diners-club.png');
 
 @withMappedNavigationParams()
 class LearnStart extends Component {
@@ -30,7 +37,12 @@ class LearnStart extends Component {
     super(props);
 
     this.state= {
-      problemData: {}
+      problemData: {},
+      modalVisible: false,
+      paymentData: [],
+      prevPayments: null,
+      currentImage: '',
+      currentNumber: ''
     }
   }
 
@@ -43,7 +55,8 @@ class LearnStart extends Component {
   }
 
   _gotoPayments = () => {
-    navigationService.navigate(pages.PAYMENTS);
+    // navigationService.navigate(Pages.PAYMENTS);
+    this.setState({modalVisible: true})
   }
 
   _goLearn = () => {
@@ -66,6 +79,161 @@ class LearnStart extends Component {
       dispatch(getMyLiveTeachSession());
     });
     navigationService.navigate(Pages.SESSION);
+  }
+
+  static getDerivedStateFromProps (props, state) {
+    console.log("Payments Array = ", props.payment);
+      if (props.payment != null && props.payment != state.prevPayments) {
+        
+        let paymentArray = _.map(props.payment, item => {
+          let Brand = item.card.brand;
+          let newItem = {
+            id: item.cardId,
+            name: Brand,
+            card_name: Brand.charAt(0).toUpperCase() + Brand.slice(1) + ', ' + item.card.last4,
+            number: item.card.last4,
+            newItem: false
+          }
+          return newItem;
+        })
+
+        let firstData = paymentArray[0];
+        let imageValue = '';
+        switch(firstData.name) {
+          case 'vise':
+            imageValue = VISA_IMAGE;
+            break;
+          case 'mastercard':
+            imageValue = MASTER_IMAGE;
+            break;
+          case 'amex':
+            imageValue = AMEX_IMAGE;
+            break;
+          case 'discover':
+            imageValue = DISCOVER_IMAGE;
+            break;
+          case 'diners':
+            imageValue = DINERS_IMAGE;
+            break;
+          case 'jcb':
+            imageValue = JCB_IMAGE;
+            break;
+        }
+        
+        return {
+          paymentData: paymentArray,
+          prevPayments: props.payment,
+          currentImage: imageValue,
+          currentNumber: firstData.number
+        }
+      } 
+        return null;
+      
+      
+  }
+
+  _renderListItem =(item) => {
+      switch (item.item.name) {
+        case 'visa':
+          return (
+            <TouchableOpacity style={styles.listItem} onPress={() => this._editPayment(item.item)}>
+                <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+                  resizeMode={'contain'} source={VISA_IMAGE}
+                />
+                <Text style={styles.listText}>
+                  {'Visa, ' + item.item.number}
+                </Text>
+            </TouchableOpacity>
+          )
+        case 'mastercard': 
+          return (
+            <TouchableOpacity style={styles.listItem} onPress={() => this._editPayment(item.item)}>
+                <Image style={{width: getWidth(24), height: getHeight(16), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+                  resizeMode={'contain'} source={MASTER_IMAGE}
+                />
+                <Text style={styles.listText}>
+                  {'Mastercard, ' + item.item.number}
+                </Text>
+            </TouchableOpacity>
+          )
+        case 'amex':
+          return (
+            <TouchableOpacity style={styles.listItem} onPress={() => this._editPayment(item.item)}>
+                <Image style={{width: getWidth(24), height: getHeight(30), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+                  resizeMode={'contain'} source={AMEX_IMAGE}
+                />
+                <Text style={styles.listText}>
+                  {'American Express, ' + item.item.number}
+                </Text>
+            </TouchableOpacity>
+          )
+        case 'discover': 
+          return (
+            <TouchableOpacity style={styles.listItem} onPress={() => this._editPayment(item.item)}>
+                <Image style={{width: getWidth(20), height: getHeight(24), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+                  resizeMode={'contain'} source={DISCOVER_IMAGE}
+                />
+                <Text style={styles.listText}>
+                  {'Discover, ' + item.item.number}
+                </Text>
+            </TouchableOpacity>
+          )
+        case 'diners':
+          return (
+            <TouchableOpacity style={styles.listItem} onPress={() => this._editPayment(item.item)}>
+                <Image style={{width: getWidth(20), height: getHeight(24), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+                  resizeMode={'contain'} source={DINERS_IMAGE}
+                />
+                <Text style={styles.listText}>
+                  {'Diners Club, ' + item.item.number}
+                </Text>
+            </TouchableOpacity>
+          )
+        case 'jcb':
+          return (
+            <TouchableOpacity style={styles.listItem} onPress={() => this._editPayment(item.item)}>
+                <Image style={{width: getWidth(20), height: getHeight(24), marginLeft: getWidth(24), marginRight: getWidth(16)}}
+                  resizeMode={'contain'} source={JCB_IMAGE}
+                />
+                <Text style={styles.listText}>
+                  {'JCB, ' + item.item.number}
+                </Text>
+            </TouchableOpacity>
+          )
+      }
+  }
+
+  _editPayment = (paymentMethod) => {
+    firestore.collection('users').doc(auth.currentUser.uid).update({
+      default_paymentMethod: paymentMethod.id
+    }).then((value) => {
+      this.setState({modalVisible: false, currentNumber: paymentMethod.number});
+      switch (paymentMethod.name) {
+        case 'visa':
+          this.setState({currentImage: VISA_IMAGE});
+          break;
+        case 'mastercard':
+          this.setState({currentImage: MASTER_IMAGE});
+          break;
+        case 'amex': 
+          this.setState({currentImage: AMEX_IMAGE});
+          break;
+        case 'discover':
+          this.setState({currentImage: DISCOVER_IMAGE});
+          break;
+        case 'diners':
+          this.setState({currentImage: DINERS_IMAGE});
+          break;
+        case 'jcb':
+          this.setState({currentImage: JCB_IMAGE});
+          break;
+        default:
+          this.setState({currentImage: DINERS_IMAGE});
+          break;
+      }
+    }).catch(() => {
+      this.setState({modalVisible: false});
+    })
   }
 
   render () {
@@ -123,8 +291,11 @@ class LearnStart extends Component {
                   >
                     {/* <Text style={styles.btnText}>Home</Text> */}
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                      <Image style={{width: getWidth(24), height: getHeight(15.87)}} source={MASTER_IMAGE}/>
-                      <Text style={styles.btnText}>0874</Text>
+                      {
+                        
+                      }
+                      <Image style={{width: getWidth(24), height: getHeight(15.87)}} source={this.state.currentImage}/>
+                    <Text style={styles.btnText}>{this.state.currentNumber}</Text>
                     </View>
                     <Text style={styles.btnText}>
                       Change
@@ -142,6 +313,19 @@ class LearnStart extends Component {
                   buttonStyle={{marginTop: getHeight(22)}}
                 />
               </View>
+              {
+                this.state.modalVisible == true ?
+                <View style={{position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, marginVertical: getHeight(100), marginHorizontal: getWidth(30), justifyContent: 'center', alginItems: 'center', backgroundColor: BLACK_PRIMARY, borderRadius: getHeight(10), paddingVertical: getHeight(10)}}>
+                  <FlatList 
+                      data={this.state.paymentData}
+                      renderItem={item => this._renderListItem(item)}
+                      keyExtractor={item => item.id}
+                      contentContainerStyle={{flex: 1, width: '100%'}}
+                      style={{flex: 1, width: '100%'}}
+                    />
+                </View>
+                : null
+              }
           </Page>
           
       )
@@ -175,7 +359,8 @@ const styles = StyleSheet.create({
     btnText: {
       fontFamily: 'Montserrat-Medium',
       color: '#FFFFFF',
-      fontSize: getHeight(18)
+      fontSize: getHeight(18),
+      marginLeft: getWidth(8)
     },
     bodyText: {
       fontFamily: 'Montserrat-Medium',
@@ -206,11 +391,31 @@ const styles = StyleSheet.create({
       paddingLeft: getWidth(13),
       paddingRight: getWidth(25),
       marginBottom: getHeight(23)
+    },
+    listText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: '#FFFFFF'
+    },
+    newListText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: GREEN_PRIMARY
+    },
+    listItem: {
+      width: '100%', 
+      height: getHeight(40), 
+      flexDirection: 'row', 
+      alignItems: 'center', 
+      borderBottomColor: PURPLE_MAIN, 
+      borderBottomWidth: 2, 
+      backgroundColor: BLACK_PRIMARY
     }
 });
 
 const mapStateToProps = (state) => ({
-  user: state.user
+  user: state.user,
+  payment: state.payment
 })
 
 export default connect(mapStateToProps)(LearnStart);

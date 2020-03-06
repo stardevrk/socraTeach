@@ -21,9 +21,10 @@ export function signupLearnInfo (learnPay) {
   }
 }
 
-export function signupStripeInfo (stripeToken) {
+export function signupStripeInfo (stripeToken, card) {
   return {
     type: types.SIGNUP_STRIPE,
-    stripeToken
+    stripeToken,
+    card
   }
 }

@@ -79,7 +79,14 @@ class Payment extends Component {
     this.setState({loading: true});
     getStripeToken(this.state.cardNumber, exp_month, exp_year, this.state.cardSecurity).then((value) => {
       console.log("Stripe Response ", value.tokenId);
-      dispatch(signupStripeInfo(value.tokenId));
+      let card = {
+        name: this.state.cardName,
+        number: this.state.cardNumber,
+        exp_month: parseInt(exp_month),
+        exp_year: parseInt(exp_year),
+        cvc: this.state.cardSecurity
+      }
+      dispatch(signupStripeInfo(value.tokenId, card));
       navigationService.navigate(pages.BANK);
     }).catch(() => {
       Alert.alert(

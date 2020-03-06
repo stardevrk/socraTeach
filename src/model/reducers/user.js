@@ -1,6 +1,9 @@
 import * as types from '../actionTypes';
+import _ from 'lodash';
 
-const initialState = null;
+const initialState = {
+  express: null
+};
 
 export default function user (state = initialState, action = '') {
   switch (action.type) {
@@ -10,6 +13,18 @@ export default function user (state = initialState, action = '') {
       }
     case types.LOGOUT:
       return initialState
+    // case types.RETRIEVE_EXPRESS_ACCOUNT:
+    //   return {
+    //     ...state,
+    //     express: {
+    //       ...action.account
+    //     }
+    //   }
+    // case types.CLEAR_EXPRESS_ACCOUNT:
+    //   return {
+    //     ...state,
+    //     express: null
+    //   }
     default :
       return state
   }

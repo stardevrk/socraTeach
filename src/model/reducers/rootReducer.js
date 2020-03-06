@@ -10,6 +10,9 @@ import session from './session';
 import myLiveLearn from './myLiveLearn';
 import login from './login';
 import ltSession from './ltSession';
+import payment from './payment';
+import bank from './bank';
+import pHistory from './pHistory';
 
 export default combineReducers({
   user,
@@ -22,5 +25,8 @@ export default combineReducers({
   session,
   myLiveLearn,
   login,
-  ltSession
+  ltSession,
+  payment,
+  bank,
+  pHistory
 })

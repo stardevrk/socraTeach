@@ -106,7 +106,7 @@ class Welcome extends Component {
         xhr.open('GET', `https://us-central1-socrateach-65b77.cloudfunctions.net/proto/checkEmailDuplicate/${this.state.email}`);
         xhr.send();
 
-        xhr.onload = () => {
+        xhr.onload = () => { 
             this.setState({loading: false});
             if (xhr.status == 200) {
                 let responseData = JSON.parse(xhr.response);

@@ -8,29 +8,24 @@ import {
     SafeAreaView,
     ScrollView
 } from 'react-native';
-import Page from '../components/basePage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
 import Person from '../components/icons/person';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
-import Star from '../components/icons/star';
 import Home from '../components/icons/home';
 import Arrow from '../components/icons/arrow';
-import Clock from '../components/icons/clock';
 import Scard from '../components/icons/scard';
 import Bank from '../components/icons/bank';
 import Qmark from '../components/icons/qmark';
-import Pencil from '../components/icons/pencil';
-import Hammer from '../components/icons/hammer';
 import Hat from '../components/icons/hat';
 import Logout from '../components/icons/logout';
 import {PURPLE_MAIN, BLACK_PRIMARY} from '../constants/colors';
 import MenuItem  from '../components/baseMenuItem';
-// import { ScrollView } from 'react-native-gesture-handler';
 import {auth} from '../constants/firebase';
 import {connect} from 'react-redux';
+import {getUserPayments, getUserPaymentHistory} from '../controller/payment';
+import _ from 'lodash';
 
-const LOGO_IMAGE = require('../assets/images/logo.png');
 const MENU_LOGO = require('../assets/images/logo-menu.png')
 
 class MenuContent extends Component {
@@ -39,7 +34,9 @@ class MenuContent extends Component {
     super(props)
 
     this.state = {
-      user: {}
+      user: {},
+      prevBank: {},
+      balanceAmount: '$0.00 in the Socra'
     }
   }
     
@@ -89,17 +86,36 @@ class MenuContent extends Component {
     }
 
     static getDerivedStateFromProps (props, state) {
-      if (props.user != null) {
-        return {
-          user: props.user
+      if (props.bank != null && props.bank != state.prevBank && props.user != null) {
+        let balance = props.bank.balance;
+        console.log("Props.Balance", props.bank.balance);
+        if (balance != null) {
+          return {
+            balanceAmount: '$' + balance.total + ' in Socra',
+            prevBank: props.bank,
+            user: props.user
+          }
+        } else {
+          return null;
         }
-      } else {
-        return null;
+        
       }
+
+      return null;
+      
+    }
+
+    componentDidMount() {
+      const {dispatch} = this.props;
+      dispatch(getUserPayments());
+      dispatch(getUserPaymentHistory());
     }
 
     render () {
       // console.log("This.props === ", this.props.user);
+      const balance = this.props.bank ? this.props.bank.balance : null;
+      
+      const displayBalance = balance ? '$' + balance + ' in Socra' : '$0.00 in Socra';
       const {user} = this.state;
         return (
             <View style={styles.container}>
@@ -121,10 +137,10 @@ class MenuContent extends Component {
                       4.79
                     </Text>
                   </View>
-
+                  
                   <View style={styles.statusPart}>
                     <Text style={styles.statusText}>
-                      $24.72 in Socra
+                      {this.state.balanceAmount}
                     </Text>
                     <Text style={styles.statusBold}>
                       Teach
@@ -279,7 +295,9 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => ({
-  user: state.user
+  user: state.user,
+  payment: state.payment,
+  bank: state.bank
 })
 
 export default connect(mapStateToProps)(MenuContent);
