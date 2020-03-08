@@ -217,8 +217,8 @@ class TeachScreen extends Component {
                       }
                       style={{width: getWidth(276)}}
                       textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), marginTop: getHeight(3), height: getHeight(128)}}
-                      buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}
+                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), height: getHeight(165), marginTop: -getHeight(40)}}
+                      buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#FFFFFF', padding: getHeight(8)}}
                       dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
                       dropdownTextHighlightStyle={{color: '#FFFFFF'}}
                       onDropdownWillShow={this.modalWillShow}
@@ -231,7 +231,6 @@ class TeachScreen extends Component {
                     >
                     </ModalDropdown>
                   </View>
-                  
                 </View>
                 <View style={{width: '100%', justifyContent: 'flex-start', alignItems: 'center', marginBottom: getHeight(57)}}>
                   <BaseButton 
@@ -312,7 +311,7 @@ const styles = StyleSheet.create({
       width: '100%',
       paddingLeft: getWidth(19),
       alignItems: 'center',
-      height: getHeight(30)
+      paddingVertical: getHeight(10)
     },
     modalListText: {
       fontFamily: 'Montserrat-Regular',

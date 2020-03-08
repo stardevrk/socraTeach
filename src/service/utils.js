@@ -77,3 +77,26 @@ export const validatePhoneNumber = (number) => {
     return false;
   }
 }
+
+export const calcDiffTS = (past, current) => {
+  var difference = current - past;
+
+  var daysDifference = Math.floor(difference/1000/60/60/24);
+  difference -= daysDifference*1000*60*60*24
+
+  var hoursDifference = Math.floor(difference/1000/60/60);
+  difference -= hoursDifference*1000*60*60
+
+  var minutesDifference = Math.floor(difference/1000/60);
+  difference -= minutesDifference*1000*60
+
+  var secondsDifference = Math.floor(difference/1000);
+
+  var weekDifference = Math.floor(daysDifference / 7);
+  var monthDifference = Math.floor(daysDifference / 30);
+
+  if (monthDifference > 0) return monthDifference + 'm';
+  if (weekDifference > 0) return weekDifference + 'w';
+  if (daysDifference > 0) return daysDifference + 'd';
+  return '1d';
+}

@@ -9,8 +9,8 @@ import styles from './styles'
 // const { height, width } = Dimensions.get('window')
 const oHeight = Dimensions.get('window').height;
 const oWidth = Dimensions.get('window').width;
-const height = oHeight * 0.46;
-const width = oWidth * 0.54;
+const height = oHeight * 0.71;
+const width = oWidth * 0.80;
 
 const LABEL_TYPES = {
   NONE: 'none',
@@ -34,7 +34,6 @@ const rebuildStackAnimatedValues = (props) => {
 
   for (let position = 0; position < stackSize; position++) {
     stackPositionsAndScales[`stackPosition${position}`] = new Animated.Value(stackSeparation * position)
-    // stackPositionsAndScales[`stackPosition${-position}`] = new Animated.Value(stackSeparation * -position)
     stackPositionsAndScales[`stackScale${position}`] = new Animated.Value((100 - stackScale * position) * 0.01)
   }
 
@@ -126,9 +125,9 @@ class Swiper extends Component {
     // const { height, width } = Dimensions.get('window')
     const oHeight = Dimensions.get('window').height;
     const oWidth = Dimensions.get('window').width;
-    const height = oHeight * 0.46;
-    const width = oWidth * 0.54;
-    const horizontalMargin = oWidth * 0.23;
+    const height = oHeight * 0.71;
+    const width = oWidth * 0.80;
+    const horizontalMargin = oWidth * 0.05;
     const {
       cardVerticalMargin,
       cardHorizontalMargin,

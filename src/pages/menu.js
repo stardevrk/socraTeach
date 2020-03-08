@@ -117,6 +117,11 @@ class MenuContent extends Component {
       
       const displayBalance = balance ? '$' + balance + ' in Socra' : '$0.00 in Socra';
       const {user} = this.state;
+      let userRating = user.rating == undefined ? 0 : user.rating;
+      let displayRating = '';
+      if (userRating * 100 % 100 == 0 && userRating != 0) {
+        displayRating = userRating + '.00';
+      }
         return (
             <View style={styles.container}>
               <SafeAreaView style={styles.safeView}>
@@ -134,7 +139,9 @@ class MenuContent extends Component {
                   </View>
                   <View style={styles.markView}>
                     <Text style={styles.markTitle}>
-                      4.79
+                      {
+                        displayRating
+                      }
                     </Text>
                   </View>
                   

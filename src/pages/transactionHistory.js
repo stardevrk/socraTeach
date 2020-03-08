@@ -19,6 +19,8 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {connect} from 'react-redux';
 import { GREEN_PRIMARY, PURPLE_MAIN, BLACK_PRIMARY } from '../constants/colors';
+import {calcDiffTS} from '../service/utils';
+import _ from 'lodash';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const WORD_LOGO = require('../assets/images/word-logo.png');
@@ -68,7 +70,10 @@ class TransactionHistory extends Component {
             amount: -3,
           }
         ]
-        this.state = {}
+        this.state = {
+          prevPHistory: {},
+          pHistory: []
+        }
     }
     learnClick = () => {
         navigationService.navigate(pages.LEARN_SUBJECT);
@@ -79,7 +84,27 @@ class TransactionHistory extends Component {
     }
     
     static getDerivedStateFromProps (props, state) {
-        
+        console.log("Props Payment History === ", props.pHistory);
+        if (props.pHistory != null && props.pHistory != state.prevPHistory) {
+          let nowTS = Date.now();
+          let hisArray = _.map(props.pHistory, item => {
+            let diff = calcDiffTS(item.timestamp, nowTS);
+            let newItem = {
+              id: item.historyId,
+              name: item.userName,
+              time: diff,
+              amount: item.from != undefined ? item.amount / 100 + 0 : 0 - item.amount / 100,
+              timestamp: item.timestamp
+            }
+            return newItem;
+          });
+          let sortedArray = _.orderBy(hisArray, ['timestamp'], ['desc']);
+
+          return {
+            prevPHistory: props.pHistory,
+            pHistory: sortedArray
+          }
+        }
         return null;
     }
 
@@ -140,7 +165,7 @@ class TransactionHistory extends Component {
             <TopBarPage renderTitle={this._renderTitle}>
                 <View style={styles.container}>
                     <FlatList 
-                      data={this.historyData}
+                      data={this.state.pHistory}
                       renderItem={item => this._renderListItem(item)}
                       keyExtractor={item => item.id}
                       contentContainerStyle={{flex: 1, width: '100%'}}
@@ -211,7 +236,8 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = (state) => ({
-    subjects: state.subject
+    subjects: state.subject,
+    pHistory: state.pHistory,
   })
   
   export default connect(mapStateToProps)(TransactionHistory);

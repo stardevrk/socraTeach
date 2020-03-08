@@ -65,7 +65,9 @@ class ChooseProblem extends Component {
       newSubjectCards: false,
       modalVisible: true,
       prevProblems: {},
-      swippedCards: 0
+      swippedCards: 0,
+      zoomModalVisible: false,
+      checkedProblemImage: ''
     }
 
     props.navigation.addListener('didFocus', payload => {
@@ -131,10 +133,10 @@ class ChooseProblem extends Component {
   
     renderCard = (card, index) => {
       return (
-        <View style={{width: '100%', height: getHeight(372), backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', borderRadius: 5}}>
+        <View style={{width: '100%', height: getHeight(577), backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', borderRadius: getHeight(10)}}>
           {
             card != undefined ? 
-            <Image style={{width: '100%', height: '100%'}} resizeMode={'contain'} source={{uri: card['problemImage']}}/>
+            <Image style={{width: '100%', height: '100%', borderRadius: getHeight(10)}} resizeMode={'contain'} source={{uri: card['problemImage']}}/>
             : 
             null
           }
@@ -225,6 +227,16 @@ class ChooseProblem extends Component {
     }
   }
 
+  _checkProblem = (index) => {
+    console.log("Card Tapped! =", this.state.cards[index]);
+    let checkedProblem = this.state.cards[index];
+    this.setState({checkedProblemImage: checkedProblem['problemImage'], zoomModalVisible: true});
+  }
+
+  _removeZoomModal = () => {
+    this.setState({zoomModalVisible: false});
+  }
+
   _teachClick = () => {
     const {dispatch} = this.props;
     dispatch(getMyInitTeachList());
@@ -239,40 +251,14 @@ class ChooseProblem extends Component {
   render () {
     const {subjects} = this.props;
     return (
-        <Page forceInset={{bottom: 'never'}}>
+        <Page forceInset={{bottom: 'never', top: 'never'}}>
           <View style={styles.workingPart}>
-            <View style={{marginTop: getHeight(38), marginBottom: getHeight(10), width: '100%'}}>
+            <View style={{marginTop: getHeight(58), marginBottom: getHeight(10), width: '100%'}}>
               <TouchableOpacity style={{marginLeft: getWidth(39)}} onPress={this._goBack}>
                 <Aback size={getHeight(28)} color={'#FFFFFF'}/>
               </TouchableOpacity>
             </View>
-             <Text
-                style={styles.title}
-            >
-              Problems
-            </Text>
-            {/*<View style={styles.modalPart}>
-              <ModalDropdown options={subjects.subject} 
-                descPart={
-                    <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                }
-                style={{width: getWidth(130)}}
-                textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(150), marginTop: getHeight(3), height: getHeight(120)}}
-                dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
-                dropdownTextHighlightStyle={{color: '#FFFFFF'}}
-                onDropdownWillShow={this.modalWillShow}
-                onDropdownWillHide={this.modalWillHide}
-                renderSeparator={this.renderModalSeparator}
-                renderRow={this.renderModalListRow}
-                renderButtonText={this.renderModalListText}
-                onExtractBtnText={this._subjectSelect}
-                defaultValue={this.state.subject}
-              >
-              </ModalDropdown>
-            </View> */}
-            
-              <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(87)}}>
+              <View style={{flex: 1, width: '100%', marginBottom: getHeight(50), marginTop: getHeight(20)}}>
                 {
                   this.state.cards.length != 0 ?
                   <Swiper
@@ -284,7 +270,7 @@ class ChooseProblem extends Component {
                     onSwipedRight={this._swipeSelect}
                     onSwipedTop={() => this.onSwiped('top')}
                     onSwipedBottom={() => this.onSwiped('bottom')}
-                    onTapCard={this.swipeLeft}
+                    onTapCard={this._checkProblem}
                     cards={this.state.cards}
                     cardLength={this.state.cardLength}
                     cardIndex={this.state.cardIndex}
@@ -379,7 +365,7 @@ class ChooseProblem extends Component {
               </View> 
               {
               this.state.modalVisible == true ?
-              <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, paddingTop: getHeight(87)}}>
+              <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
                 <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
                   <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                     <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
@@ -400,14 +386,25 @@ class ChooseProblem extends Component {
               </View>
               : null
             }
-            
+            {
+              this.state.zoomModalVisible == true ?
+              <View style={{flex: 1, width: '100%', zIndex: 10, position: 'absolute', left: 0, top: 0, bottom: 0, right: 0, backgroundColor: PURPLE_MAIN}}>
+                <Image style={{position: 'absolute', left: 0, top: 0, width: '100%', height: '100%'}} resizeMode={'contain'} source={{uri: this.state.checkedProblemImage}}/>
+                <View style={{marginTop: getHeight(35), width: '100%'}}>
+                  <TouchableOpacity style={{marginLeft: getWidth(20)}} onPress={() => this._removeZoomModal()}>
+                    <Aback size={getHeight(28)} color={'#FFFFFF'}/>
+                  </TouchableOpacity>
+                </View>
+              </View>
+              : null
+            }
           </View>
-          <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
+          {/* <View style={{height: getHeight(100), width: '100%', justifyContent: 'flex-start', alignItems: 'center'}}>
             <BaseButton 
               text={'TEACH'}
               onClick={this._teachClick}
             />
-          </View>
+          </View> */}
         </Page>
     )
   }

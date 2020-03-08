@@ -228,6 +228,7 @@ class Session extends Component {
           ...item,
           name: userDoc.data().userName,
           phoneNumber: userDoc.data().phoneNumber,
+          rating: userDoc.data().rating
           // userData: userDoc.data()
         };
         newArray.push(newItem);
@@ -247,7 +248,8 @@ class Session extends Component {
           let newItem = {
             ...item,
             name: userDoc.data().userName,
-            phoneNumber: userDoc.data().phoneNumber
+            phoneNumber: userDoc.data().phoneNumber,
+            rating: userDoc.data().rating
           };
           newArray.push(newItem);
         }

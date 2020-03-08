@@ -39,6 +39,7 @@ class Signup extends Component {
       phoneNumber: '',
       emptyPhoneNumber: false,
       errorPhoneNumber: false,
+      weekPassword: false,
       emptyName: false,
       emptyEmail: false,
       emptyCountry: false,
@@ -63,6 +64,11 @@ class Signup extends Component {
       }
       if (this.state.passwordConfirm == '') {
         this.setState({emptyPasswordConfirm: true});
+        return;
+      }
+
+      if (this.state.password.length < 8) {
+        this.setState({weekPassword: true});
         return;
       }
       const {dispatch} = this.props;
@@ -149,6 +155,17 @@ class Signup extends Component {
     }
 
     render () {
+      let passwordErroText = '';
+      if (this.state.emptyPassword == true) {
+        passwordErroText = 'Required!';
+      }
+      if (this.state.passwordDismatch == true) {
+        passwordErroText = 'Password Mismatch';
+      }
+
+      if (this.state.weekPassword == true) {
+        passwordErroText = 'Your password should be at least 8 characters!'
+      }
         return (
             <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
                 <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
@@ -180,8 +197,8 @@ class Signup extends Component {
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changePassword}
-                      errorExist={this.state.emptyPassword || this.state.passwordDismatch}
-                      errorText={this.state.passwordDismatch == true ? 'Password Mismatch!' : 'Required!'}
+                      errorExist={this.state.emptyPassword || this.state.passwordDismatch || this.state.weekPassword}
+                      errorText={passwordErroText}
                   />
                   <AuthInput 
                       desc={'Confirm'}

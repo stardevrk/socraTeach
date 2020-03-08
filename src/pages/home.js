@@ -123,10 +123,10 @@ class HomeScreen extends Component {
                         <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                             <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
                             <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
-                            Add Bank Account to
+                            You will need to add the bank account to teach.
                             </Text>
                             <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
-                            Teach
+                            When you add the bank account, it will reflected a few mins later.
                             </Text>
                         </View>
                         <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}

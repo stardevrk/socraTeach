@@ -25,7 +25,7 @@ import {signupStripeInfo, signupUserInfo} from '../../model/actions/signupAC';
 import {getExpress} from '../../model/actions/userAC';
 import {connect} from 'react-redux';
 import { BLACK_PRIMARY, PURPLE_MAIN } from '../../constants/colors';
-import {auth} from '../../constants/firebase';
+import {auth, firestore} from '../../constants/firebase';
 
 const ICON_LOGO = require('../../assets/images/icon-logo.png');
 const BACK_BUTTON = require('../../assets/images/back-button.png');
@@ -61,7 +61,7 @@ class BankSetup extends Component {
       bankSkipped: false
     }));
     auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
-      dispatch(getExpress({desc: 'Express Account Will be Created'}));
+      // dispatch(getExpress({desc: 'Express Account Will be Created'}));
       let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM&state=${result.user.uid}`;
       Linking.canOpenURL(url)
       .then((supported) => {
@@ -72,7 +72,10 @@ class BankSetup extends Component {
         }
       })
       .catch((err) => console.error('An error occurred', err));
-    }).finally(() => {
+    }).catch(error => {
+      console.log("Create Firebase User Error = ", error);
+    })
+    .finally(() => {
       this.setState({loading: false});
     })
   }
@@ -90,7 +93,10 @@ class BankSetup extends Component {
 
     auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
       console.log("Signup Result = ", result);
-    }).finally(() => {
+    }).catch(error => {
+      console.log("Create Firebase User Error = ", error);
+    })
+    .finally(() => {
       this.setState({loading: false});
     })
   }

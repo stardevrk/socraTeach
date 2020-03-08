@@ -248,6 +248,8 @@ class SOLVESCREEN extends Component {
     }
 
     render () {
+      const {sessionData} = this.props;
+
       return (
         <MenuPage 
           backgroundColor={'#FFFFFF'} menuBtnColor={BLACK_PRIMARY}
@@ -316,7 +318,7 @@ class SOLVESCREEN extends Component {
                     <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} />
                   </View>
                   <View style={styles.modalTitleView}>
-                    <Text style={styles.modalTitle}>Rate Salmon</Text>
+                  <Text style={styles.modalTitle}>Rate {sessionData.name}</Text>
                   </View>
                   <View style={styles.starView}>
                     <TouchableOpacity onPress={() => {this.setState({posterRate: 1})}}>

@@ -57,6 +57,8 @@ class TeachStart extends Component {
     }
 
     render () {
+      const {sessionData} = this.props;
+      let rating = sessionData.userData.rating ? sessionData.userData.rating : 0;
         return (
             <Page>
                 <View style={styles.container} >
@@ -65,11 +67,31 @@ class TeachStart extends Component {
                     <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(40)}}>
                       <Text style={styles.bodyText}>{this.props.sessionData.name}</Text>
                       <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
-                        <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/>
-                        <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/>
-                        <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/>
-                        <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
-                        <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                        {
+                          rating > 0 ?
+                          <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/> :
+                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                        }
+                        {
+                          rating > 1 ?
+                          <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/> :
+                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                        }
+                        {
+                          rating > 2 ?
+                          <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/> :
+                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                        }
+                        {
+                          rating > 3 ?
+                          <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/> :
+                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                        }
+                        {
+                          rating > 4 ?
+                          <Star width={getWidth(28)} height={getHeight(27)} color ={PURPLE_MAIN}/> :
+                          <BStar width={getWidth(28)} height={getHeight(27)} color={'#FFFFFF'} stroke={BLACK_PRIMARY} />
+                        }
                       </View>
                       
                     </View>
