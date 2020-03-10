@@ -95,15 +95,15 @@ class TeachStart extends Component {
                       </View>
                       
                     </View>
-                    <TouchableOpacity style={styles.btnBody}
+                    {/* <TouchableOpacity style={styles.btnBody}
                     onPress={this._gotoHome}
                     >
-                      {/* <Text style={styles.btnText}>Home</Text> */}
+                      {
                       
                       <Text style={styles.btnText}>
-                        Salmon's Reviews
+                      {this.props.sessionData.name}'s Reviews
                       </Text>
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                   </View>
                   <BaseButton 
                     text={'TEACH'}

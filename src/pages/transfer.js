@@ -181,37 +181,37 @@ class Transfer extends Component {
     }
 
     _clickTransfer = () => {
-      // if (this.state.moneyAmount > this.state.available) {
-      //   Alert.alert(
-      //     'Not Available',
-      //     'You can not transfer money bigger than your available one',
-      //     [
-      //       {
-      //         text: 'OK',
-      //         onPress: () => console.log('Cancel Pressed'),
-      //         style: 'cancel'
-      //       }
-      //     ],
-      //     {cancelable: false}
-      //   )
-      //   return;
-      // }
+      if (this.state.moneyAmount > this.state.available) {
+        Alert.alert(
+          'Not Available',
+          'You can not transfer money bigger than your available one',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel'
+            }
+          ],
+          {cancelable: false}
+        )
+        return;
+      }
 
-      // if (this.state.available == 0) {
-      //   Alert.alert(
-      //     'Not Available',
-      //     'You have no available money to send',
-      //     [
-      //       {
-      //         text: 'OK',
-      //         onPress: () => console.log('Cancel Pressed'),
-      //         style: 'cancel'
-      //       }
-      //     ],
-      //     {cancelable: false}
-      //   )
-      //   return;
-      // }
+      if (this.state.available == 0) {
+        Alert.alert(
+          'Not Available',
+          'You have no available money to send',
+          [
+            {
+              text: 'OK',
+              onPress: () => console.log('Cancel Pressed'),
+              style: 'cancel'
+            }
+          ],
+          {cancelable: false}
+        )
+        return;
+      }
 
       //SENT
       console.log("Money Transfer ==== ", this.state.transferAmount);
@@ -363,7 +363,7 @@ const styles = StyleSheet.create({
       fontSize: getHeight(24),
       color: '#FFFFFF',
       width: getWidth(100),
-      textAlign: 'right',
+      textAlign: 'center',
       borderWidth: 1,
       borderColor: '#FFFFFF',
       paddingVertical: getHeight(10)

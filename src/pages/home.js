@@ -35,19 +35,21 @@ class HomeScreen extends Component {
         this.notificationOpenListener = null;
         this.notificationListener =  null;
         this.state = {
-            modalVisible: false
+            modalVisible: false,
+            leWarnVisible: false
         }
     }
     learnClick = () => {
-        navigationService.navigate(pages.LEARN_SUBJECT);
+        navigationService.navigate(pages.LEARN_SUBJECT);       
     }
 
     teachClick = () => {
         console.log("Home Express Props = ", this.props.bank.express);
-        if (this.props.bank.express != null) {
-            navigationService.navigate(pages.TEACH_SUBJECT);
-        } else {
+        if (this.props.bank.express == null) {
             this.setState({modalVisible: true});
+            
+        } else {
+            navigationService.navigate(pages.TEACH_SUBJECT);
         }
         
     }
@@ -118,26 +120,26 @@ class HomeScreen extends Component {
                     />
                     {
                     this.state.modalVisible == true ?
-                    <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
-                        <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
-                        <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                            <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
-                            <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
-                            You will need to add the bank account to teach.
-                            </Text>
-                            <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
-                            When you add the bank account, it will reflected a few mins later.
-                            </Text>
-                        </View>
-                        <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
-                        onPress={() =>{this.setState({modalVisible: false})}}
-                        >
-                            <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
-                        </TouchableOpacity>
-                        </View>
+                        <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
+                            <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
+                            <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                                <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
+                                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
+                                You will need to add the bank account to teach.
+                                </Text>
+                                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                                When you add the bank account, it will reflected a few mins later.
+                                </Text>
+                            </View>
+                            <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
+                            onPress={() =>{this.setState({modalVisible: false})}}
+                            >
+                                <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
+                            </TouchableOpacity>
+                            </View>
 
-                    </View>
-                    : null
+                        </View>
+                        : null
                     }
                 </View>
             </TopBarPage>
@@ -169,6 +171,7 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
     subjects: state.subject,
     user: state.user,
+    payment: state.payment,
     bank: state.bank
   })
   

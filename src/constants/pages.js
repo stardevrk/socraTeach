@@ -40,5 +40,6 @@ export default {
   TRANSFER: 'transfer',
   TRANSFER_STARTED: 'transfer_started',
   HELP: 'help',
-  SESSION: 'session'
+  SESSION: 'session',
+  CHANGE_USER_INFO: 'change_user_info'
 }

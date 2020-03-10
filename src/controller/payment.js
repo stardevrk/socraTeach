@@ -49,6 +49,7 @@ export function getUserPaymentHistory() {
             dispatch(clearPaymentHistory());
           }
         })
+        addListener('user_payment_history', listener)
       }
     } catch (error) {
       console.log("Get Payment History Error !", error);

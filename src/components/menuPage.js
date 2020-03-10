@@ -32,15 +32,20 @@ export default class MenuPage extends Component {
   }
 
   render () {
-    const {forceInset, titleText, rightText, renderTitle, renderRightItem, children, backgroundColor, menuBtnColor, customContainer, customHeaderBar} = this.props
+    const {forceInset, titleText, rightText, renderTitle, renderRightItem, children, backgroundColor, menuBtnColor, customContainer, customHeaderBar, menuExist} = this.props
     return (
       <Page forceInset={forceInset} backgroundColor={backgroundColor}>
         <View style={{...containerDefault, ...customContainer}}>
           <View style={{...headerDefault, ...customHeaderBar}}>
-            <NavMenuButton buttonStyle={{marginLeft: getWidth(30)}}
+            {
+              menuExist == true ?
+              <NavMenuButton buttonStyle={{marginLeft: getWidth(30)}}
                         buttonColor={menuBtnColor}
                         onClick={this.toggleMenu} 
-            />
+              />
+              :
+              <View style={{marginLeft: getWidth(50)}}></View>
+            }
             {
               renderTitle ? 
               renderTitle() :
@@ -78,7 +83,8 @@ MenuPage.defaultProps = {
   children: null,
   backgroundColor: PURPLE_MAIN,
   menuBtnColor: '#FFFFFF',
-  customHeaderBar: {}
+  customHeaderBar: {},
+  menuExist: true
 };
 
 MenuPage.propTypes = {
@@ -91,7 +97,8 @@ MenuPage.propTypes = {
   children: PropTypes.element,
   backgroundColor: PropTypes.string,
   menuBtnColor: PropTypes.string,
-  customHeaderBar: PropTypes.object
+  customHeaderBar: PropTypes.object,
+  menuExist: PropTypes.bool
 };
 
 const styles = StyleSheet.create({

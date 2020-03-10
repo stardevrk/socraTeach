@@ -3,9 +3,10 @@ import {
     StyleSheet,
     View,
     Text,
-    ActivityIndicator,
+    Alert,
     Image,
     FlatList,
+    ActivityIndicator,
     TouchableOpacity,
     Linking
 } from 'react-native';
@@ -17,6 +18,7 @@ import {connect} from 'react-redux';
 import { GREEN_PRIMARY, PURPLE_MAIN, BLACK_PRIMARY } from '../constants/colors';
 import {auth, firestore} from '../constants/firebase';
 import Bank from '../components/icons/bank';
+import _ from 'lodash';
 
 const WORD_LOGO = require('../assets/images/word-logo.png');
 const CHASE_IMAGE = require('../assets/images/bank-chase.png');
@@ -34,7 +36,8 @@ class Banks extends Component {
           }
         ]
         this.state = {
-          hasBank : false
+          hasBank : false,
+          loading: false
         }
     }
     learnClick = () => {
@@ -73,16 +76,85 @@ class Banks extends Component {
     _goSetup = () => {
       // navigationService.navigate(pages.BANK_SETUP, {prevScreen: 'banks'});
       // ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM
-      let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM&state=${auth.currentUser.uid}`;
-      Linking.canOpenURL(url)
-      .then((supported) => {
-        if (!supported) {
-          console.log("Can't handle url: " + url);
-        } else {
-          return Linking.openURL(url);
+      console.log("User Bank ----", this.props.bank);
+      if (this.props.bank != null) {
+        if (!_.isNil(this.props.bank.express)) {
+          this.setState({loading: true});
+          let xhr = new XMLHttpRequest();
+          xhr.open('GET', `https://us-central1-socrateach-65b77.cloudfunctions.net/proto/createLoginLink/${auth.currentUser.uid}`);
+          xhr.send();
+
+          xhr.onload = () => {
+              if (xhr.status == 200) {
+                  let responseData = JSON.parse(xhr.response);
+                  if (responseData['result'] == true) {
+                      let linkObject = responseData['linkObject'];
+                      console.log("Login Link Object = ", linkObject);
+                      let url = linkObject.url;
+                      Linking.canOpenURL(url)
+                      .then((supported) => {
+                        this.setState({loading: false});
+                        if (!supported) {
+                          console.log("Can't handle Loign URL: ", url);
+                        } else {
+                          return Linking.openURL(url);
+                        }
+                      }).catch(err => {
+                        this.setState({loading: false});
+                        console.log("URL Checking Error occured: ", err);
+                      });
+                  } else {
+                    this.setState({loading: false});
+                    Alert.alert(
+                      'Login Attemp Failed!',
+                      'Login Link generation Failed!',
+                      [
+                        {
+                          text: 'OK',
+                          onPress: () => console.log('Cancel Pressed'),
+                          style: 'cancel'
+                        }
+                      ],
+                      {cancelable: false}
+                    )
+                    return;
+                  }
+              } else {
+                this.setState({loading: false});
+                Alert.alert(
+                  'Login Attemp Failed!',
+                  'Login Link generation Failed!',
+                  [
+                    {
+                      text: 'OK',
+                      onPress: () => console.log('Cancel Pressed'),
+                      style: 'cancel'
+                    }
+                  ],
+                  {cancelable: false}
+                )
+                return;
+              }
+          }
         }
-      })
-      .catch((err) => console.error('An error occurred', err));
+      } else {
+        this.setState({loading: true});
+        let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi&state=${auth.currentUser.uid}`;
+        Linking.canOpenURL(url)
+        .then((supported) => {
+          this.setState({loading: false});
+          if (!supported) {
+            console.log("Can't handle url: " + url);
+          } else {
+            return Linking.openURL(url);
+          }
+        })
+        .catch((err) => {
+          this.setState({loading: false});
+          console.error('An error occurred', err)
+        });
+      }
+      
     }
 
     _goEdit = () => {
@@ -157,15 +229,22 @@ class Banks extends Component {
                         <Text style={styles.secondText}>account through </Text>
                         <Text style={styles.secondText}>Stripe</Text>
                       </View>
-                      <TouchableOpacity style={styles.btnBody}
-                      onPress={this._goSetup}
-                      >
-                        {/* <Text style={styles.btnText}>Home</Text> */}
-                        
-                        <Text style={styles.btnText}>
-                          Bank Setup
-                        </Text>
-                      </TouchableOpacity>
+                      {
+                        this.state.loading == false ?
+                        <TouchableOpacity style={styles.btnBody}
+                        onPress={this._goSetup}
+                        >
+                          {/* <Text style={styles.btnText}>Home</Text> */}
+                          
+                          <Text style={styles.btnText}>
+                            Bank Setup
+                          </Text>
+                        </TouchableOpacity>
+                        : 
+                        <View style={styles.btnBody}>
+                          <ActivityIndicator size={'small'} />
+                        </View>
+                      }
                     </View>
                 </View>
             </TopBarPage>
@@ -252,15 +331,14 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center', 
       flexDirection: 'row',
-      paddingLeft: getWidth(13),
-      paddingRight: getWidth(25),
       marginBottom: getHeight(23)
     }
 })
 
 const mapStateToProps = (state) => ({
     subjects: state.subject,
-    user: state.user
+    user: state.user,
+    bank: state.bank
   })
   
   export default connect(mapStateToProps)(Banks);

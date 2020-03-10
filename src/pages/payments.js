@@ -66,7 +66,12 @@ class Payments extends Component {
             prevPayments: props.payment
           }
         } else {
-          return null;
+          return {
+            paymentData: [{
+              id: 'new',
+              newItem: true
+            }]
+          };
         }
         
     }

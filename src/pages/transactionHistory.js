@@ -141,11 +141,11 @@ class TransactionHistory extends Component {
               {
                 item.item.amount > 0 ?
                 <Text style={styles.plusAmount}>
-                  +{item.item.amount}$
+                  +${item.item.amount}
                 </Text>
                 :
                 <Text style={styles.minusAmount}>
-                  {item.item.amount}$
+                  ${item.item.amount}
                 </Text>
               }
           </View>

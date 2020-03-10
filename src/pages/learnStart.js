@@ -8,7 +8,7 @@ import {
     Image,
     FlatList
 } from 'react-native';
-import {BLACK_PRIMARY, PURPLE_MAIN, GREEN_PRIMARY} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN, GREEN_PRIMARY, GRAY_SECONDARY} from '../constants/colors';
 import Page from '../components/basePage';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 import {connect} from 'react-redux';
@@ -18,9 +18,11 @@ import Pages from '../constants/pages';
 import Star from '../components/icons/star';
 import BStar from '../components/icons/bstar';
 import {firestore, auth} from '../constants/firebase';
+import Alert from '../components/icons/alert';
 import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 import {getMyLiveLearnSession, getMyLiveTeachSession, clearMyLTSession} from '../controller/ltsession';
 import _ from 'lodash';
+import pages from '../constants/pages';
 
 const ICON_LOGO = require('../assets/images/icon-logo.png');
 const VISA_IMAGE = require('../assets/images/visa.png');
@@ -42,7 +44,8 @@ class LearnStart extends Component {
       paymentData: [],
       prevPayments: null,
       currentImage: '',
-      currentNumber: ''
+      currentNumber: '',
+      warningVisible: false
     }
   }
 
@@ -56,12 +59,24 @@ class LearnStart extends Component {
 
   _gotoPayments = () => {
     // navigationService.navigate(Pages.PAYMENTS);
+    if (this.state.paymentData.length == 0) {
+      this.setState({warningVisible: true});
+      return;
+    }
     this.setState({modalVisible: true})
+  }
+
+  _addPayment = () => {
+    this.setState({warningVisible: false});
+    navigationService.navigate(pages.PAYMENTS);
   }
 
   _goLearn = () => {
     const {sessionData, user, dispatch} = this.props;
-    
+    if (this.state.paymentData.length == 0) {
+      this.setState({warningVisible: true});
+      return;
+    }
     firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
       acceptance: true,
       lastUpdate: Date.now()
@@ -100,7 +115,7 @@ class LearnStart extends Component {
         let firstData = paymentArray[0];
         let imageValue = '';
         switch(firstData.name) {
-          case 'vise':
+          case 'visa':
             imageValue = VISA_IMAGE;
             break;
           case 'mastercard':
@@ -326,6 +341,30 @@ class LearnStart extends Component {
                 </View>
                 : null
               }
+
+              {
+                  this.state.warningVisible == true ?
+                  <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
+                      <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
+                      <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                          <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
+                          <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
+                          Please add the payment
+                          </Text>
+                          <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                          method to learn.
+                          </Text>
+                      </View>
+                      <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
+                      onPress={() =>{this._addPayment()}}
+                      >
+                          <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
+                      </TouchableOpacity>
+                      </View>
+
+                  </View>
+                  : null
+                }
           </Page>
           
       )

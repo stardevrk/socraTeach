@@ -3,48 +3,43 @@ import {
     StyleSheet,
     Image,
     TouchableOpacity,
-    View
+    View,
+    ActivityIndicator
 } from 'react-native';
-import Page from '../../components/basePage';
-import {getWidth, getHeight} from '../../constants/dynamicSize';
-import BaseButton from '../../components/baseButton';
-import BaseInput from '../../components/baseInput';
-import AuthInput from '../../components/authInput';
-import NavButton from '../../components/navButton';
-import navigationService from '../../navigation/navigationService';
+import Page from '../components/basePage';
+import {getWidth, getHeight} from '../constants/dynamicSize';
+import BaseButton from '../components/baseButton';
+import BaseInput from '../components/baseInput';
+import AuthInput from '../components/authInput';
+import navigationService from '../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import pages from '../../constants/pages';
-import {validateEmail, validatePhoneNumber} from '../../service/utils';
+import pages from '../constants/pages';
+import {validateEmail, validatePhoneNumber} from '../service/utils';
 import {connect} from 'react-redux';
-import {signupUserInfo} from '../../model/actions/signupAC';
-import { BLACK_PRIMARY } from '../../constants/colors';
+import {signupUserInfo} from '../model/actions/signupAC';
+import { BLACK_PRIMARY } from '../constants/colors';
+import {auth, firestore} from '../constants/firebase';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
 
-const LOGO_IMAGE = require('../../assets/images/logo.png');
-const BACK_BUTTON = require('../../assets/images/back-button.png');
-const FORWARD_BUTTON = require('../../assets/images/forward-button.png');
+const LOGO_IMAGE = require('../assets/images/logo.png');
+const BACK_BUTTON = require('../assets/images/back-button.png');
+const FORWARD_BUTTON = require('../assets/images/forward-button.png');
 
-class Signup extends Component {
+@withMappedNavigationParams()
+class ChangeUserInfo extends Component {
 
   constructor(props) {
     super(props);
 
     this.state ={
-      userName: '',
-      email: '',
-      password: '',
-      passwordConfirm: '',
+      userName: props.userData ? props.userData.userName : '',
+      email: props.userData ? props.userData.email : '',
       errorEmail: false,
-      passwordDismatch: false,
-      country: '',
-      phoneNumber: '',
+      phoneNumber: props.userData ? props.userData.phoneNumber : '',
       emptyPhoneNumber: false,
       errorPhoneNumber: false,
-      weekPassword: false,
       emptyName: false,
       emptyEmail: false,
-      emptyCountry: false,
-      emptyPassword: false,
-      emptyPasswordConfirm: false
     }
   }
     
@@ -58,12 +53,9 @@ class Signup extends Component {
         this.setState({emptyPhoneNumber: true});
         return;
       }
-      if (this.state.password == '') {
-        this.setState({emptyPassword: true});
-        return;
-      }
-      if (this.state.passwordConfirm == '') {
-        this.setState({emptyPasswordConfirm: true});
+      
+      if (this.state.email == '') {
+        this.setState({emptyEmail: true});
         return;
       }
 
@@ -81,7 +73,7 @@ class Signup extends Component {
     }
 
     goBack = () => {
-      navigationService.pop();
+      navigationService.goBack();
     }
 
     _changeFirstName = (text) => {
@@ -154,73 +146,100 @@ class Signup extends Component {
 
     }
 
-    render () {
-      let passwordErroText = '';
-      if (this.state.emptyPassword == true) {
-        passwordErroText = 'Required!';
-      }
-      if (this.state.passwordDismatch == true) {
-        passwordErroText = 'Password Mismatch';
+    _goSave = () => {
+      if (this.state.userName == '') {
+        this.setState({emptyName: true});
+        return;
       }
 
-      if (this.state.weekPassword == true) {
-        passwordErroText = 'Your password should be at least 8 characters!'
+      if (this.state.phoneNumber == '') {
+        this.setState({emptyPhoneNumber: true});
+        return;
       }
+      
+      if (this.state.email == '') {
+        this.setState({emptyEmail: true});
+        return;
+      }
+
+      if (this.state.errorEmail) {
+        return;
+      }
+
+      this.setState({loading: true});
+      auth.currentUser.updateEmail(this.state.email).then((value) => {
+        firestore.collection('users').doc(auth.currentUser.uid).update({
+          phoneNumber: this.state.phoneNumber,
+          userName: this.state.userName,
+          email: this.state.email
+        }).then((value) => {
+          this.setState({loading: false});
+          console.log("Update is Finished! ", value);
+        }).catch(error => {
+          this.setState({loading: false});
+          console.log("Update is Failed: ", error);
+        });
+      }).catch(error => {
+        this.setState({loading: false});
+        console.log("Firebase Current User Email Change Failed: ", error);
+      });
+    }
+
+    render () {
         return (
-            <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
+            <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never', bottom: 'never'}}>
                 <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
                   <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
                       <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
                   </TouchableOpacity>
                   
                   <AuthInput 
+                      desc={'Email Address'}
+                      wrapperStyle={{marginBottom: getHeight(27)}}
+                      descStyle={{marginBottom: getHeight(25)}}
+                      onChangeText={this._changeEmail}
+                      errorExist={this.state.emptyEmail || this.state.errorEmail}
+                      defaultValue={this.state.email}
+                      errorText={this.state.email == true ? 'Required!' : 'Invalid Email'}
+                  />
+                  <AuthInput 
                       desc={'Full Name'}
-                      
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changeFirstName}
                       errorExist={this.state.emptyName}
+                      defaultValue={this.state.userName}
                       errorText={'Required!'}
                   />
                   <AuthInput 
                       desc={'Phone Number'}
-                      
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changePhoneNumber}
                       errorExist={this.state.emptyPhoneNumber}
+                      defaultValue={this.state.phoneNumber}
                       errorText={'Required!'}
                   />
-                  <AuthInput 
-                      desc={'Password'}
-                      pwdType={true}
-                      wrapperStyle={{marginBottom: getHeight(27)}}
-                      descStyle={{marginBottom: getHeight(25)}}
-                      onChangeText={this._changePassword}
-                      errorExist={this.state.emptyPassword || this.state.passwordDismatch || this.state.weekPassword}
-                      errorText={passwordErroText}
-                  />
-                  <AuthInput 
-                      desc={'Confirm'}
-                      pwdType={true}
-                      wrapperStyle={{marginBottom: getHeight(62)}}
-                      descStyle={{marginBottom: getHeight(25)}}
-                      onChangeText={this._changePasswordConfirm}
-                      errorExist={this.state.emptyPasswordConfirm}
-                      errorText={'Required!'}
-                  />
-                  <View style={styles.forwardBtnView}>
-                      <TouchableOpacity style={styles.forwardBtn} onPress={this.goForward}>
-                          <Image style={styles.backBtnImage} resizeMode={'contain'} source={FORWARD_BUTTON}/>
-                      </TouchableOpacity>
+                  <View style={styles.forwardBtnView}>  
+                    <BaseButton 
+                      text={'SAVE'}
+                      onClick={this._goSave}
+                    />
                   </View>
                 </KeyboardAwareScrollView>
+                {
+                  this.state.loading == true ? 
+                  <View style={styles.loadingWrapper}>
+                    <ActivityIndicator size={'large'} />
+                  </View>
+                  : null
+                }
             </Page>
         )
     }
 }
 
-Signup.navigatorStyle = {
+ChangeUserInfo.navigatorStyle = {
     navBarHidden: false,
     statusBarBlur: false
 }
@@ -237,6 +256,16 @@ const styles = StyleSheet.create({
     height: '100%',
     
   },
+  loadingWrapper: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.6)'
+  },
   logoImage: {
       width: getWidth(291),
       height: getHeight(151),
@@ -252,8 +281,11 @@ const styles = StyleSheet.create({
       height: getHeight(48)
   },
   forwardBtnView: {
-      width: '100%', 
-      alignItems: 'flex-end',
+      width: '100%',
+      flex: 1,
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+      paddingBottom: getHeight(30)
   },
   forwardBtn: {
       marginRight: getWidth(32),
@@ -263,4 +295,4 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
 })
 
-export default connect(mapStateToProps)(Signup);
+export default connect(mapStateToProps)(ChangeUserInfo);

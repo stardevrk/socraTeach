@@ -57,7 +57,7 @@ async function getUserInfo (authData) {
     let fcmToken = await message.getToken();
     console.log("FCM Token === ", fcmToken);
     firestore.collection('users').doc(userId).get().then(doc => {
-      
+      console.log("Fetch User Result = ", doc.data());
       if (doc.exists) {
         store.dispatch(fetchUser(doc.data()));
         firestore.collection('users').doc(userId).update({

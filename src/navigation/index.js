@@ -42,6 +42,7 @@ import Help from '../pages/help';
 import Session from '../pages/session';
 import PaymentEdit from '../pages/paymentEdit';
 import BankEdit from '../pages/bankEdit';
+import ChangeUserInfo from '../pages/changeUserInfo';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
@@ -80,7 +81,8 @@ const AppDrawer = createDrawerNavigator(
         [pages.TRANSFER]: Transfer,
         [pages.TRANSFER_STARTED]: TransferStarted,
         [pages.HELP]: Help,
-        [pages.SESSION]: Session
+        [pages.SESSION]: Session,
+        [pages.CHANGE_USER_INFO]: ChangeUserInfo
 
     },
     {

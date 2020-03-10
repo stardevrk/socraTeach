@@ -330,6 +330,7 @@ class LearnSolve extends Component {
             backgroundColor={'#FFFFFF'} menuBtnColor={BLACK_PRIMARY}
             renderTitle={this._renderTitle}
             renderRightItem={this._renderRightItem}
+            menuExist={false}
             >
               <Modal
                 animationType="slide"

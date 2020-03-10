@@ -6,7 +6,7 @@ import {
     ActivityIndicator,
     Image,
     SafeAreaView,
-    ScrollView
+    TouchableOpacity
 } from 'react-native';
 import {getWidth, getHeight} from '../constants/dynamicSize';
 import Person from '../components/icons/person';
@@ -25,6 +25,7 @@ import {auth} from '../constants/firebase';
 import {connect} from 'react-redux';
 import {getUserPayments, getUserPaymentHistory} from '../controller/payment';
 import _ from 'lodash';
+import Star from '../components/icons/star';
 
 const MENU_LOGO = require('../assets/images/logo-menu.png')
 
@@ -36,7 +37,7 @@ class MenuContent extends Component {
     this.state = {
       user: {},
       prevBank: {},
-      balanceAmount: '$0.00 in the Socra'
+      balanceAmount: '$0.00 in Socra'
     }
   }
     
@@ -88,20 +89,30 @@ class MenuContent extends Component {
     static getDerivedStateFromProps (props, state) {
       if (props.bank != null && props.bank != state.prevBank && props.user != null) {
         let balance = props.bank.balance;
-        console.log("Props.Balance", props.bank.balance);
+        console.log("Props.Balance", props.bank.balance, props.user);
         if (balance != null) {
           return {
             balanceAmount: '$' + balance.total + ' in Socra',
             prevBank: props.bank,
             user: props.user
           }
-        } else {
-          return null;
+        } else if (props.user != null) {
+          return {
+            user: props.user
+          };
         }
         
       }
 
       return null;
+      
+    }
+
+    _changeUserInfo = () => {
+      const {user} = this.props;
+      if (user) {
+        navigationService.navigate(pages.CHANGE_USER_INFO, {userData: user});
+      }
       
     }
 
@@ -118,19 +129,20 @@ class MenuContent extends Component {
       const displayBalance = balance ? '$' + balance + ' in Socra' : '$0.00 in Socra';
       const {user} = this.state;
       let userRating = user.rating == undefined ? 0 : user.rating;
-      let displayRating = '';
-      if (userRating * 100 % 100 == 0 && userRating != 0) {
-        displayRating = userRating + '.00';
-      }
+      let displayRating = userRating.toFixed(2);
+      // if (userRating * 100 % 100 == 0 && userRating != 0) {
+      //   displayRating = userRating + '.00';
+      // }
+      console.log("User Rating !!!!, ", displayRating, user);
         return (
             <View style={styles.container}>
               <SafeAreaView style={styles.safeView}>
                 
                 <View style={styles.contentView}>
                   <View style={styles.header}>
-                    <View style={styles.personView}>
+                    <TouchableOpacity style={styles.personView} onPress={() => {this._changeUserInfo()}}>
                       <Person size={getHeight(30)} color={'#FFFFFF'} />
-                    </View>
+                    </TouchableOpacity>
                     <Text style={styles.headerTitle}>
                       {
                         user.userName == undefined ? '' : user.userName
@@ -138,6 +150,7 @@ class MenuContent extends Component {
                     </Text>
                   </View>
                   <View style={styles.markView}>
+                    <Star width={getWidth(18)} height={getHeight(17)} color ={'#FFFFFF'}/>
                     <Text style={styles.markTitle}>
                       {
                         displayRating
@@ -160,7 +173,7 @@ class MenuContent extends Component {
                     onClick={this.onHomeClick}
                   />
                   <MenuItem 
-                    text={'Transer Balance'}
+                    text={'Transfer Balance'}
                     icon={<Arrow size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onTransfer}
                   />

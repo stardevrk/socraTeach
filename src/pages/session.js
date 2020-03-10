@@ -198,19 +198,16 @@ class Session extends Component {
       if (sessionItem.type == 'learn') {
         if (sessionItem.newExist == true) {
           navigationService.navigate(Pages.LEARN_START, {sessionData: newSessionItem});
-        } else {
-          navigationService.navigate(Pages.LEARN_SOLVE, {sessionData: newSessionItem});
-        }
-      } if (sessionItem.type == 'teach') {
+        } 
+      } 
+      if (sessionItem.type == 'teach') {
         if (sessionItem.newExist == true) {
           firestore.collection('users').doc(this.props.user.userId).collection('teach_session').doc(sessionItem.subject + '-' + sessionItem.problemId).update({
             confirmed: true,
             lastUpdate: Date.now()
           });
           navigationService.navigate(Pages.TEACH_START, {sessionData: newSessionItem});
-        } else {
-          navigationService.navigate(Pages.TEACH_SOLVE, {sessionData: newSessionItem});
-        }
+        } 
       } 
       
     }

@@ -301,7 +301,7 @@ class ChooseProblem extends Component {
                         }
                       },
                       left: {
-                        title: 'NOPE',
+                        title: 'Nope',
                         style: {
                           label: {
                             backgroundColor: 'black',
@@ -319,7 +319,7 @@ class ChooseProblem extends Component {
                         }
                       },
                       right: {
-                        title: 'LIKE',
+                        title: 'Teach',
                         style: {
                           label: {
                             backgroundColor: 'black',

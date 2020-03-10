@@ -62,7 +62,7 @@ class BankSetup extends Component {
     }));
     auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
       // dispatch(getExpress({desc: 'Express Account Will be Created'}));
-      let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM&state=${result.user.uid}`;
+      let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi&state=${result.user.uid}`;
       Linking.canOpenURL(url)
       .then((supported) => {
         if (!supported) {
