@@ -10,6 +10,7 @@ import {
     Modal,
     TouchableHighlight,
     KeyboardAvoidingView,
+    Linking
 } from 'react-native';
 import MenuPage from '../components/menuPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
@@ -70,7 +71,9 @@ class LearnSolve extends Component {
       imageModalVisible: false,
       sessionEnded: false,
       messageExist: false,
-      timerStarted: false
+      timerStarted: false,
+      timerStartedAt: 0,
+      confirmModalVisible: false
     }
 
     this.sessionListener = null;
@@ -85,22 +88,43 @@ class LearnSolve extends Component {
         navigationService.navigate(pages.LEARN_SUBJECT);
     }
 
-    singupClick = () => {
-      
-    }    
+    _callTeacher = () => {
+      if (this.state.timerStarted == true) {
+        let url = `tel:${this.state.phoneNumber}`;
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            this.setState({loading: false});
+            if (!supported) {
+              console.log("Can't handle phone call url: " + url);
+            } else {
+              return Linking.openURL(url);
+            }
+          })
+          .catch((err) => {
+            console.error('An error occurred to call phone', err)
+          });
+      }
+    }   
 
     _renderTitle = () => {
       if (this.state.problemData.teacherId !== undefined) {
         return (
           <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', flex: 1}}
-          
+            onPress={() => {this._callTeacher()}}
           >
             <Text style={styles.titleText}>
               {this.state.teacherName}
             </Text>
-            <Text style={styles.titleText}>
-              {this.state.phoneNumber}
-            </Text>
+            {
+              this.state.timerStarted == true ?
+              <View style={styles.titlePhone}>
+                <Text style={styles.titleText}>
+                  {this.state.phoneNumber}
+                </Text>
+              </View>
+              
+              : null
+            }
           </TouchableOpacity>
         )
       }
@@ -110,12 +134,17 @@ class LearnSolve extends Component {
     }
 
     _renderRightItem = () => {
+      let diff = 0
+      if (this.state.timerStartedAt != 0) {
+        diff = Math.floor((Date.now() - this.state.timerStartedAt)/1000);
+      }
+      let display = 600 - diff;
       return (
         <View style={{width: getWidth(50), marginRight: getWidth(33)}}>
           {
             this.state.timerStarted == true ?
             <TimerComponent 
-              until={600}
+              until={display}
               onFinish={() => this.timerFinish()}
               size={20}
               timeToShow={['M', 'S']}
@@ -193,7 +222,7 @@ class LearnSolve extends Component {
     }
 
     timerFinish = () => {
-      this.setState({modalVisible: true, timerStarted: false});
+      this.setState({modalVisible: true, timerStarted: false, confirmModalVisible: false});
         // timer = duration;
       this.sessionListener();
       this.messageListener();
@@ -209,76 +238,13 @@ class LearnSolve extends Component {
     }
 
     static getDerivedStateFromProps (nextprops, nextstate) {
-      /** Commented By Me*/
-      // const {session} = nextprops;
-      // const problemData = session.problemData;
-
-      // // this._getPosterName(nextprops.session.problemData.posterId);
-
-      // let newTeacherId = problemData.teacherId == undefined ? '' : problemData.teacherId;
-      // let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
-
-      // if (problemData.teacherId == undefined || problemData.teacherId == null) {
-      //   return {
-      //     subject: problemData.subject,
-      //     problemUri: problemData.problemImage,
-      //     problemData: problemData,
-      //     answer: problemData.answer,
-      //     teacherName: '',
-      //     prevTeacherId: newTeacherId,
-      //     prevProblemId : newProblemId
-      //   }
-
-      // } else {
-      //   if (nextstate.prevTeacherId != problemData.teacherId || nextstate.prevProblemId != session.problemData.problemId ) {
-          
-      //     nextprops.dispatch(getTeacherInfo(problemData.teacherId));
-      //   }
-  
-      //   // console.log("LeSolve Session ===== ", session);
-        
-  
-  
-      //   return {
-      //     subject: problemData.subject,
-      //     problemUri: problemData.problemImage,
-      //     problemData: problemData,
-      //     answer: problemData.answer,
-      //     teacherName: session.teacher != undefined ? session.teacher.userName : '',
-      //     prevTeacherId: newTeacherId,
-      //     prevProblemId : newProblemId
-      //   }
-      // }
-      /** Commented By Me*/
-
-      
-
-      
-      // return {
-      //   subject: problemData.subject,
-      //   problemUri: problemData.problemImage,
-      //   problemData: problemData,
-      //   answer: problemData.answer
-      // };
     }
 
     componentDidUpdate(prevProps, prevState, snapShot) {
-      // if (this.state.problemData.sessionExist == false) {
-      //   this.startTimer(timerDuration, timerDisplay);
-      //   return;
-      // }
-
-      // if (this.state.modalVisible == true) {
-      //   clearInterval(myTimer);
-      // }
-
-      // if (this.state.prevProblemId != prevState.prevProblemId) {
-      //   this.setState({modalVisible: false});
-      //   clearInterval(myTimer)
-      //   // console.log("TimerDuration ==== ", timerDuration );
-      //   this.startTimer(timerDuration, timerDisplay);
-      // }
+      
     }
+
+    
 
     componentDidMount() {
       // this.startTimer(timerDuration, timerDisplay);
@@ -292,15 +258,22 @@ class LearnSolve extends Component {
           })
           this.sessionListener = firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).onSnapshot((sn) => {
             let currentProblem = sn.data();
-            if (currentProblem.sessionStarted == 10) {
+            if (currentProblem.sessionStarted > 100) { // sessionStarted has value of timestamp of teacher start to teach.
               // this.startTimer(this.timerDuration, this.timerDisplay);
-              this.setState({timerStarted: true});
+              this.setState({timerStarted: true, timerStartedAt: currentProblem.sessionStarted});
             }
           })
 
           this.messageListener = firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).collection('messages').onSnapshot(sn => {
-            if (sn.docs.length > 0)
-              this.setState({messageExist: true})
+            if (sn.docs.length > 0) {
+              this.setState({messageExist: false});
+              sn.forEach(doc => {
+                let messageData = doc.data();
+                if (messageData.sentBy != auth.currentUser.uid) {
+                  this.setState({messageExist: true})
+                }
+              })
+            }
             else
               this.setState({messageExist: false});
           })
@@ -322,6 +295,18 @@ class LearnSolve extends Component {
 
     componentWillUnmount() {
       this.messageListener();
+    }
+
+    _forceFinishSession = () => {
+      const {sessionData} = this.props;
+      firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+        forceFinished: Date.now()
+      });
+      this.timerFinish();
+    }
+
+    _clickEndSession = () => {
+      this.setState({confirmModalVisible: true, timerStarted: true});
     }
 
     render () {
@@ -368,8 +353,19 @@ class LearnSolve extends Component {
                 </View> */}
                 {
                   this.state.problemData.teacherId !== undefined ? 
-                  <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end', paddingRight: getWidth(30)}}>
-                    <TouchableOpacity style={{width: getWidth(50), height: getHeight(40), justifyContent: 'center', alignItems: 'center'}} onPress={() => this._clickChat()}>
+                  <View style={{width: '100%', height: getHeight(40), justifyContent: 'flex-start', alignItems: 'flex-end'}}>
+                    {
+                      this.state.timerStarted == true ?
+                      <View style={{position: 'absolute', left: 0, top: 0, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                        <TouchableOpacity style={styles.btnEndSession} onPress={() => {this._clickEndSession()}}>
+                          <Text style={styles.btnESText}>
+                            End Session
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                      : null
+                    }
+                    <TouchableOpacity style={{width: getWidth(50), height: getHeight(40), justifyContent: 'center', alignItems: 'center', marginRight: getWidth(30)}} onPress={() => this._clickChat()}>
                       <View>
                         <Chat size={getHeight(30)} color={'#000000'} /> 
                       </View>
@@ -382,6 +378,35 @@ class LearnSolve extends Component {
                         null
                       }
                     </TouchableOpacity>
+                  </View>
+                  : null
+                }
+                {
+                  this.state.confirmModalVisible == true ?
+                  <View style={styles.modalContainerView}>
+                    <View style={styles.modalView}>
+                      <View style={styles.modalMark}>
+                        <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} /> 
+                      </View>
+                      <View style={styles.modalSessionView}>
+                        <Text style={styles.modalTitle}>Are you sure?</Text>
+                      </View>
+                      
+                      <View style={styles.modalBtnPrimary}>
+                        <TouchableOpacity style={styles.modalBtn} onPress={() => {this._forceFinishSession()}}>
+                          <Text style={styles.modalBtnText}>
+                            Yes
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                      <View style={styles.modalBtnView}>
+                        <TouchableOpacity style={styles.modalBtn} onPress={() => {this.setState({confirmModalVisible: false, timerStarted: true})}}>
+                          <Text style={styles.modalBtnText}>
+                            Cancel
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
                   </View>
                   : null
                 }
@@ -491,6 +516,10 @@ const styles = StyleSheet.create({
       fontSize: getHeight(16),
       color: BLACK_PRIMARY
     },
+    titlePhone:{
+      borderColor: BLACK_PRIMARY,
+      borderBottomWidth: 1
+    },
     modalView:{
       backgroundColor: PURPLE_MAIN,
       width: getWidth(244),
@@ -532,6 +561,12 @@ const styles = StyleSheet.create({
       alignItems: 'center',
       height: getHeight(36)
     },
+    modalSessionView: {
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      flex: 1
+    },
     modalTitle: {
       fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(20),
@@ -560,6 +595,13 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       alignItems: 'center',
       marginBottom: getHeight(23)
+    },
+    modalBtnPrimary: {
+      flex: 1,
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: getHeight(10)
     },
     modalBtn: {
       width: getWidth(220),
@@ -592,6 +634,19 @@ const styles = StyleSheet.create({
     modalImage: {
       flex: 1,
       width: '100%'
+    },
+    btnEndSession: {
+      width: getWidth(184),
+      height: getHeight(36),
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: 'rgba(58, 58, 60, 0.8)',
+      borderRadius: getHeight(5)
+    },
+    btnESText: {
+      color: '#FFFFFF',
+      fontSize: getHeight(18),
+      fontFamily: 'Montserrat-Medium'
     }
 })
 

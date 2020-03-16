@@ -145,13 +145,6 @@ class Signup extends Component {
       if (number != '') {
         this.setState({emptyPhoneNumber: false});
       }
-
-      // if (!validatePhoneNumber(number)) {
-      //   this.setState({errorPhoneNumber: true});
-      // } else {
-      //   this.setState({errorPhoneNumber: false});
-      // }
-
     }
 
     render () {
@@ -182,9 +175,9 @@ class Signup extends Component {
                       errorExist={this.state.emptyName}
                       errorText={'Required!'}
                   />
-                  <AuthInput 
+                  <AuthInput
                       desc={'Phone Number'}
-                      
+                      placeholder={'6304086670'}
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changePhoneNumber}

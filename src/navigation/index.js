@@ -43,6 +43,7 @@ import Session from '../pages/session';
 import PaymentEdit from '../pages/paymentEdit';
 import BankEdit from '../pages/bankEdit';
 import ChangeUserInfo from '../pages/changeUserInfo';
+import { getWidth } from '../constants/dynamicSize';
 
 const navigatorConfig = {
     defaultNavigationOptions: {
@@ -88,7 +89,10 @@ const AppDrawer = createDrawerNavigator(
     {
         initialRouteName: pages.HOME_SCREEN,
         contentComponent: MenuContent,
-        overlayColor: 'rgba(0, 0, 0, 0.7)'
+        drawerLockMode: 'locked-opened',
+        edgeWidth: 0,
+        overlayColor: 'rgba(0, 0, 0, 0.9)',
+        drawerWidth: getWidth(283)
     }
 );
 

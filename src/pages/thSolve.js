@@ -6,10 +6,11 @@ import {
     ActivityIndicator,
     Image,
     TouchableOpacity,
-    Dimensions,
+    Alert,
     TouchableHighlight,
     TextInput,
-    Modal
+    Modal,
+    AppState
 } from 'react-native';
 import Page from '../components/basePage';
 import MenuPage from '../components/menuPage';
@@ -51,13 +52,15 @@ class SOLVESCREEN extends Component {
       phoneNumber: '',
       imageModalVisible: false,
       messageExist: false,
-      timerStarted: false
+      timerStarted: false,
+      forceSessionFinished: false,
     }
 
     this.timerDuration = 60 * 10;
     this.timerDisplay = '10:00';
     this.myTimer = null;
     this.messageListener = null;
+    this.studentSessionListener = null;
   }
     
     learnClick = () => {
@@ -71,13 +74,12 @@ class SOLVESCREEN extends Component {
     _renderTitle = () => {
       return (
         <TouchableOpacity style={{justifyContent: 'center', alignItems: 'center', flex: 1, paddingRight: getWidth(66)}}
-        
         >
           <Text style={styles.titleText}>
             {this.state.posterName}
           </Text>
           <Text style={styles.titleText}>
-            {this.state.phoneNumber}
+            
           </Text>
         </TouchableOpacity>
       )
@@ -162,57 +164,27 @@ class SOLVESCREEN extends Component {
       navigationService.reset(pages.LOADING);
     }
 
-    componentDidUpdate(prevProps, prevState, snapShot) {
-      // if (this.state.problemData.sessionExist == false) {
-      //   this.startTimer(timerDuration, timerDisplay);
-      //   return;
-      // }
-
-      // if (this.state.modalVisible == true) {
-      //   // clearInterval(myTimer);
-      // }
-
-      // if (this.state.prevProblemId != prevState.prevProblemId) {
-      //   this.setState({modalVisible: false});
-      //   // clearInterval(myTimer)
-      //   // console.log("TimerDuration ==== ", timerDuration );
-      //   // this.startTimer(timerDuration, timerDisplay);
-      // }
-    }
-
-    static getDerivedStateFromProps (nextprops, nextstate) {
-      /** Commented By Me*/
-      // const {session} = nextprops;
-
-      // if (nextstate.prevPosterId != session.problemData.posterId || nextstate.prevProblemId != session.problemData.problemId) {
-      //   // clearInterval(myTimer);
-        
-      //   // SOLVESCREEN.startTimer(timerDuration, timerDisplay);
-      //   nextprops.dispatch(getPosterInfo(session.problemData.posterId));  
-      // }
-
-      // let newPosterId = session.problemData.posterId == undefined ? '' : session.problemData.posterId;
-      // let newProblemId = session.problemData.problemId == undefined ? '' : session.problemData.problemId;
-
-      // return {
-      //   subject: session.subject,
-      //   problemUri: session.problemData.problemImage,
-      //   problemData: session.problemData,
-      //   posterName: session.poster != undefined ? session.poster.userName : '',
-      //   prevPosterId: newPosterId,
-      //   prevProblemId : newProblemId
-      // };
-      /** Commented By Me*/
-    }
-
     _clickChat =() =>{
       // clearInterval(myTimer);
       navigationService.navigate(pages.CHAT_SCREEN, {subject: this.state.subject, problem: this.state.problemData, prevScreen: 'thSolve', sessionData: this.props.sessionData});
       // this.setState({chatting: true});  
     }
 
+    _handleAppStateChange = (nextAppState) => {
+      const {sessionData} = this.props;
+      if (nextAppState == 'inactive') {
+        console.log("App is closed");
+        firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).update({
+          teacherClosed: Date.now()
+        }).then((value) => {
+          // this.startTimer(this.timerDuration, this.timerDisplay);
+        })
+      }
+    }
+
     componentDidMount() {
       // this.startTimer(timerDuration, timerDisplay);
+      AppState.addEventListener('change', this._handleAppStateChange);
       const {sessionData} =  this.props;
       this.setState({subject: sessionData.subject});
       firestore.collection('users').doc(sessionData.userId).get().then(doc => {
@@ -222,8 +194,15 @@ class SOLVESCREEN extends Component {
         if (doc.exists) {
           this.setState({problemData: doc.data(), problemUri: doc.data().problemImage});
           this.messageListener = firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).collection('messages').onSnapshot(sn => {
-            if (sn.docs.length > 0)
-              this.setState({messageExist: true})
+            if (sn.docs.length > 0) {
+              this.setState({messageExist: false});
+              sn.forEach(doc => {
+                let messageData = doc.data();
+                if (messageData.sentBy != auth.currentUser.uid) {
+                  this.setState({messageExist: true})
+                }
+              })
+            }
             else
               this.setState({messageExist: false});
           })  
@@ -231,10 +210,23 @@ class SOLVESCREEN extends Component {
         
       })
 
+      this.studentSessionListener = firestore.collection('users').doc(sessionData.userId).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).onSnapshot((sn) => {
+        if (sn.exists) {
+          let studentSessionData = sn.data();
+          if (studentSessionData.forceFinished != undefined && studentSessionData.forceFinished > 100) {
+            // Student finished the session Before time
+            this.setState({forceSessionFinished: true});
+          }
+        }
+      })
+
       firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).update({
-        sessionStarted: 10
+        sessionStarted: Date.now()
       }).then((value) => {
         // this.startTimer(this.timerDuration, this.timerDisplay);
+        firestore.collection('users').doc(sessionData.userId).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+          shouldPay: Date.now()
+        });
         this.setState({timerStarted: true});
       })
     }
@@ -245,6 +237,7 @@ class SOLVESCREEN extends Component {
 
     componentWillUnmount() {
       this.messageListener();
+      AppState.removeEventListener('change', this._handleAppStateChange);
     }
 
     render () {
@@ -319,7 +312,7 @@ class SOLVESCREEN extends Component {
                     <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} />
                   </View>
                   <View style={styles.modalTitleView}>
-                  <Text style={styles.modalTitle}>Rate {sessionData.name}</Text>
+                  <Text style={styles.modalTitle}>Rate Your Student</Text>
                   </View>
                   <View style={styles.starView}>
                     <TouchableOpacity onPress={() => {this.setState({posterRate: 1})}}>
@@ -366,7 +359,7 @@ class SOLVESCREEN extends Component {
                   
                   <View style={styles.modalTimeView}>
                     <Text style={styles.modalTime}>
-                      $3.00
+                      +$2.00
                     </Text>
                   </View>
                   <View style={{flex: 1}}>
@@ -376,6 +369,32 @@ class SOLVESCREEN extends Component {
                     <TouchableOpacity style={styles.modalBtn} onPress={() => {this._finishSession()}}>
                       <Text style={styles.modalBtnText}>
                         Home
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+              : null
+            }
+            {
+              this.state.forceSessionFinished == true ?
+              <View style={styles.modalContainerView}>
+                <View style={styles.modalView}>
+                  <View style={styles.modalMark}>
+                    <Image style={styles.modalLogoLeft} source={MARK_IMAGE} resizeMode={'contain'} />
+                  </View>
+                  <View style={styles.modalTitleView}>
+                    <Text style={styles.modalTitle}>Your Student finished</Text>
+                    <Text style={styles.modalTitle}>this session</Text>
+                  </View>
+                  
+                  <View style={{flex: 1}}>
+                    
+                  </View>
+                  <View style={styles.modalBtnView}>
+                    <TouchableOpacity style={styles.modalBtn} onPress={() => {this.setState({modalVisible: true, forceSessionFinished: false, timerStarted: false})}}>
+                      <Text style={styles.modalBtnText}>
+                        OK
                       </Text>
                     </TouchableOpacity>
                   </View>

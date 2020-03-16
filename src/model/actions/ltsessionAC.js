@@ -20,3 +20,15 @@ export function clearLTSession() {
   }
 }
 
+export function clearLearnSession() {
+  return {
+    type: types.LEARN_SESSION_CLEAR
+  }
+}
+
+export function clearTeachSession () {
+  return {
+    type: types.TEACH_SESSION_CLEAR
+  }
+}
+

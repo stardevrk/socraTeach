@@ -213,6 +213,7 @@ class ChangeUserInfo extends Component {
                   />
                   <AuthInput 
                       desc={'Phone Number'}
+                      placeholder={'6304086670'}
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changePhoneNumber}

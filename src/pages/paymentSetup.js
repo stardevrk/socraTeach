@@ -159,7 +159,7 @@ class PaymentSetup extends Component {
             this.state.loading == true ? 
             <View style={styles.loadingWrapper}>
               <ActivityIndicator size={'large'} />
-              <Text style={{color: 'white', fontFamily: 'Montserrat-Medium', fontSize: getHeight(14), width: '100%', textAlign: 'center'}}>New Card maybe appear after a few seconds.</Text>
+              <Text style={{color: 'white', fontFamily: 'Montserrat-Medium', fontSize: getHeight(14), width: '100%', textAlign: 'center'}}>Your card will appear in a few seconds.</Text>
             </View>
             :
             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>

@@ -145,7 +145,7 @@ class TransactionHistory extends Component {
                 </Text>
                 :
                 <Text style={styles.minusAmount}>
-                  ${item.item.amount}
+                  -${0 - item.item.amount}
                 </Text>
               }
           </View>

@@ -38,6 +38,10 @@ class HomeScreen extends Component {
             modalVisible: false,
             leWarnVisible: false
         }
+
+        const {dispatch} = props;
+        dispatch(getExpressAccount());
+        dispatch(fetchBalance());
     }
     learnClick = () => {
         navigationService.navigate(pages.LEARN_SUBJECT);       
@@ -124,10 +128,10 @@ class HomeScreen extends Component {
                             <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
                             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                                 <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
-                                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
+                                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29), width: '100%', textAlign: 'center'}}>
                                 You will need to add the bank account to teach.
                                 </Text>
-                                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), width: '100%', textAlign: 'center'}}>
                                 When you add the bank account, it will reflected a few mins later.
                                 </Text>
                             </View>

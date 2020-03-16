@@ -70,6 +70,7 @@ class CountDown extends React.Component {
   }
 
   _handleAppStateChange = currentAppState => {
+    console.log("App State Changed on Timer Component!!!!");
     const {until, wentBackgroundAt} = this.state;
     if (currentAppState === 'active' && wentBackgroundAt && this.props.running) {
       const diff = (Date.now() - wentBackgroundAt) / 1000.0;

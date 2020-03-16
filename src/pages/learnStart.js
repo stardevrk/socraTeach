@@ -45,7 +45,8 @@ class LearnStart extends Component {
       prevPayments: null,
       currentImage: '',
       currentNumber: '',
-      warningVisible: false
+      warningVisible: false,
+      firstPayment: {}
     }
   }
 
@@ -93,6 +94,9 @@ class LearnStart extends Component {
       dispatch(getMyLiveLearnSession());
       dispatch(getMyLiveTeachSession());
     });
+    firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).update({
+      sessionExist: false
+    })
     navigationService.navigate(Pages.SESSION);
   }
 
@@ -139,7 +143,8 @@ class LearnStart extends Component {
           paymentData: paymentArray,
           prevPayments: props.payment,
           currentImage: imageValue,
-          currentNumber: firstData.number
+          currentNumber: firstData.number,
+          firstPayment: firstData
         }
       } 
         return null;
@@ -248,6 +253,38 @@ class LearnStart extends Component {
       }
     }).catch(() => {
       this.setState({modalVisible: false});
+    })
+  }
+
+  componentDidMount() {
+    firestore.collection('users').doc(auth.currentUser.uid).update({
+      default_paymentMethod: this.state.firstPayment.id
+    }).then((value) => {
+      
+      switch (this.state.firstPayment.name) {
+        case 'visa':
+          this.setState({currentImage: VISA_IMAGE});
+          break;
+        case 'mastercard':
+          this.setState({currentImage: MASTER_IMAGE});
+          break;
+        case 'amex': 
+          this.setState({currentImage: AMEX_IMAGE});
+          break;
+        case 'discover':
+          this.setState({currentImage: DISCOVER_IMAGE});
+          break;
+        case 'diners':
+          this.setState({currentImage: DINERS_IMAGE});
+          break;
+        case 'jcb':
+          this.setState({currentImage: JCB_IMAGE});
+          break;
+        default:
+          this.setState({currentImage: DINERS_IMAGE});
+          break;
+      }
+    }).catch(() => {
     })
   }
 

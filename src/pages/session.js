@@ -40,6 +40,9 @@ class Session extends Component {
           prevLearnSession: {},
           prevTeachSession: {}
         }
+
+        this.learnListener = null;
+        this.teachListener = null;
     }
 
     static getDerivedStateFromProps (props, state) {
@@ -52,7 +55,7 @@ class Session extends Component {
             type: 'learn', 
             teacherPhoneNumber: item.teacherPhoneNumber,
             acceptance: item.acceptance,
-            name: '',
+            name: item.teacherName ? item.teacherName : '',
             userId: item.teacherId,
             problemId: item.problemId,
             subject: item.subject,
@@ -76,7 +79,7 @@ class Session extends Component {
             lastUpdate: item.lastUpdate,
             newExist: item.confirmed == false ? true: false,
             userId: item.posterId,
-            name: '',
+            name: item.posterName ? item.posterName : '',
             problemId: item.problemId
           }
           
@@ -213,6 +216,7 @@ class Session extends Component {
     }
 
     async componentDidMount() {
+      this.setState({loading: true})
       PushNotificationIOS.setApplicationIconBadgeNumber(0);
       firestore.collection('users').doc(auth.currentUser.uid).update({
         badge: 0
@@ -221,17 +225,22 @@ class Session extends Component {
       let newArray = []
       for (const item of stateArray) {
         let userDoc = await firestore.collection('users').doc(item.userId).get();
-        let newItem = {
-          ...item,
-          name: userDoc.data().userName,
-          phoneNumber: userDoc.data().phoneNumber,
-          rating: userDoc.data().rating
-          // userData: userDoc.data()
-        };
-        newArray.push(newItem);
+        console.log("Notification User Id = ", item.userId);
+        if (userDoc.exists) {
+          let newItem = {
+            ...item,
+            name: userDoc.data().userName,
+            phoneNumber: userDoc.data().phoneNumber,
+            rating: userDoc.data().rating
+            // userData: userDoc.data()
+          };
+          newArray.push(newItem);
+        } else {
+          newArray.push(item);
+        }
       }
 
-      this.setState({sessionData: newArray});
+      this.setState({sessionData: newArray, loading: false});
     }
 
     async componentDidUpdate(prevProps, prevState) {
@@ -240,17 +249,22 @@ class Session extends Component {
       let learnData = this.props.learnSession;
       let teachData = this.props.teachSession;
       if (prevState.prevLearnSession != learnData || prevState.prevTeachSession != teachData) {
+        this.setState({loading: true})
         for (const item of stateArray) {
           let userDoc = await firestore.collection('users').doc(item.userId).get();
-          let newItem = {
-            ...item,
-            name: userDoc.data().userName,
-            phoneNumber: userDoc.data().phoneNumber,
-            rating: userDoc.data().rating
-          };
-          newArray.push(newItem);
+          if (userDoc.exists) {
+            let newItem = {
+              ...item,
+              name: userDoc.data().userName,
+              phoneNumber: userDoc.data().phoneNumber,
+              rating: userDoc.data().rating
+            };
+            newArray.push(newItem);
+          } else {
+            newArray.push(item);
+          }
         }
-        this.setState({sessionData: newArray});
+        this.setState({sessionData: newArray, loading: false});
       }
       
     }
@@ -268,6 +282,13 @@ class Session extends Component {
                       style={{flex: 1, width: '100%'}}
                     />
                 </View>
+                {
+                  this.state.loading == true ?
+                  <View style={styles.loadingWrapper}>
+                    <ActivityIndicator />
+                  </View>
+                  : null
+                }
             </TopBarPage>
         )
     }
@@ -328,6 +349,16 @@ const styles = StyleSheet.create({
       fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(14),
       color: 'white'
+    },
+    loadingWrapper: {
+      position: 'absolute',
+      justifyContent: 'center',
+      alignItems: 'center',
+      left: 0,
+      top: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.4)'
     }
 })
 

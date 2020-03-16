@@ -149,11 +149,16 @@ class Login extends Component {
                             errorText={this.state.mismatch == true ? 'Incorrect Password or Email!' : 'Required!'}
                             autoFocus={true}
                         />
-                        <TouchableOpacity style={{marginBottom: getHeight(45), paddingLeft: getWidth(33), paddingRight: getWidth(234)}}
+                        <TouchableOpacity style={{marginBottom: getHeight(45), marginLeft: getWidth(33), width: getWidth(108), flexDirection: 'row'}}
                         onPress={this._forgotpasswordClick}
                         >
-                            <Text style={styles.forgotText}>Forgot Password?</Text>
-                            <View style={{height: 1, width: '100%', backgroundColor: '#FFFFFF', marginTop: -getHeight(2)}}></View>
+                            <View>
+                                <Text style={styles.forgotText}>Forgot Password?</Text>
+                                <View style={{height: 1, backgroundColor: '#FFFFFF', marginTop: -getHeight(2)}}></View>
+                            </View>
+                            <View style={{flex: 1}}>
+
+                            </View>
                         </TouchableOpacity>
                         <View style={styles.forwardBtnView}>
                             <TouchableOpacity style={styles.forwardBtn} onPress={this._forwardClick}>
@@ -163,7 +168,7 @@ class Login extends Component {
                     </KeyboardAwareScrollView>
                     :
                     <View style={styles.modalWrapper}>
-                        <Image style={{marginTop: getHeight(120), width: getWidth(156), height: getHeight(82)}} source={LOGO_IMAGE} />
+                        <Image style={{marginTop: getHeight(120), width: getWidth(156), height: getHeight(82)}} source={LOGO_IMAGE} resizeMode={'contain'}/>
                         <View style={styles.modalView}>
                             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                                 <Text style={styles.descText}>

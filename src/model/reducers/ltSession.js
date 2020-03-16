@@ -24,6 +24,16 @@ export default function user (state = initialState, action = '') {
           ...action.sessionData
         }
       }
+    case types.LEARN_SESSION_CLEAR: 
+      return {
+        ...state,
+        learn_session: {}
+      }
+    case types.TEACH_SESSION_CLEAR:
+      return {
+        ...state,
+        teach_session: {}
+      }
     case types.LTSESSION_CLEAR:
       return initialState;
     default :

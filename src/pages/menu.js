@@ -172,11 +172,11 @@ class MenuContent extends Component {
                     icon={<Home size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this.onHomeClick}
                   />
-                  <MenuItem 
+                  {/* <MenuItem 
                     text={'Transfer Balance'}
                     icon={<Arrow size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onTransfer}
-                  />
+                  /> */}
                   {/* <MenuItem 
                     text={'Teaching History'}
                     icon={<Clock size={getHeight(20)} color={'#FFFFFF'} />}
@@ -193,7 +193,7 @@ class MenuContent extends Component {
                     onClick={this._onTransactionHistory}
                   />
                   <MenuItem 
-                    text={'Bank Setup'}
+                    text={'Bank Portal'}
                     icon={<Bank size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onBanks}
                   />

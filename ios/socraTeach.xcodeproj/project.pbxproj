@@ -687,7 +687,7 @@
 				CODE_SIGN_ENTITLEMENTS = socraTeach/SocraTeach.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.25;
+				CURRENT_PROJECT_VERSION = 1.35;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = SF47AY2WUX;
 				HEADER_SEARCH_PATHS = (
@@ -723,7 +723,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.socrateach;
 				PRODUCT_NAME = SocraTeach;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Debug;
@@ -736,7 +736,7 @@
 				CODE_SIGN_ENTITLEMENTS = socraTeach/SocraTeach.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1.25;
+				CURRENT_PROJECT_VERSION = 1.35;
 				DEVELOPMENT_TEAM = SF47AY2WUX;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -771,7 +771,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.socrateach;
 				PRODUCT_NAME = SocraTeach;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
 			name = Release;

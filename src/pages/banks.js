@@ -77,6 +77,21 @@ class Banks extends Component {
       // navigationService.navigate(pages.BANK_SETUP, {prevScreen: 'banks'});
       // ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM
       console.log("User Bank ----", this.props.bank);
+      // let url = `tel:18642581811`;
+      // Linking.canOpenURL(url)
+      //   .then((supported) => {
+      //     this.setState({loading: false});
+      //     if (!supported) {
+      //       console.log("Can't handle url: " + url);
+      //     } else {
+      //       return Linking.openURL(url);
+      //     }
+      //   })
+      //   .catch((err) => {
+          
+      //     console.error('An error occurred', err)
+      //   });
+
       if (this.props.bank != null) {
         if (!_.isNil(this.props.bank.express)) {
           this.setState({loading: true});
@@ -136,6 +151,23 @@ class Banks extends Component {
                 return;
               }
           }
+        } else {
+          this.setState({loading: true});
+          let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi&state=${auth.currentUser.uid}`;
+          Linking.canOpenURL(url)
+          .then((supported) => {
+            this.setState({loading: false});
+            if (!supported) {
+              console.log("Can't handle url: " + url);
+            } else {
+              return Linking.openURL(url);
+            }
+          })
+          .catch((err) => {
+            this.setState({loading: false});
+            console.error('An error occurred', err)
+          });
+        
         }
       } else {
         this.setState({loading: true});
@@ -212,22 +244,39 @@ class Banks extends Component {
     }
 
     render () {
+        let balance = 0;
+        const {bank} = this.props;
+        if (bank != null) {
+          if (bank.balance != null) {
+            balance = bank.balance.total;
+          }
+        }
+        let display = balance.toFixed();
         return (
-            <TopBarPage titleText={'BANK SETUP'}>
+            <TopBarPage titleText={'BANK'}>
                 <View style={styles.container}>
-                    {/* <FlatList 
-                      data={this.paymentsData}
-                      renderItem={item => this._renderListItem(item)}
-                      keyExtractor={item => item.id}
-                      contentContainerStyle={{flex: 1, width: '100%'}}
-                      style={{flex: 1, width: '100%'}}
-                    /> */}
+                    <View style={styles.upperTextView}>
+                      <View style={{width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row'}}>
+                        <Text style={styles.upperText}>
+                          Your Socra
+                        </Text>
+                        <Text style={styles.upperTextBold}>
+                          {'Teach '}
+                        </Text>
+                        <Text style={styles.upperText}>
+                          balance
+                        </Text>
+                      </View>
+                      <Text style={styles.upperText}>
+                        is ${display}
+                      </Text>
+                    </View>
                     <View style={styles.modal}>
                       <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(40)}}>
                         <Bank size={getHeight(48)} color={BLACK_PRIMARY} />
-                        <Text style={styles.bodyText}>Add or change bank</Text>
-                        <Text style={styles.secondText}>account through </Text>
-                        <Text style={styles.secondText}>Stripe</Text>
+                        <Text style={styles.bodyText}>Add/edit bank</Text>
+                        <Text style={styles.secondText}>information and view</Text>
+                        <Text style={styles.secondText}>account balance</Text>
                       </View>
                       {
                         this.state.loading == false ?
@@ -237,7 +286,7 @@ class Banks extends Component {
                           {/* <Text style={styles.btnText}>Home</Text> */}
                           
                           <Text style={styles.btnText}>
-                            Bank Setup
+                            Stripe Bank Portal
                           </Text>
                         </TouchableOpacity>
                         : 
@@ -245,6 +294,14 @@ class Banks extends Component {
                           <ActivityIndicator size={'small'} />
                         </View>
                       }
+                    </View>
+                    <View style={styles.lowerTextView}>
+                      <Text style={styles.lowerText}>
+                        Your balance is transferred to your
+                      </Text>
+                      <Text style={styles.lowerText}>
+                        bank account by Stripe daily
+                      </Text>
                     </View>
                 </View>
             </TopBarPage>
@@ -332,6 +389,33 @@ const styles = StyleSheet.create({
       alignItems: 'center', 
       flexDirection: 'row',
       marginBottom: getHeight(23)
+    },
+    upperTextView: {
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginBottom: getHeight(52)
+    },
+    upperText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(24),
+      color: '#FFFFFF'
+    },
+    upperTextBold: {
+      fontFamily: 'Montserrat-Bold',
+      fontSize: getHeight(24),
+      color: '#FFFFFF'
+    },
+    lowerTextView: {
+      width: '100%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: getHeight(52)
+    },
+    lowerText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(16),
+      color: '#FFFFFF'
     }
 })
 

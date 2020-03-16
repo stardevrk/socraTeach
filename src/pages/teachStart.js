@@ -65,7 +65,7 @@ class TeachStart extends Component {
                   <Image style={{width: getWidth(155), height: getHeight(82)}} resizeMode={'contain'} source={ICON_LOGO}/>
                   <View style={styles.modal}>
                     <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', paddingBottom: getHeight(40)}}>
-                      <Text style={styles.bodyText}>{this.props.sessionData.name}</Text>
+                      <Text style={styles.bodyText}>{this.props.sessionData.userData.userName}</Text>
                       <View style={{flexDirection: 'row', justifyContent: 'center', alignItems: 'center'}}>
                         {
                           rating > 0 ?
