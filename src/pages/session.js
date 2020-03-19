@@ -6,7 +6,8 @@ import {
     ActivityIndicator,
     Image,
     TouchableOpacity,
-    FlatList
+    FlatList,
+    Platform
 } from 'react-native';
 import Page from '../components/basePage';
 // import MenuPage from '../components/menuPage';
@@ -216,8 +217,11 @@ class Session extends Component {
     }
 
     async componentDidMount() {
-      this.setState({loading: true})
-      PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      this.setState({loading: true});
+      if (Platform.OS == 'ios') {
+        PushNotificationIOS.setApplicationIconBadgeNumber(0);
+      }
+      
       firestore.collection('users').doc(auth.currentUser.uid).update({
         badge: 0
       })

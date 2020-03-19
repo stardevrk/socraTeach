@@ -4,14 +4,16 @@ import {
     View,
     Text,
     ActivityIndicator,
+    Platform,
     Image,
-    TouchableOpacity
+    TouchableOpacity,
+    BackHandler
 } from 'react-native';
 import Page from '../components/basePage';
 // import MenuPage from '../components/menuPage';
 import TopBarPage from '../components/topBarPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import {notifications} from '../constants/firebase';
+import {notifications, firebase} from '../constants/firebase';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import Alert from '../components/icons/alert';
@@ -25,6 +27,7 @@ import {getExpressAccount, fetchBalance} from '../controller/user';
 import {getMyLiveLearnSession, getMyLiveTeachSession, clearMyLTSession} from '../controller/ltsession';
 import PushNotificationIOS from "@react-native-community/push-notification-ios"
 import {GRAY_SECONDARY, PURPLE_MAIN} from '../constants/colors';
+import Notification from 'react-native-android-local-notification';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const WORD_LOGO = require('../assets/images/word-logo.png');
@@ -42,6 +45,10 @@ class HomeScreen extends Component {
         const {dispatch} = props;
         dispatch(getExpressAccount());
         dispatch(fetchBalance());
+
+        const channel = new firebase.notifications.Android.Channel('test-channel', 'Test Channel', firebase.notifications.Android.Importance.Max).setDescription('SocraTeach Test Channel');
+
+        notifications.android.createChannel(channel);
     }
     learnClick = () => {
         navigationService.navigate(pages.LEARN_SUBJECT);       
@@ -97,16 +104,51 @@ class HomeScreen extends Component {
         this.notificationListener = notifications.onNotification((notification) => {
             console.log("Notification Received ", notification.body);
             console.log("Notification Received ", notification.title);
-            PushNotificationIOS.presentLocalNotification({
-                alertBody: notification.body,
-                alertTitle: notification.title,  
-            })
+            if (Platform.OS == 'ios') {
+                PushNotificationIOS.presentLocalNotification({
+                    alertBody: notification.body,
+                    alertTitle: notification.title,  
+                })
+            } else {
+                // Notification.create({
+                //     subject: notification.title,
+                //     message: notification.body
+                // })
+
+                const localNotification = new firebase.notifications.Notification({
+                    sound: 'default',
+                    show_in_foreground: true,
+                  })
+                  .setNotificationId(notification.notificationId)
+                  .setTitle(notification.title)
+                //   .setSubtitle(notification.subtitle)
+                  .setBody(notification.body)
+                //   .setData(notification.data)
+                  .android.setChannelId('test-channel') // e.g. the id you chose above
+                  .android.setSmallIcon('ic_app_icon') // create this icon in Android Studio
+                  .android.setColor('#000000') // you can set a color here
+                  .android.setPriority(firebase.notifications.Android.Priority.High);
+                
+                
+                notifications
+                  .displayNotification(localNotification)
+                  .catch(err => console.error("Notification Display Error: ", err));
+            }
+            
         })
+
+        BackHandler.addEventListener('hardwareBackPress', this.onBackButtonPressed);
     }
 
     componentWillUnmount() {
         this.notificationOpenListener();
         this.notificationListener();
+
+        BackHandler.removeEventListener('hardwareBackPress', this.onBackButtonPressed);
+    }
+
+    onBackButtonPressed() {
+        return true;
     }
 
     render () {
@@ -129,10 +171,13 @@ class HomeScreen extends Component {
                             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                                 <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
                                 <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29), width: '100%', textAlign: 'center'}}>
-                                You will need to add the bank account to teach.
+                                Add a bank account through
                                 </Text>
                                 <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), width: '100%', textAlign: 'center'}}>
-                                When you add the bank account, it will reflected a few mins later.
+                                the Stripe Bank Portal
+                                </Text>
+                                <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), width: '100%', textAlign: 'center'}}>
+                                before teaching
                                 </Text>
                             </View>
                             <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}

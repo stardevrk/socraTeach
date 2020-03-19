@@ -85,14 +85,18 @@ class TransactionHistory extends Component {
     
     static getDerivedStateFromProps (props, state) {
         console.log("Props Payment History === ", props.pHistory);
+        
         if (props.pHistory != null && props.pHistory != state.prevPHistory) {
           let nowTS = Date.now();
           let hisArray = _.map(props.pHistory, item => {
+            let a = new Date(item.timestamp);
+            let month = a.getMonth() + 1;
+            let year = a.getFullYear().toString().substr(2, 2);
             let diff = calcDiffTS(item.timestamp, nowTS);
             let newItem = {
               id: item.historyId,
-              name: item.userName,
-              time: diff,
+              name: item.from != undefined ? 'Taught ' + item.userName : 'Learned from ' + item.userName,
+              time: month + '/' + a.getDate() + '/' + year,
               amount: item.from != undefined ? item.amount / 100 + 0 : 0 - item.amount / 100,
               timestamp: item.timestamp
             }
@@ -168,8 +172,7 @@ class TransactionHistory extends Component {
                       data={this.state.pHistory}
                       renderItem={item => this._renderListItem(item)}
                       keyExtractor={item => item.id}
-                      contentContainerStyle={{flex: 1, width: '100%'}}
-                      style={{flex: 1, width: '100%'}}
+                      style={{height: 1, width: '100%'}}
                     />
                 </View>
             </TopBarPage>

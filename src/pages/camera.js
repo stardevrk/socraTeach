@@ -50,13 +50,13 @@ export default class Camera extends Component {
       type: 'back',
       whiteBalance: 'auto',
       ratio: '16:9',
-      recordOptions: {
-          mute: false,
-          maxDuration: 50,
-          fixOrientation: true,
-          skipProcessing: false,
-          quality: RNCamera.Constants.VideoQuality["288p"]
-      },
+      // recordOptions: {
+      //     mute: false,
+      //     maxDuration: 50,
+      //     fixOrientation: true,
+      //     skipProcessing: false,
+      //     quality: RNCamera.Constants.VideoQuality["288p"]
+      // },
       isRecording: false,
       canDetectFaces: false,
       canDetectText: false,
@@ -140,6 +140,7 @@ export default class Camera extends Component {
                   autoFocus={this.state.autoFocus}
                   autoFocusPointOfInterest={this.state.autoFocusPoint.normalized}
                   zoom={this.state.zoom}
+                  captureAudio={false}
                   whiteBalance={this.state.whiteBalance}
                   ratio={this.state.ratio}
                   focusDepth={this.state.depth}

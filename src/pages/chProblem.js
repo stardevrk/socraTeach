@@ -67,7 +67,9 @@ class ChooseProblem extends Component {
       prevProblems: {},
       swippedCards: 0,
       zoomModalVisible: false,
-      checkedProblemImage: ''
+      checkedProblemImage: '',
+      textVisible: false,
+      endModalVisible: false,
     }
 
     props.navigation.addListener('didFocus', payload => {
@@ -159,7 +161,8 @@ class ChooseProblem extends Component {
   
     onSwipedAllCards = () => {
       this.setState({
-        swipedAllCards: true
+        swipedAllCards: true,
+        endModalVisible: true
       });
       
     };
@@ -196,6 +199,7 @@ class ChooseProblem extends Component {
       let sortedArray = _.orderBy(filteredArray, ['updateTime'], 'desc');
       console.log("New Cards Length = ", sortedArray.length);
       return {
+        modalVisible: sortedArray.length == 0 ? false : true,
         cards: sortedArray,
         prevProblems: problems,
         cardLength: sortedArray.length
@@ -244,7 +248,7 @@ class ChooseProblem extends Component {
   }
 
   _goBack=() => {
-    this.setState({swippedCards: 0});
+    this.setState({swippedCards: 0, endModalVisible: false});
     navigationService.navigate(pages.TEACH_SUBJECT)
   }
 
@@ -359,25 +363,48 @@ class ChooseProblem extends Component {
                     <TouchableOpacity onPress={() => this.swiper.swipeBack()} title='Swipe Back' />
                   </Swiper>
                   : 
-                  null
+                  <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
+                    <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
+                      <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                        <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
+                        <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(15)}}>
+                          There are no more
+                        </Text>
+                        <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                          recently uploaded
+                        </Text>
+                        <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                          problems in this
+                        </Text>
+                        <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                          subject
+                        </Text>
+                      </View>
+                      <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
+                      onPress={() =>{this._goBack()}}
+                      >
+                        <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
+                      </TouchableOpacity>
+                    </View>
+                  </View>
                 }
               
               </View> 
-              {
+              {/* {
               this.state.modalVisible == true ?
               <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
                 <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
                   <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
                     <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
                     <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
-                      Have the problems solved
+                      Solve the problem
                     </Text>
                     <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
-                      before swipping right.
+                      before swiping right.
                     </Text>
                   </View>
                   <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
-                  onPress={() =>{this.setState({modalVisible: false})}}
+                  onPress={() =>{this.setState({modalVisible: false, textVisible: true})}}
                   >
                     <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
                   </TouchableOpacity>
@@ -385,7 +412,7 @@ class ChooseProblem extends Component {
 
               </View>
               : null
-            }
+            } */}
             {
               this.state.zoomModalVisible == true ?
               <View style={{flex: 1, width: '100%', zIndex: 10, position: 'absolute', left: 0, top: 0, bottom: 0, right: 0, backgroundColor: PURPLE_MAIN}}>
@@ -405,6 +432,40 @@ class ChooseProblem extends Component {
               onClick={this._teachClick}
             />
           </View> */}
+          
+            <Text style={styles.bottomText}>
+              Solve the problem before swiping right
+            </Text>
+            
+          {
+              this.state.endModalVisible == true ?
+              <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center', position: 'absolute', top: 0, left: 0, right: 0, bottom: 0}}>
+                <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
+                  <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                    <Alert width={getWidth(44)} height={getHeight(38)} color={PURPLE_MAIN} />
+                    <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(15)}}>
+                      There are no more
+                    </Text>
+                    <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                      recently uploaded
+                    </Text>
+                    <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                      problems in this
+                    </Text>
+                    <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
+                      subject
+                    </Text>
+                  </View>
+                  <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
+                  onPress={() =>{this._goBack()}}
+                  >
+                    <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
+                  </TouchableOpacity>
+                </View>
+
+              </View>
+              : null
+            }
         </Page>
     )
   }
@@ -503,6 +564,14 @@ const styles = StyleSheet.create({
       fontSize: 30,
       color: 'white',
       backgroundColor: 'transparent'
+    },
+    bottomText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(14),
+      color: '#FFFFFF',
+      marginBottom: getHeight(30),
+      width: '100%',
+      textAlign: 'center'
     }
 })
 

@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {BLACK_PRIMARY} from '../constants/colors';
 import Page from '../components/basePage';
+import Vector from '../components/icons/vector';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 import {connect} from 'react-redux';
 import navigationService from '../navigation/navigationService';
@@ -30,6 +31,7 @@ class Loading extends Component {
                 <View style={styles.container} >
                     <View style={styles.modal}>
                       <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                        <Vector size={getHeight(40)} />
                         <Text style={styles.bodyText}>Problem Submitted</Text>
                       </View>
                       <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), borderRadius: getHeight(10), backgroundColor: 'rgba(58, 58, 60, 0.8)', justifyContent: 'center', alignItems: 'center', marginBottom: getHeight(23)}}
@@ -38,6 +40,12 @@ class Loading extends Component {
                         <Text style={styles.btnText}>Home</Text>
                       </TouchableOpacity>
                     </View>
+                    <Text style={styles.descText}>
+                      You'll get a notification when a
+                    </Text>
+                    <Text style={styles.descText}>
+                      teacher can help you solve it!
+                    </Text>
                 </View>
             </Page>
             
@@ -66,7 +74,8 @@ const styles = StyleSheet.create({
       height: getHeight(262),
       backgroundColor: '#FFFFFF',
       alignItems: 'center',
-      borderRadius: getHeight(10)
+      borderRadius: getHeight(10),
+      marginBottom: getHeight(49)
     },
     btnText: {
       fontFamily: 'Montserrat-Medium',
@@ -76,7 +85,15 @@ const styles = StyleSheet.create({
     bodyText: {
       fontFamily: 'Montserrat-Medium',
       fontSize: getHeight(18),
-      color: BLACK_PRIMARY
+      color: BLACK_PRIMARY,
+      marginTop: getHeight(28)
+    },
+    descText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: '#FFFFFF',
+      width: '100%',
+      textAlign: 'center'
     }
 });
 

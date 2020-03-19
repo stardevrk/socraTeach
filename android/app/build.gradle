@@ -136,14 +136,6 @@ android {
         missingDimensionStrategy 'react-native-camera', 'general'
         multiDexEnabled true
     }
-    signingConfigs {
-        release {
-            storeFile file('my-upload-key.keystore')
-            storePassword 'perfect'
-            keyAlias 'rkstar'
-            keyPassword 'perfect'
-        }
-    }
     splits {
         abi {
             reset()
@@ -158,6 +150,12 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+        release {
+            storeFile file('my-upload-key.keystore')
+            storePassword 'perfect'
+            keyAlias 'rkstar-release'
+            keyPassword 'perfect'
         }
     }
     buildTypes {
@@ -202,6 +200,9 @@ dependencies {
     implementation "com.google.firebase:firebase-database:19.2.0"
     implementation "com.google.firebase:firebase-firestore:21.3.1"
     implementation "com.google.firebase:firebase-storage:19.1.0"
+    implementation "com.google.firebase:firebase-functions:19.0.2"
+    implementation "com.google.firebase:firebase-messaging:20.1.0"
+    implementation 'me.leolin:ShortcutBadger:1.1.21@aar'
 
     if (enableHermes) {
         def hermesPath = "../../node_modules/hermes-engine/android/";

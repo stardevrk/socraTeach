@@ -62,13 +62,11 @@ class LearnScreen extends Component {
   }
 
   modalWillShow = () => {
-    console.log("$$$$$$$");
     this.setState({modalOpened: true});
     // openOverlay();
   }
 
   modalWillHide = () => {
-    console.log("######");
     this.setState({modalOpened: false});
     // closeOverlay();
   }

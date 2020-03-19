@@ -48,13 +48,9 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>App Needs to access to the camera</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>App needs to access to the microphone.</string>
+	<string>Enable SocraTeach to access your camera to get a photo of your problem and upload it.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>App needs to access to the PhotoLibaray</string>
+	<string>Enable SocraTeach to access your camera roll to upload your problems.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Montserrat-Bold.otf</string>

@@ -15,6 +15,7 @@ import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import Checked from '../components/icons/checked';
 import HelpIcon from '../components/icons/help';
+import TopBarPage from '../components/topBarPage';
 
 const ICON_LOGO = require('../assets/images/icon-logo.png');
 
@@ -31,7 +32,7 @@ class Help extends Component {
 
     render () {
         return (
-            <Page>
+            <TopBarPage titleText={'HELP'} rightExist={true}>
                 <View style={styles.container} >
                   <Image style={{width: getWidth(155), height: getHeight(82), marginBottom: getHeight(42)}} resizeMode={'contain'} source={ICON_LOGO}/>
                   <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
@@ -55,7 +56,7 @@ class Help extends Component {
                   </View>
                   
                 </View>
-            </Page>
+            </TopBarPage>
             
         )
     }
