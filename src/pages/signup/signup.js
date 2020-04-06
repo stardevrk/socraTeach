@@ -168,16 +168,16 @@ class Signup extends Component {
                   
                   <AuthInput 
                       desc={'Full Name'}
-                      
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changeFirstName}
                       errorExist={this.state.emptyName}
                       errorText={'Required!'}
+                      autoCap={true}
                   />
                   <AuthInput
                       desc={'Phone Number'}
-                      placeholder={'6304086670'}
+                      placeholder={'6301231234'}
                       wrapperStyle={{marginBottom: getHeight(27)}}
                       descStyle={{marginBottom: getHeight(25)}}
                       onChangeText={this._changePhoneNumber}

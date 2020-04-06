@@ -20,6 +20,7 @@ import {validateEmail} from '../service/utils';
 import { BLACK_PRIMARY, PURPLE_MAIN } from '../constants/colors';
 import pages from '../constants/pages';
 import {connect} from 'react-redux';
+// import { withMappedNavigationParams } from 'react-navigation-props-mapper';
 
 const LOGO_IMAGE = require('../assets/images/icon-logo.png');
 const BACK_BUTTON = require('../assets/images/back-button.png');
@@ -97,7 +98,10 @@ class Login extends Component {
     }
 
     _gotoHome = () => {
-        console.log("Go To Home!!!!!");
+        console.log("Go To Home!!!!!", this.props.login.email);
+        auth.sendPasswordResetEmail(this.props.login.email).then((value) => {
+
+        })
         navigationService.reset(pages.LOADING);
         
     }

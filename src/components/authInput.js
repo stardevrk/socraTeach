@@ -36,7 +36,7 @@ const errorDefault = {
   paddingLeft: getWidth(10),
 }
 
-const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder, keyboardType, autoFocus, defaultValue}) => {
+const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder, keyboardType, autoFocus, defaultValue, autoCap}) => {
   return (
     <View
       style={{...wrapperDefault, ...wrapperStyle}}
@@ -46,7 +46,7 @@ const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwd
         pwdType == true ? 
         <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>
         :
-        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType} defaultValue={defaultValue}></TextInput>  
+        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType} defaultValue={defaultValue} autoCapitalize={autoCap == true ? 'words' : 'none'}></TextInput>  
       }
       
       <View style={{width: '100%', backgroundColor: 'rgba(88, 86, 214, 0.76)', height: 2, paddingLeft: getWidth(1)}} />
@@ -72,7 +72,8 @@ ComonInput.defaultProps = {
   placeholder: '',
   keyboardType: 'default',
   autoFocus: false,
-  defaultValue: ''
+  defaultValue: '',
+  autoCap: false
 };
 
 ComonInput.propTypes = {
@@ -88,7 +89,8 @@ ComonInput.propTypes = {
   placeholder: PropTypes.string,
   keyboardType: PropTypes.string,
   autoFocus: PropTypes.bool,
-  defaultValue: PropTypes.string
+  defaultValue: PropTypes.string,
+  autoCap: PropTypes.bool
 };
 
 export default ComonInput;

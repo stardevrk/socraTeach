@@ -60,7 +60,8 @@ class ImageCrop extends Component {
       imageHeight: 0,
       prevImageSource: '',
       prevImageHeight: 0,
-      prevImageWidth: 0
+      prevImageWidth: 0,
+      problemName: ''
     }
 
     // this.child = React.createRef();
@@ -68,7 +69,7 @@ class ImageCrop extends Component {
     props.navigation.addListener('didFocus', payload => {
       let newAspect = payload.action.params.imageHeight/payload.action.params.imageWidth;
       this.setState({imageSource: payload.action.params.imageUri, subject: payload.action.params.subject, aspect: newAspect, imageWidth: payload.action.params.imageWidth,
-      imageHeight: payload.action.params.imageHeight});
+      imageHeight: payload.action.params.imageHeight, problemName: payload.action.params.problemName});
     })
   }
 
@@ -123,6 +124,7 @@ class ImageCrop extends Component {
     }
     this.setState({loading: true});    
     uploadImage(croppedUri).then((data) => {
+      console.log("Problem Uploaded!!!!");
       let newDocRef  = firestore.collection(this.state.subject).doc();
       newDocRef.set({
         problemId: newDocRef.id,
@@ -130,7 +132,8 @@ class ImageCrop extends Component {
         problemImage: data,
         updateTime: Date.now(),
         sessionExist: false,
-        subject: this.state.subject
+        subject: this.state.subject,
+        problemName: this.state.problemName
       }).catch((err) => {
         console.log("firestore set error ==== ", err);
       })
@@ -139,10 +142,11 @@ class ImageCrop extends Component {
       })
       const {dispatch} = this.props;
       dispatch(getMyInitLearnList());
-      navigationService.navigate(pages.PROBLEM_SUBMITTED);
+      
     }).catch((err) =>{
       console.log("Upload Error = ", err);
     });
+    navigationService.navigate(pages.PROBLEM_SUBMITTED);
   }
 
   _onCancel = () => {

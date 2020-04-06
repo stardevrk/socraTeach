@@ -70,13 +70,14 @@ export default class Camera extends Component {
       countdown: 0,
       sec_Right: 0,
       pause: false,
-      subject: ''
+      subject: '',
+      problemName: ''
     };
 
     this.getSelectedImages = this.getSelectedImages.bind(this);
 
     props.navigation.addListener('didFocus', payload => {
-      this.setState({subject: payload.action.params.subject});
+      this.setState({subject: payload.action.params.subject, problemName: payload.action.params.problemName});
     })
   }
 
@@ -89,8 +90,8 @@ export default class Camera extends Component {
       const data = await this.camera.takePictureAsync(options);
       console.log("Camera Photo Take ======= ", data);
       // Actions.EditStory({ data: { uri: data.uri, type: 'image', typer: 'camera' } })
-      navigationService.navigate(pages.PROBLEM_CROP, {imageUri: data.uri, subject: this.state.subject, imageWidth: data.width, imageHeight: data.height});
-  }
+      navigationService.navigate(pages.PROBLEM_CROP, {imageUri: data.uri, subject: this.state.subject, imageWidth: data.width, imageHeight: data.height, problemName: this.state.problemName});
+    }
     // navigationService.navigate(pages.PROBLEM_CROP);
   }
 

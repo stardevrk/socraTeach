@@ -18,6 +18,8 @@ import Algebra from '../components/icons/algebra';
 import Geometry from '../components/icons/geometry';
 import Physics from '../components/icons/physics';
 import Chemistry from '../components/icons/chemistry';
+import Bank from '../components/icons/bank';
+import Computer from '../components/icons/computer';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import ModalDropdown from '../components/dropDownList';
@@ -25,7 +27,7 @@ import MenuPage from '../components/menuPage';
 import TopBarPage from '../components/topBarPage';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {fetchInitProblem} from '../controller/problem';
+import {fetchInitProblem, clearSubjectProblems} from '../controller/problem';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -102,6 +104,20 @@ class TeachScreen extends Component {
               <Text style={styles.modalListText}>{rowData.name}</Text>
             </View>
           )
+        case 'economics': 
+          return (
+            <View style={styles.mListItem}>
+              <Bank size={getHeight(14)} color={'#FFFFFF'} />
+              <Text style={styles.modalListText}>{rowData.name}</Text>
+            </View>
+          )
+        case 'computer':
+          return (
+            <View style={styles.mListItem}>
+              <Computer size={getHeight(15)} color={'#FFFFFF'} />
+              <Text style={styles.modalListText}>{rowData.name}</Text>
+            </View>
+          )
         default:
           return (
             <View style={styles.mListItem}>
@@ -173,7 +189,9 @@ class TeachScreen extends Component {
     }
 
     _subjectSelect = (subject) => {
+      console.log("Subject Changing!!!");
       const {dispatch} = this.props;
+      dispatch(clearSubjectProblems(subject.toLowerCase()));
       dispatch(fetchInitProblem(subject.toLowerCase()));
       this.setState({subject: subject});
     }
@@ -217,7 +235,7 @@ class TeachScreen extends Component {
                       }
                       style={{width: getWidth(276)}}
                       textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), height: getHeight(165), marginTop: -getHeight(40)}}
+                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), height: getHeight(247), marginTop: -getHeight(40)}}
                       buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#FFFFFF', padding: getHeight(8)}}
                       dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
                       dropdownTextHighlightStyle={{color: '#FFFFFF'}}

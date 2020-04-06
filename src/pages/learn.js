@@ -3,7 +3,7 @@ import {
     StyleSheet,
     View,
     Text,
-    ActivityIndicator,
+    TextInput,
     Image,
     TouchableOpacity,
     Alert,
@@ -19,6 +19,8 @@ import Algebra from '../components/icons/algebra';
 import Geometry from '../components/icons/geometry';
 import Physics from '../components/icons/physics';
 import Chemistry from '../components/icons/chemistry';
+import Bank from '../components/icons/bank';
+import Computer from '../components/icons/computer';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import ModalDropdown from '../components/dropDownList';
@@ -27,6 +29,7 @@ import TopBarPage from '../components/topBarPage';
 import ImagePicker from 'react-native-image-picker';
 import {connect} from 'react-redux';
 import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -55,7 +58,8 @@ class LearnScreen extends Component {
           name: 'Chemistry'
         }
       ],
-      subject: ''
+      subject: '',
+      problemName: ''
     }
 
     console.log("Redux Store Subjects =", props.subjects);
@@ -98,6 +102,20 @@ class LearnScreen extends Component {
         return (
           <View style={styles.mListItem}>
             <Chemistry size={getHeight(12)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'economics': 
+        return (
+          <View style={styles.mListItem}>
+            <Bank size={getHeight(14)} color={'#FFFFFF'} />
+            <Text style={styles.modalListText}>{rowData.name}</Text>
+          </View>
+        )
+      case 'computer':
+        return (
+          <View style={styles.mListItem}>
+            <Computer size={getHeight(15)} color={'#FFFFFF'} />
             <Text style={styles.modalListText}>{rowData.name}</Text>
           </View>
         )
@@ -156,6 +174,22 @@ class LearnScreen extends Component {
       )
       return;
     }
+
+    if(this.state.problemName == '') {
+      Alert.alert(
+        'YOUR PROBLEM NAME',
+        'Please input your problem name!',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
+    }
     const options = {
       title: 'Select Problem Image',
       customButtons: [],
@@ -169,12 +203,12 @@ class LearnScreen extends Component {
       if (response.uri != undefined && response.uri != null && response.uri != '' ) {
         const subject = this.state.subject.toLowerCase();
         if (Platform.OS == 'ios') {
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject, problemName: this.state.problemName});
         } else if (Platform.OS == 'android') {
           let absPath = 'file://' + response.path;
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: absPath, imageWidth: response.width, imageHeight: response.height, subject: subject});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: absPath, imageWidth: response.width, imageHeight: response.height, subject: subject, problemName: this.state.problemName});
         } else {
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject, problemName: this.state.problemName});
         }
       }
     })
@@ -196,8 +230,25 @@ class LearnScreen extends Component {
       )
       return;
     }
+
+    if(this.state.problemName == '') {
+      Alert.alert(
+        'YOUR PROBLEM NAME',
+        'Please input your problem name!',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
+    }
+
     const subject = this.state.subject.toLowerCase();
-    navigationService.navigate(pages.CAMERA, {subject: subject});
+    navigationService.navigate(pages.CAMERA, {subject: subject, problemName: this.state.problemName});
   }
 
   _subjectSelect = (subject) => {
@@ -222,37 +273,50 @@ class LearnScreen extends Component {
     return null;
   }
 
+  _onChangeProblemName = (name) => {
+    this.setState({problemName: name});
+  }
+
   render () {
     const {subjects} = this.props;
     return (
         <TopBarPage titleText={'LEARN'} forceInset={{bottom: 'never'}} onRightClick={this._gotoLearn} notiExist={true} rightExist={true}>
-          <View style={styles.workingPart}>
-            <Text
-              style={styles.title}
-            >
-              Subject
-            </Text>
-            <View style={styles.modalPart}>
-              <ModalDropdown options={subjects.subject} 
-                descPart={
-                    <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                }
-                style={{width: getWidth(276)}}
-                textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), height: getHeight(165), marginTop: -getHeight(40)}}
-                buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#FFFFFF', padding: getHeight(8)}}
-                dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
-                dropdownTextHighlightStyle={{color: '#FFFFFF'}}
-                onDropdownWillShow={this.modalWillShow}
-                onDropdownWillHide={this.modalWillHide}
-                renderSeparator={this.renderModalSeparator}
-                renderRow={this.renderModalListRow}
-                renderButtonText={this.renderModalListText}
-                defaultValue={'Choose Your Subject'}
-                onExtractBtnText={this._subjectSelect}
+          <KeyboardAwareScrollView style={styles.workingPart} contentContainerStyle={styles.editPart}>
+            <View style={{flex: 1}}>
+              <Text
+                style={styles.title}
               >
-              </ModalDropdown>
+                Subject
+              </Text>
+              <View style={styles.modalPart}>
+                <ModalDropdown options={subjects.subject} 
+                  descPart={
+                      <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
+                  }
+                  style={{width: getWidth(276)}}
+                  textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
+                  dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), height: getHeight(247), marginTop: -getHeight(40)}}
+                  buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#FFFFFF', padding: getHeight(8)}}
+                  dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
+                  dropdownTextHighlightStyle={{color: '#FFFFFF'}}
+                  onDropdownWillShow={this.modalWillShow}
+                  onDropdownWillHide={this.modalWillHide}
+                  renderSeparator={this.renderModalSeparator}
+                  renderRow={this.renderModalListRow}
+                  renderButtonText={this.renderModalListText}
+                  defaultValue={'Choose Your Subject'}
+                  onExtractBtnText={this._subjectSelect}
+                >
+                </ModalDropdown>
+              </View>
+              <TextInput
+                style={styles.problemName}
+                onChangeText={text => this._onChangeProblemName(text)}
+                placeholderTextColor={'rgba(255,255,255,0.39)'}
+                placeholder={'Name your problem'}
+              />
             </View>
+            
             <View style={styles.belowPart}>
                 <View style={styles.blackPart}>
                   <Text style={styles.uploadText}>
@@ -269,7 +333,7 @@ class LearnScreen extends Component {
                   />
                 </View>
             </View>
-          </View>
+          </KeyboardAwareScrollView>
         </TopBarPage>
     )
   }
@@ -281,7 +345,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         width: '100%',
-        paddingTop: getHeight(80)
+        
     },
     headerTitle: {
       width: '100%',
@@ -294,8 +358,7 @@ const styles = StyleSheet.create({
     },
     workingPart: {
       flex: 1,
-      justifyContent: 'flex-start',
-      alignItems: 'center',
+      
       width: '100%',
     },
     title: {
@@ -303,9 +366,25 @@ const styles = StyleSheet.create({
       fontFamily: 'Montserrat-Medium',
       color: '#FFFFFF',
       fontSize: getHeight(30),
-      paddingLeft: getWidth(52),
+      
       marginBottom: getHeight(44),
-      marginTop: getHeight(126)
+      marginTop: getHeight(100)
+    },
+    editPart: {
+      flex:1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    problemName: {
+      height: getHeight(42), 
+      borderColor: 'white', 
+      borderWidth: 1, 
+      color: 'white', 
+      fontFamily:  'Montserrat-Regular', 
+      fontSize: getHeight(18), 
+      paddingLeft: getWidth(10),
+      marginTop: getHeight(41),
+      
     },
     dropDescText: {
       color: '#FFFFFF',
@@ -315,7 +394,7 @@ const styles = StyleSheet.create({
     },
     modalPart: {
       alignSelf: 'flex-start', 
-      marginLeft: getWidth(52)
+      
     },
     belowPart: {
       flex: 1,

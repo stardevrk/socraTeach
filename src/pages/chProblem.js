@@ -27,7 +27,9 @@ import {fetchInitProblem, clearSubjectProblems, fetchMoreProblems} from '../cont
 import {selectProblem, getMyInitTeachList} from '../controller/teach';
 import {auth} from '../constants/firebase';
 import {updateSession, clearSession} from '../model/actions/sessionAC';
+import { withMappedNavigationParams} from 'react-navigation-props-mapper';
 
+@withMappedNavigationParams()
 class ChooseProblem extends Component {
 
   constructor(props) {
@@ -77,8 +79,9 @@ class ChooseProblem extends Component {
       this.setState({subject: payload.action.params.subject});
       this.setState({newSubjectCards: true});
       const {dispatch} = this.props;
-      dispatch(clearSubjectProblems(payload.action.params.subject.toLowerCase()));
-      dispatch(fetchInitProblem(payload.action.params.subject.toLowerCase()));
+      // dispatch(clearSubjectProblems(payload.action.params.subject.toLowerCase()));
+      // dispatch(fetchInitProblem(payload.action.params.subject.toLowerCase()));
+      // dispatch(fetchMoreProblems(this.props.subject.toLowerCase()));
     })
   }
 
@@ -134,24 +137,35 @@ class ChooseProblem extends Component {
   }
   
     renderCard = (card, index) => {
+      console.log("Render Card === ", index);
       return (
         <View style={{width: '100%', height: getHeight(577), backgroundColor: '#FFFFFF', justifyContent: 'center', alignItems: 'center', borderRadius: getHeight(10)}}>
           {
             card != undefined ? 
-            <Image style={{width: '100%', height: '100%', borderRadius: getHeight(10)}} resizeMode={'contain'} source={{uri: card['problemImage']}}/>
+            <Image style={{width: '100%', height: '100%', borderRadius: getHeight(10)}} resizeMode={'contain'} source={{uri: card['problemImage']}} onLoad={() => {this._loadFirstImage(index)}}/>
             : 
             null
           }
         </View>
       )
     };
+
+    _loadFirstImage = (index) => {
+      console.log("loadFirstImage === ", index)
+
+      if (index == 0) {
+        const {dispatch} = this.props;
+        console.log("Fetch More Problems After first Image Loading ", this.props.subject);
+        dispatch(fetchMoreProblems(this.props.subject.toLowerCase()));
+      }
+    }
   
     onSwiped = (type) => {
       this.setState({newSubjectCards: false});
       let currentSwipped = this.state.swippedCards;
       currentSwipped++;
       console.log(`on swiped ${currentSwipped}`);
-      if (this.state.cardLength > 3 && currentSwipped == this.state.cardLength - 3 && this.state.cardLength % 20 == 0) {
+      if (this.state.cardLength > 3 && currentSwipped == this.state.cardLength - 3 && this.state.cardLength % 3 == 0) {
         const {dispatch} = this.props;
         console.log("Fetch More Problems");
         dispatch(fetchMoreProblems(this.state.subject.toLowerCase()));
@@ -249,7 +263,16 @@ class ChooseProblem extends Component {
 
   _goBack=() => {
     this.setState({swippedCards: 0, endModalVisible: false});
+    const {dispatch, subject} = this.props;
+    dispatch(clearSubjectProblems(subject.toLowerCase()));
+    dispatch(fetchInitProblem(subject.toLowerCase()));
     navigationService.navigate(pages.TEACH_SUBJECT)
+  }
+
+  componentDidMount() {
+    // const {dispatch} = this.props;
+    // console.log("Fetch More Problems After starting ", this.props.subject);
+    // dispatch(fetchMoreProblems(this.props.subject.toLowerCase()));
   }
 
   render () {
@@ -388,7 +411,6 @@ class ChooseProblem extends Component {
                     </View>
                   </View>
                 }
-              
               </View> 
               {/* {
               this.state.modalVisible == true ?

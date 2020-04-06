@@ -74,10 +74,11 @@ class LearnStart extends Component {
 
   _goLearn = () => {
     const {sessionData, user, dispatch} = this.props;
-    if (this.state.paymentData.length == 0) {
-      this.setState({warningVisible: true});
-      return;
-    }
+    /** Commented By Me Because students will learn freely. His stripe account will pay to the teachers */
+    // if (this.state.paymentData.length == 0) {
+    //   this.setState({warningVisible: true});
+    //   return;
+    // }
     firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
       acceptance: true,
       lastUpdate: Date.now()
@@ -334,14 +335,14 @@ class LearnStart extends Component {
                     <Text style={styles.bodySecText}>
                       {this.props.sessionData.phoneNumber}
                     </Text>
-                    <Text style={styles.bodyThirdText}>
-                      $3.00
-                    </Text>
+                    {/* <Text style={styles.bodyThirdText}>
+                      $0.00
+                    </Text> */}
                   </View>
-                  <TouchableOpacity style={styles.btnBody}
+                  {/* <TouchableOpacity style={styles.btnBody}
                   onPress={this._gotoPayments}
                   >
-                    {/* <Text style={styles.btnText}>Home</Text> */}
+                    <Text style={styles.btnText}>Home</Text>
                     <View style={{flexDirection: 'row', alignItems: 'center'}}>
                       {
                         
@@ -352,7 +353,7 @@ class LearnStart extends Component {
                     <Text style={styles.btnText}>
                       Change
                     </Text>
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
                 <BaseButton 
                   text={'LEARN'}

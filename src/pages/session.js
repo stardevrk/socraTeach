@@ -61,7 +61,8 @@ class Session extends Component {
             problemId: item.problemId,
             subject: item.subject,
             newExist: item.acceptance == false ? true : false,
-            lastUpdate: item.lastUpdate
+            lastUpdate: item.lastUpdate,
+            problemName: item.problemName ? item.problemName : ''
           }
           
           return newItem;
@@ -81,7 +82,8 @@ class Session extends Component {
             newExist: item.confirmed == false ? true: false,
             userId: item.posterId,
             name: item.posterName ? item.posterName : '',
-            problemId: item.problemId
+            problemId: item.problemId,
+            problemName: item.problemName ? item.problemName : ''
           }
           
           return newItem
@@ -117,7 +119,13 @@ class Session extends Component {
     _renderItem = (item) => {
       
       let oneItem = item.item;
-      const newSubject = oneItem.subject.charAt(0).toUpperCase() + oneItem.subject.slice(1);
+      let newSubject = '';
+      if (oneItem.subject !== 'cs') {
+        newSubject = oneItem.subject.charAt(0).toUpperCase() + oneItem.subject.slice(1);
+      } else {
+        newSubject = oneItem.subject.toUpperCase();
+      }
+      
       const learnStyle={
         backgroundColor: BLACK_SECONDARY
       }
@@ -140,6 +148,9 @@ class Session extends Component {
                     </Text>
                   </View>
                 </View>
+                <Text style={styles.minusAmount}>
+                  {oneItem.problemName}
+                </Text>
                 {
                   oneItem.type == 'learn' ?
                   <Text style={styles.plusAmount}>
@@ -176,6 +187,9 @@ class Session extends Component {
                     </Text>
                   </View>
                 </View>
+                <Text style={styles.minusAmount}>
+                  {oneItem.problemName}
+                </Text>
                 {
                   oneItem.type == 'learn' ?
                   <Text style={styles.minusAmount}>
@@ -264,7 +278,7 @@ class Session extends Component {
               rating: userDoc.data().rating
             };
             newArray.push(newItem);
-          } else {
+          } else { //Already Deleted Users
             newArray.push(item);
           }
         }

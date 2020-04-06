@@ -36,3 +36,9 @@ export const uploadImage = (uri, mime = 'application/octet-stream') => {
       })
   })
 }
+
+export const downloadFile = (uri, location) => {
+  return new Promise((resolve, reject) => {
+    
+  })
+}

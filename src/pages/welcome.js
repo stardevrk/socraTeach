@@ -40,7 +40,10 @@ class Welcome extends Component {
             errorEmail: false,
             emptyEmail: false,
             email: '',
-            loading: false
+            loading: false,
+            errorText: '',
+            loginStep: false,
+            emailDuplicated: false
         }
     }
     
@@ -50,6 +53,16 @@ class Welcome extends Component {
 
     singupClick = () => {
         navigationService.navigate(pages.SIGN_UP);
+    }
+
+    _loginAnimate = () => {
+        this.setState({loginStep: true});
+        this._startAnimate();
+    }
+
+    _signupAnimate = () => {
+        this.setState({loginStep: false});
+        this._startAnimate();
     }
 
     _startAnimate = () => {
@@ -82,50 +95,60 @@ class Welcome extends Component {
         this.setState({email: email});
         
         if (email != '') {
-          this.setState({emptyEmail: false});
+          this.setState({emptyEmail: false, errorText: ''});
         }
   
         if (!validateEmail(email)) {
-          this.setState({errorEmail: true});
+          this.setState({errorEmail: true, errorText: 'Invalid Email!'});
         } else {
-          this.setState({errorEmail: false});
+          this.setState({errorEmail: false, errorText: ''});
         }
     }
     
     _forwardClick = () => {
         if (this.state.email == '') {
-            this.setState({emptyEmail: true});
+            this.setState({emptyEmail: true, errorText: 'Required!'});
             return;
         }
 
         if (this.state.emptyEmail == true || this.state.errorEmail == true) {
             return;
         }
-        this.setState({loading: true});
-        let xhr = new XMLHttpRequest();
-        xhr.open('GET', `https://us-central1-socrateach-65b77.cloudfunctions.net/proto/checkEmailDuplicate/${this.state.email}`);
-        xhr.send();
 
-        xhr.onload = () => { 
-            this.setState({loading: false});
-            if (xhr.status == 200) {
-                let responseData = JSON.parse(xhr.response);
-                const {dispatch} = this.props;
-                if (responseData['result'] == true) {
-                    console.log("User Exist!!!");
-                    dispatch(loginUserInfo({
-                        email: this.state.email
-                    }));
-                    navigationService.navigate(pages.SIGN_IN);
-                } else {
-                    console.log("User not Exist!!!");
-                    dispatch(signupUserInfo({
-                        email: this.state.email
-                    }))
-                    navigationService.navigate(pages.SIGN_UP);
+        if (this.state.loginStep == true) {
+            const {dispatch} = this.props;
+            dispatch(loginUserInfo({
+                email: this.state.email
+            }));
+            navigationService.navigate(pages.SIGN_IN);
+        } else {
+            this.setState({loading: true});
+            let xhr = new XMLHttpRequest();
+            xhr.open('GET', `https://us-central1-socrateach-65b77.cloudfunctions.net/proto/checkEmailDuplicate/${this.state.email}`);
+            xhr.send();
+
+            xhr.onload = () => {
+                this.setState({loading: false});
+                if (xhr.status == 200) {
+                    let responseData = JSON.parse(xhr.response);
+                    const {dispatch} = this.props;
+                    if (responseData['result'] == true) {
+                        console.log("User Exist!!!");
+                        this.setState({emailDuplicated: true, errorText: 'Email Duplicated!'});
+                    } else {
+                        this.setState({emailDuplicated: false, errorText: ''});
+                        console.log("User not Exist!!!");
+                        dispatch(signupUserInfo({
+                            email: this.state.email
+                        }))
+                        navigationService.navigate(pages.SIGN_UP);
+                    }
                 }
             }
         }
+
+        
+        
     }
 
     componentDidMount() {
@@ -133,6 +156,7 @@ class Welcome extends Component {
     }
 
     render () {
+
         return (
             <Page forceInset={{bottom: 'never'}}>
                 <View style={styles.container} >
@@ -153,11 +177,17 @@ class Welcome extends Component {
                             <Text style={styles.goBtn}>
                                 Get Started
                             </Text>
-                            <TouchableOpacity onPress={() => this._startAnimate()}>
+                            <TouchableOpacity onPress={() => this._loginAnimate()}>
                                 <Text style={styles.emailBtn}>
                                     Enter email address
                                 </Text>
                                 <View style={styles.underLine}></View>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.signBtn} onPress={() => this._signupAnimate()}>
+                                <Text style={styles.signText}>
+                                    Sign Up
+                                </Text>
+                                <View style={styles.signLine}></View>
                             </TouchableOpacity>
                         </Animated.View> 
                         :
@@ -171,8 +201,8 @@ class Welcome extends Component {
                                 wrapperStyle={{marginBottom: getHeight(45)}}
                                 descStyle={{marginBottom: getHeight(20)}}
                                 onChangeText={this._changeEmail}
-                                errorExist={this.state.errorEmail || this.state.emptyEmail}
-                                errorText={this.state.emptyEmail == true ? 'Required!' : 'Invalid Email!'}
+                                errorExist={this.state.errorEmail || this.state.emptyEmail || this.state.emailDuplicated}
+                                errorText={this.state.errorText}
                                 keyboardType={'email-address'}
                                 autoFocus={this.state.emailInputable}
                             />
@@ -248,6 +278,20 @@ const styles = StyleSheet.create({
         height: 2,
         backgroundColor: 'rgba(88, 86, 214, 0.76)',
         width: getWidth(267)
+    },
+    signBtn: {
+        marginTop: getHeight(25),
+        height: getHeight(35)
+    },
+    signText: {
+        color: 'rgba(229, 229, 229, 0.23)',
+        fontFamily: 'Montserrat-Medium',
+        fontSize: getHeight(20),
+    },
+    signLine: {
+        height: 2,
+        backgroundColor: 'rgba(88, 86, 214, 0.76)',
+        marginTop: -getHeight(4)
     },
     backBtnView: {
         marginTop: getHeight(48),

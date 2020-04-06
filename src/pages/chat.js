@@ -344,6 +344,7 @@ class ChatScreen extends Component {
     }
 
     render () {
+      
         return (
           <Page backgroundColor={'#FFFFFF'}>
             
@@ -369,6 +370,11 @@ class ChatScreen extends Component {
                   scrollToBottom={true}
                   renderActions={this._renderActions}
                   // onPressActionButton={this._pressActionButton}
+                  lightboxProps={{
+                    springConfig: { tension: 5, friction: 3 },
+                    backgroundColor: 'black',
+                    swipeToDismiss: false
+                  }}
                 />
                 {
                   this.state.loading == true ? 

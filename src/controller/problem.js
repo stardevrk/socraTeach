@@ -18,8 +18,9 @@ export function fetchInitProblem(subject) {
         var listener = firestore.collection(subject)
         .where('sessionExist', '==', false)
         .orderBy('updateTime', 'DESC')
-        .limit(20)
+        .limit(1)
         .onSnapshot((snapShot) => {
+          console.log("Fetch Init Problem ^^^ ", snapShot.docs.length, subject)
           if (snapShot.docs.length > 0) {
             
             let problems = {};
@@ -29,6 +30,7 @@ export function fetchInitProblem(subject) {
               problems[doc.id] = doc.data();
             })
             dispatch(fetchProblem(subject, problems, lastProblem));
+            // dispatch(fetchProblem(subject, problems, null));
           }
         });
         addListener('problems_' + subject + '_' + 0, listener);
@@ -50,12 +52,13 @@ export function fetchMoreProblems(subject) {
       if (prevLastProblem != null) {
         
         if(!hasListener('problems_' + subject + '_' + prevLastProblem.id)) {
-          var listener = firestore.collection(subject)
+          let listener = firestore.collection(subject)
           .where('sessionExist', '==', false)
           .orderBy('updateTime', 'DESC')
           .startAfter(prevLastProblem)
-          .limit(20)
+          .limit(3)
           .onSnapshot((snapShot) => {
+            console.log("Fetch More Problems After****", snapShot.docs.length)
             if (snapShot.docs.length > 0) {
               let problems = {};
               let lastProblem = snapShot.docs[snapShot.docs.length - 1];
@@ -68,7 +71,29 @@ export function fetchMoreProblems(subject) {
           });
           addListener('problems_' + subject + '_' + prevLastProblem.id, listener);
         }
-      }
+      } 
+
+      // if (prevLastProblem == null) {
+      //   console.log("Fetch More Problems After Initing Starting Point", subject)
+      //   let listener = firestore.collection(subject)
+      //     .where('sessionExist', '==', false)
+      //     .orderBy('updateTime', 'DESC')
+      //     .limit(5)
+      //     .onSnapshot((snapShot) => {
+      //       console.log("Fetch More Problems After Initing")
+      //       if (snapShot.docs.length > 0) {
+      //         let problems = {};
+      //         let lastProblem = snapShot.docs[snapShot.docs.length - 1];
+      //         snapShot.forEach((doc) => {
+      //           // dispatch(fetchProblem(subject, doc.data()));
+      //           problems[doc.id] = doc.data();
+      //         })
+              
+      //         dispatch(fetchProblem(subject, problems, lastProblem));
+      //       }
+      //     });
+      //     addListener('problems_' + subject + '_' + 1, listener);
+      // }
     } catch (e) {
       console.log("Fetch More Problems Error = ", e);
     }

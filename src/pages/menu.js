@@ -193,12 +193,12 @@ class MenuContent extends Component {
                     onClick={this._onTransactionHistory}
                   />
                   <MenuItem 
-                    text={'Bank Portal'}
+                    text={'Bank Portal for Teaching'}
                     icon={<Bank size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onBanks}
                   />
                   <MenuItem 
-                    text={'Payments'}
+                    text={'Payments for Learning'}
                     icon={<Scard size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onPayments}
                   />

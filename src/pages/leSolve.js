@@ -465,7 +465,7 @@ class LearnSolve extends Component {
                       
                       <View style={styles.modalTimeView}>
                         <Text style={styles.modalTime}>
-                          $3.00
+                          $0.00
                         </Text>
                       </View>
                       <View style={{flex: 1}}>
