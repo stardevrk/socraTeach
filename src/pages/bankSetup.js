@@ -151,7 +151,6 @@ class BankSetup extends Component {
             :
             <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
             <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
-                
                 <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
                     <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
                 </TouchableOpacity>
@@ -179,7 +178,6 @@ class BankSetup extends Component {
                     keyboardType={'numeric'}
                 />
                 
-
                 <AuthInput 
                     desc={'Account Number'}
                     wrapperStyle={{marginBottom: getHeight(27)}}

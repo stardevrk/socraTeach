@@ -175,7 +175,7 @@ class Welcome extends Component {
                         <Animated.View style={{alignItems: 'center', position: 'absolute', bottom: 0, 
             backgroundColor: BLACK_PRIMARY, width: '100%',  height: this.state.height}}>
                             <Text style={styles.goBtn}>
-                                Get Started
+                                Login
                             </Text>
                             <TouchableOpacity onPress={() => this._loginAnimate()}>
                                 <Text style={styles.emailBtn}>

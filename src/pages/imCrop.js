@@ -55,7 +55,6 @@ class ImageCrop extends Component {
       subject: '',
       loading: false,
       aspect: getHeight(410) / getWidth(316),
-      // scale: new Animated.Value(1),
       imageWidth: 0,
       imageHeight: 0,
       prevImageSource: '',
@@ -63,8 +62,6 @@ class ImageCrop extends Component {
       prevImageWidth: 0,
       problemName: ''
     }
-
-    // this.child = React.createRef();
 
     props.navigation.addListener('didFocus', payload => {
       let newAspect = payload.action.params.imageHeight/payload.action.params.imageWidth;
@@ -74,40 +71,6 @@ class ImageCrop extends Component {
   }
 
   goForward = () => {
-
-    // this.child.onDone();
-    console.log("onDoneResult ==== ", this.child);
-    // if (this.state.imageSource == '' || this.state.subject == '') {
-    //   console.log("Not be able to go forward")
-    //   return;
-    // }
-    // this.setState({loading: true});    
-    // uploadImage(this.state.imageSource).then((data) => {
-    //   let newDocRef  = firestore.collection(this.state.subject).doc();
-    //   newDocRef.set({
-    //     problemId: newDocRef.id,
-    //     posterId: auth.currentUser.uid,
-    //     problemImage: data,
-    //     updateTime: Date.now(),
-    //     sessionExist: false,
-    //     subject: this.state.subject
-    //   }).catch((err) => {
-    //     console.log("firestore set error ==== ", err);
-    //   })
-    //   .finally(() => {
-    //     this.setState({loading: false});
-    //   })
-    //   const {dispatch} = this.props;
-    //   dispatch(getMyInitLearnList());
-    //   navigationService.navigate(pages.LIVE_LEARN);
-    // }).catch((err) =>{
-    //   console.log("Upload Error = ", err);
-    // });
-    
-  }
-
-  componentDidMount() {
-    // openOverlay();
     
   }
 
@@ -171,7 +134,7 @@ class ImageCrop extends Component {
     }
   }
 
-  _goBack=() => {
+  _goBack = () => {
     navigationService.navigate(pages.LEARN_SUBJECT)
   }
 
@@ -187,14 +150,12 @@ class ImageCrop extends Component {
     })
     return (
         <Page forceInset={{bottom: 'never', top: 'never'}}>
-          
             <View style={styles.container}>
               <View style={{marginTop: getHeight(38), marginBottom: getHeight(10), width: '100%'}}>
                 <TouchableOpacity style={{marginLeft: getWidth(39)}} onPress={this._goBack}>
                   <Aback size={getHeight(28)} color={'#FFFFFF'}/>
                 </TouchableOpacity>
               </View>
-              
               <View style={styles.headView}>
                   <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(25), flex: 1, textAlign: 'center'}}>
                     Select Your Problem

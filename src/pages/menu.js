@@ -197,11 +197,11 @@ class MenuContent extends Component {
                     icon={<Bank size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onBanks}
                   />
-                  <MenuItem 
+                  {/* <MenuItem 
                     text={'Payments for Learning'}
                     icon={<Scard size={getHeight(20)} color={'#FFFFFF'} />}
                     onClick={this._onPayments}
-                  />
+                  /> */}
                   <MenuItem 
                     text={'Help'}
                     icon={<Qmark size={getHeight(20)} color={'#FFFFFF'} />}
