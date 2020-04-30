@@ -156,7 +156,7 @@ export function getMoreChats(subject, problemId) {
   }
 }
 
-export function sendMessage (subject, problemId, message, shouldGetInitChats) {
+export function sendMessage (subject, problemId, message, shouldGetInitChats, toUser) {
   // console.log("Subject =====", subject);
   return async function(dispatch, getState) {
     try {
@@ -165,6 +165,7 @@ export function sendMessage (subject, problemId, message, shouldGetInitChats) {
         text: message.text != undefined ? message.text : '',
         image: message.image != undefined ? message.image : '',
         sentBy: auth.currentUser.uid,
+        deliverTo: toUser,
         // createdAt: message.createdAt,
         timestamp: Date.now()
       }).finally(() => {

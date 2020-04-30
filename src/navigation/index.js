@@ -43,6 +43,18 @@ import Session from '../pages/session';
 import PaymentEdit from '../pages/paymentEdit';
 import BankEdit from '../pages/bankEdit';
 import ChangeUserInfo from '../pages/changeUserInfo';
+import TestScreen from '../pages/testPage';
+import ForgotPassword from '../pages/forgotPassword';
+import LearnMatches from '../pages/learnMatches';
+import TeachMatches from '../pages/teachMatches';
+import LeSessionNew from '../pages/leSessionNew';
+import TeSessionNew from '../pages/teSessionNew';
+import LeSession from '../pages/leSession';
+import TeSession from '../pages/teSession';
+import SessionAvailability from '../pages/sessionAvailability';
+import LeSessionEnd from '../pages/leSessionEnd';
+import TeSessionEnd from '../pages/teSessionEnd';
+import ContentLoading from '../pages/contentLoading';
 import { getWidth } from '../constants/dynamicSize';
 
 const navigatorConfig = {
@@ -51,70 +63,127 @@ const navigatorConfig = {
     }
 }
 
-const AppDrawer = createDrawerNavigator(
+const LeSessionStack = createStackNavigator(
     {
-        [pages.HOME_SCREEN]: HomeScreen,
+        [pages.LEARN_MATCHES]: LearnMatches,
+        [pages.LESESSION_NEW]: LeSessionNew,
+        [pages.SESSION_AVAILABILITY]: SessionAvailability,
+        [pages.LEARN_SESSION]: LeSession,
+        [pages.CHAT_SCREEN]: ChatScreen,
+        [pages.LESESSION_END]: LeSessionEnd
+    },
+    navigatorConfig
+)
+
+const TeSessionStack = createStackNavigator(
+    {
+        [pages.TEACH_MATCHES]: TeachMatches,
+        [pages.TESESSION_NEW]: TeSessionNew,
+        [pages.TEACH_SESSION]: TeSession,
+        [pages.CHAT_SCREEN]: ChatScreen,
+        [pages.TESESSION_END]: TeSessionEnd
+    },
+    navigatorConfig
+)
+
+const LeSubmitStack = createStackNavigator(
+    {
         [pages.LEARN_SUBJECT]: LearnSubject,
-        [pages.CAMERA_ROLL]: PhotoLibrary,
         [pages.CAMERA]: Camera,
         [pages.PROBLEM_CROP]: ProblemCrop,
-        [pages.SEARCH_SOPHIST]: SearchSophist,
-        [pages.CHOOSE_SOPHIST]: ChooseSophist,
-        [pages.TEACH_SOLVE]: SolveScreen,
-        [pages.LEARN_SOLVE]: LearnSolve,
-        [pages.TEACH_SUBJECT]: TeachSubject,
-        [pages.CHOOSE_PROBLEM]: ChooseProblem,
-        [pages.TEACH_HISTORY]: TeachHistory,
-        [pages.LEARN_HISTORY]: LearnHistory,
-        [pages.CHAT_SCREEN]: ChatScreen,
-        [pages.LIVE_LEARN]: LiveLearn,
-        [pages.PROBLEM_SUBMITTED]: SubProblem,
-        [pages.LEARN_START]: LearnStart,
-        [pages.TEACH_START]: TeachStart,
-        [pages.NOTI_STUDENT]: NotiStudent,
-        [pages.PAYMENTS]: Payments,
-        [pages.PAYMENTS_SETUP]: PaymentSetup,
-        [pages.PAYMENTS_EDIT]: PaymentEdit,
-        [pages.BANKS]: Banks,
-        [pages.BANK_SETUP]: BankSetup,
-        [pages.BANK_EDIT]: BankEdit,
-        [pages.TRANSACTION_HISTORY]: TransactionHistory,
-        [pages.TRANSFER]: Transfer,
-        [pages.TRANSFER_STARTED]: TransferStarted,
-        [pages.HELP]: Help,
-        [pages.SESSION]: Session,
-        [pages.CHANGE_USER_INFO]: ChangeUserInfo
+        // [pages.PROBLEM_SUBMITTED]: SubProblem
+    },
+    navigatorConfig
+)
 
+const LearnSwitch = createSwitchNavigator(
+    {
+        [pages.LESUBMIT_STACK]: LeSubmitStack,
+        [pages.PROBLEM_SUBMITTED]: SubProblem
     },
     {
-        initialRouteName: pages.HOME_SCREEN,
+        initialRouteName: pages.LESUBMIT_STACK
+    }
+)
+
+const TeChooseStack = createStackNavigator(
+    {
+        [pages.TEACH_SUBJECT]: TeachSubject,
+        [pages.CHOOSE_PROBLEM]: ChooseProblem
+    },
+    navigatorConfig
+)
+
+const TeachSwitch = createSwitchNavigator(
+    {
+        [pages.TECHOOSE_STACK]: TeChooseStack
+    },
+    {
+        initialRouteName: pages.TECHOOSE_STACK
+    }
+)
+
+const MainSwitch = createSwitchNavigator(
+    {
+        [pages.LEARN_SWITCH]: LearnSwitch,
+        [pages.TEACH_SWITCH]: TeachSwitch,
+        [pages.LESESSION_STACK]: LeSessionStack,
+        [pages.TESESSION_STACK]: TeSessionStack,
+        [pages.CHANGE_USER_INFO]: ChangeUserInfo,
+        [pages.BANK_EDIT]: BankEdit,
+        [pages.HELP]: Help
+    },
+    {
+        initialRouteName: pages.LEARN_SWITCH
+    }
+)
+
+const MainDrawer = createDrawerNavigator(
+    {
+        [pages.CONTENT_LOADING]: ContentLoading,
+        [pages.MAIN_SWITCH]: MainSwitch
+    },
+    {
+        initialRouteName: pages.CONTENT_LOADING,
         contentComponent: MenuContent,
         drawerLockMode: 'locked-opened',
         edgeWidth: 0,
-        overlayColor: 'rgba(0, 0, 0, 0.9)',
-        drawerWidth: getWidth(283)
+        overlayColor: 'rgba(0, 0, 0, 0.2)',
+        drawerWidth: getWidth(303)
     }
 );
 
-const AuthStack = createStackNavigator(
+const SignUpStack = createStackNavigator(
     {
-        [pages.INIT_SCREEN]: Welcome,
-        [pages.SIGN_IN]: Login,
         [pages.SIGN_UP]: Signup,
-        [pages.PAY_TEACHING]: PayTeaching,
-        [pages.PAY_LEARNING]: PayLearning,
-        [pages.PAYMENT]: Payment,
-        [pages.SINGUP_FINISH]: Finish,
         [pages.BANK]: Bank
     },
     navigatorConfig
-);
+)
+
+const SignInStack = createStackNavigator(
+    {
+        [pages.SIGN_IN]: Login,
+        [pages.FORGOT_PASSWORD]: ForgotPassword
+    },
+    navigatorConfig
+)
+
+const AuthSwitch = createSwitchNavigator(
+    {
+        [pages.SIGNUP_SWITCH]: SignUpStack,
+        [pages.SIGNIN_SWITCH]: SignInStack
+    },
+    {
+        initialRouteName: pages.SIGNIN_SWITCH
+    }
+)
 
 const RootNavigator = createSwitchNavigator(
     {
         [pages.LOADING]: Loading,
-        [pages.AUTH]: AuthStack,
-        [pages.APP]: AppDrawer
+        [pages.AUTH]: AuthSwitch,
+        [pages.APP]: MainDrawer,
     },
     {
         initialRouteName: pages.LOADING

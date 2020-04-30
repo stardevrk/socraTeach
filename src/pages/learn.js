@@ -7,29 +7,29 @@ import {
     Image,
     TouchableOpacity,
     Alert,
-    Platform
+    Platform,
+    ScrollView,
+    FlatList
 } from 'react-native';
-import Page from '../components/basePage';
+import SwitchPage from '../components/switchPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import {BLACK_PRIMARY, PURPLE_MAIN} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN, GRAY_THIRD} from '../constants/colors';
 import BaseButton from '../components/baseButton';
-import MenuButton from '../components/menuButton';
 import Triangle from '../components/icons/triangle';
-import Algebra from '../components/icons/algebra';
-import Geometry from '../components/icons/geometry';
-import Physics from '../components/icons/physics';
-import Chemistry from '../components/icons/chemistry';
-import Bank from '../components/icons/bank';
-import Computer from '../components/icons/computer';
+import Camera from '../components/icons/camera';
+import Picture from '../components/icons/picture';
+import Check from '../components/icons/check';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
-import ModalDropdown from '../components/dropDownList';
-import MenuPage from '../components/menuPage';
-import TopBarPage from '../components/topBarPage';
+import RadioButton from '../components/radioButton';
+import {uploadImage} from '../service/firebase';
+import {auth, firestore} from '../constants/firebase';
 import ImagePicker from 'react-native-image-picker';
 import {connect} from 'react-redux';
 import {getMyInitLearnList, clearMyLearnList} from '../controller/learn';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {changeAppBranch} from '../model/actions/branchAC';
+import { KeyboardAwareView } from 'react-native-keyboard-aware-view';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -59,86 +59,15 @@ class LearnScreen extends Component {
         }
       ],
       subject: '',
-      problemName: ''
+      displaySubject: '',
+      problemName: '',
+      photoSource: 'camera',
+      selecting: false,
+      cropped: false,
+      imageToBeUploaded: ''
     }
 
-    console.log("Redux Store Subjects =", props.subjects);
-  }
-
-  modalWillShow = () => {
-    this.setState({modalOpened: true});
-    // openOverlay();
-  }
-
-  modalWillHide = () => {
-    this.setState({modalOpened: false});
-    // closeOverlay();
-  }
-
-  renderModalListRow = (rowData, rowID, highlighted) => {
-    switch (rowData.iconName) {
-      case 'algebra': 
-        return (
-          <View style={styles.mListItem}>
-            <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-            <Text style={styles.modalListText}>{rowData.name}</Text>
-          </View>
-        )
-      case 'physics': 
-        return (
-          <View style={styles.mListItem}>
-            <Physics size={getHeight(12)} color={'#FFFFFF'} />
-            <Text style={styles.modalListText}>{rowData.name}</Text>
-          </View>
-        )
-      case 'geometry': 
-        return (
-          <View style={styles.mListItem}>
-            <Geometry size={getHeight(12)} color={'#FFFFFF'} />
-            <Text style={styles.modalListText}>{rowData.name}</Text>
-          </View>
-        )
-      case 'chemistry': 
-        return (
-          <View style={styles.mListItem}>
-            <Chemistry size={getHeight(12)} color={'#FFFFFF'} />
-            <Text style={styles.modalListText}>{rowData.name}</Text>
-          </View>
-        )
-      case 'economics': 
-        return (
-          <View style={styles.mListItem}>
-            <Bank size={getHeight(14)} color={'#FFFFFF'} />
-            <Text style={styles.modalListText}>{rowData.name}</Text>
-          </View>
-        )
-      case 'computer':
-        return (
-          <View style={styles.mListItem}>
-            <Computer size={getHeight(15)} color={'#FFFFFF'} />
-            <Text style={styles.modalListText}>{rowData.name}</Text>
-          </View>
-        )
-      default:
-        return (
-          <View style={styles.mListItem}>
-            <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-            <Text style={styles.modalListText}>{rowData.name}</Text>
-          </View>
-        )
-    }
-    
-  }
-
-  renderModalListText = (rowData) => {
-    console.log('rowData', rowData);
-    return `${rowData.name}`;
-  }
-
-  renderModalSeparator = () => {
-    return (
-      <View style={{width: '100%', height: 2, backgroundColor: PURPLE_MAIN}}></View>
-    )
+    // console.log("Redux Store Subjects =", props.subjects);
   }
 
   checkSubject = () => {
@@ -199,16 +128,16 @@ class LearnScreen extends Component {
       },
     };
     ImagePicker.launchImageLibrary(options, (response) => {
+      this.setState({photoSource: 'library'});
       console.log("Image Picker Response = ", response);
       if (response.uri != undefined && response.uri != null && response.uri != '' ) {
-        const subject = this.state.subject.toLowerCase();
         if (Platform.OS == 'ios') {
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject, problemName: this.state.problemName});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, updateResult: (uri) => this._updateCropResult(uri)});
         } else if (Platform.OS == 'android') {
           let absPath = 'file://' + response.path;
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: absPath, imageWidth: response.width, imageHeight: response.height, subject: subject, problemName: this.state.problemName});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: absPath, imageWidth: response.width, imageHeight: response.height, updateResult: (uri) => this._updateCropResult(uri)});
         } else {
-          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, subject: subject, problemName: this.state.problemName});
+          navigationService.navigate(pages.PROBLEM_CROP, {imageUri: response.uri, imageWidth: response.width, imageHeight: response.height, updateResult: (uri) => this._updateCropResult(uri)});
         }
       }
     })
@@ -233,8 +162,8 @@ class LearnScreen extends Component {
 
     if(this.state.problemName == '') {
       Alert.alert(
-        'YOUR PROBLEM NAME',
-        'Please input your problem name!',
+        'YOUR PROBLEM TOPIC',
+        'Please input your problem topic!',
         [
           {
             text: 'OK',
@@ -251,11 +180,6 @@ class LearnScreen extends Component {
     navigationService.navigate(pages.CAMERA, {subject: subject, problemName: this.state.problemName});
   }
 
-  _subjectSelect = (subject) => {
-    // console.log("Subject Text = ", subject);
-    this.setState({subject: subject});
-  }
-
   _skipUpload = () => {
     const {dispatch} = this.props;
     dispatch(clearMyLearnList());
@@ -268,73 +192,283 @@ class LearnScreen extends Component {
     navigationService.navigate(pages.SESSION);
   }
 
-  static getDerivedStateFromProps (props, state) {
-    console.log("Learn Start Props User = ", props.user);
-    return null;
-  }
+  // static getDerivedStateFromProps (props, state) {
+  //   console.log("Learn Start Props User = ", props.user);
+  //   return null;
+  // }
 
   _onChangeProblemName = (name) => {
     this.setState({problemName: name});
   }
 
+  _gotoTeach = () => {
+    const {dispatch} = this.props;
+    
+    console.log("Bank Props ==== ", this.props.bank);
+    if(this.props.bank.express == null) {
+      navigationService.navigate(pages.BANK_EDIT, {bank: this.props.bank});
+    } else {
+      dispatch(changeAppBranch('teach'));
+      navigationService.navigate(pages.TEACH_SWITCH);
+    }
+    // navigationService.navigate(pages.TEACH_SWITCH)
+  }
+
+  _updateCameraPhoto = (photo) => {
+      console.log("Camera Photo URL === ", photo.uri);
+      // navigationService.pop();
+      this.setState({photoSource: 'camera'});
+      navigationService.navigate(pages.PROBLEM_CROP, {imageUri: photo.uri, imageWidth: photo.width, imageHeight: photo.height, updateResult: (uri) => this._updateCropResult(uri)});
+  }
+
+  _updateCropResult = (croppedImage) => {
+    this.setState({cropped: true});
+    this.setState({imageToBeUploaded: croppedImage});
+    console.log("Cropped Image ==== ", croppedImage);
+    navigationService.popToTop();
+  }
+
+  _gotoCamera = () => {
+    console.log("Go to Camera === ");
+    if (this.state.subject == '') {
+      Alert.alert(
+        'YOUR SUBJECT',
+        'Please select your subject',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
+    }
+
+    if(this.state.problemName == '') {
+      Alert.alert(
+        'YOUR PROBLEM TOPIC',
+        'Please input your problem topic!',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
+    }
+    navigationService.navigate(pages.CAMERA, {updatePhoto: (uri) => this._updateCameraPhoto(uri)});
+  }
+
+  _forwardClick = () => {
+    if (this.state.subject == '') {
+      Alert.alert(
+        'YOUR SUBJECT',
+        'Please select your subject',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
+    }
+
+    if(this.state.problemName == '') {
+      Alert.alert(
+        'YOUR PROBLEM TOPIC',
+        'Please input your problem topic!',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
+    }
+
+    if (this.state.photoSource == '' || this.state.cropped == false) {
+      Alert.alert(
+        'YOUR PROBLEM IMAGE',
+        'Please select your problem image!',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+      return;
+    }
+    if (this.state.imageToBeUploaded != '') {
+      uploadImage(this.state.imageToBeUploaded).then((data) => {
+        console.log("Problem Uploaded!!!!");
+        let newDocRef  = firestore.collection(this.state.subject).doc();
+        newDocRef.set({
+          problemId: newDocRef.id,
+          posterId: auth.currentUser.uid,
+          problemImage: data,
+          updateTime: Date.now(),
+          sessionExist: false,
+          subject: this.state.subject,
+          displaySubject: this.state.displaySubject,
+          problemName: this.state.problemName
+        }).catch((err) => {
+          console.log("firestore set error ==== ", err);
+        })
+        .finally(() => {
+        })
+      }).catch((err) =>{
+        console.log("Upload Error = ", err);
+      });
+      navigationService.navigate(pages.PROBLEM_SUBMITTED);
+    }
+  }
+
+  _renderSubjects = (item) => {
+    let oneItem = item.item;
+
+    return (
+      <TouchableOpacity 
+        style={styles.selectionItem}
+        onPress={()=> {this.setState({subject: oneItem.name.toLowerCase(), displaySubject: oneItem.displayName})}}
+      >
+          <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
+            {oneItem.displayName}
+          </Text>
+          <RadioButton 
+            isSelected={this.state.subject == oneItem.name.toLowerCase() ? true : false}
+            onPress={()=> {this.setState({subject: oneItem.name.toLowerCase(), displaySubject: oneItem.displayName})}}
+            size={getHeight(11)}
+          />
+      </TouchableOpacity>
+    )
+  }
+
   render () {
     const {subjects} = this.props;
+    console.log("Learn Subjects === ", subjects);
     return (
-        <TopBarPage titleText={'LEARN'} forceInset={{bottom: 'never'}} onRightClick={this._gotoLearn} notiExist={true} rightExist={true}>
+      <SwitchPage leftSwitch={'Learn'} rightSwitch={'Teach'} switchChange={this._gotoTeach} switchValue={'left'}>
+        {
+          this.state.selecting == false ?
           <KeyboardAwareScrollView style={styles.workingPart} contentContainerStyle={styles.editPart}>
             <View style={{flex: 1}}>
               <Text
-                style={styles.title}
+                style={styles.titleText}
               >
-                Subject
+                Problem info
               </Text>
-              <View style={styles.modalPart}>
-                <ModalDropdown options={subjects.subject} 
-                  descPart={
-                      <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                  }
-                  style={{width: getWidth(276)}}
-                  textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                  dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), height: getHeight(247), marginTop: -getHeight(40)}}
-                  buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#FFFFFF', padding: getHeight(8)}}
-                  dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
-                  dropdownTextHighlightStyle={{color: '#FFFFFF'}}
-                  onDropdownWillShow={this.modalWillShow}
-                  onDropdownWillHide={this.modalWillHide}
-                  renderSeparator={this.renderModalSeparator}
-                  renderRow={this.renderModalListRow}
-                  renderButtonText={this.renderModalListText}
-                  defaultValue={'Choose Your Subject'}
-                  onExtractBtnText={this._subjectSelect}
-                >
-                </ModalDropdown>
+              <Text style={styles.subTitle}>
+                Select subject
+              </Text>
+              <TouchableOpacity
+                style={styles.btnSubject}
+                onPress={()=>{this.setState({selecting: true})}}
+              >
+                <Text style={styles.btnText}>
+                  {this.state.subject != '' ? this.state.displaySubject : 'Subject'}
+                </Text>
+                <Triangle width={getHeight(16)} height={getHeight(16)} color={PURPLE_MAIN} />
+              </TouchableOpacity>
+              <View style={{marginBottom: getHeight(30)}}>
+                <Text style={styles.subTitle}>
+                  Problem topic
+                </Text>
+                <TextInput
+                  style={styles.problemName}
+                  onChangeText={text => this._onChangeProblemName(text)}
+                  defaultValue={this.state.problemName}
+                />
               </View>
-              <TextInput
-                style={styles.problemName}
-                onChangeText={text => this._onChangeProblemName(text)}
-                placeholderTextColor={'rgba(255,255,255,0.39)'}
-                placeholder={'Name your problem'}
-              />
-            </View>
-            
-            <View style={styles.belowPart}>
-                <View style={styles.blackPart}>
-                  <Text style={styles.uploadText}>
-                    Upload
-                  </Text>
-                  <BaseButton 
-                    text={'TAKE PICTURE'}
-                    onClick={this.cameraClick}
-                    buttonStyle={{marginBottom: getHeight(31)}}
-                  />
-                  <BaseButton 
-                    text={'CAMERA ROLL'}
-                    onClick={this.libraryClick}
-                  />
-                </View>
+              {/* <View style={{marginBottom: getHeight(30)}}>
+                <Text style={styles.subTitle}>
+                  What's tripping you up?
+                </Text>
+                <TextInput
+                  style={styles.problemName}
+                  onChangeText={text => this._onChangeProblemName(text)}
+                />
+              </View> */}
+              <Text
+                style={[styles.titleText, {marginTop: getHeight(30)}]}
+              >
+                Upload
+              </Text>
+              <TouchableOpacity 
+                style={styles.photoBtn}
+                onPress={this._gotoCamera}
+              >
+                <Camera size={getHeight(24)} />
+                <Text style={styles.btnText}>
+                  Take photo
+                </Text>
+                {
+                  this.state.photoSource == 'camera' && this.state.cropped == true ?
+                  <Check size={getHeight(24)} />
+                  :
+                  <View style={{width: getHeight(24), height: getHeight(24)}}></View>
+                }
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.photoBtn, {marginTop: getHeight(18)}]} onPress={() => {this.libraryClick()}}>
+                <Picture size={getHeight(24)} />
+                <Text style={styles.btnText}>
+                  Camera roll
+                </Text>
+                {
+                  this.state.photoSource == 'library' && this.state.cropped == true ?
+                  <Check size={getHeight(24)} />
+                  :
+                  <View style={{width: getHeight(24), height: getHeight(24)}}></View>
+                }
+              </TouchableOpacity>
+              <View style={{flex: 1, justifyContent: 'flex-end'}}>
+                <BaseButton 
+                    text={'Submit problem'}
+                    onClick={this._forwardClick}
+                    buttonStyle={{marginBottom: getHeight(30), backgroundColor: PURPLE_MAIN, alignSelf: 'center'}}
+                    textStyle={{color: '#FFFFFF'}}
+                />
+              </View>
+              
             </View>
           </KeyboardAwareScrollView>
-        </TopBarPage>
+          :
+          <View style={{flex: 1, width: '100%'}}>
+              <View style={styles.selectionHeader}>
+                <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(24), color: BLACK_PRIMARY}}>
+                  Select Subject
+                </Text>
+                <TouchableOpacity
+                  onPress={() => {this.setState({selecting: false})}}
+                >
+                  <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), color: PURPLE_MAIN}}>
+                    Save
+                  </Text>
+                </TouchableOpacity>
+              </View>
+              <FlatList 
+                data={subjects.subject}
+                renderItem={this._renderSubjects}
+                keyExtractor={item => item.name}
+                contentContainerStyle={{flex: 1, width: '100%'}}
+                style={{flex: 1, width: '100%'}}
+              />
+          </View>
+        }
+        </SwitchPage>
     )
   }
 }
@@ -347,93 +481,97 @@ const styles = StyleSheet.create({
         width: '100%',
         
     },
-    headerTitle: {
-      width: '100%',
-      textAlign: 'center',
-      fontSize: getHeight(24),
-      fontFamily: 'Montserrat-Regular',
-      color: '#FFFFFF',
-      position: 'absolute',
-      top: getHeight(20)
-    },
     workingPart: {
       flex: 1,
-      
+      height: '100%',
       width: '100%',
     },
-    title: {
-      width: '100%',
+    titleText: {
       fontFamily: 'Montserrat-Medium',
-      color: '#FFFFFF',
-      fontSize: getHeight(30),
-      
-      marginBottom: getHeight(44),
-      marginTop: getHeight(100)
+      fontSize: getHeight(24),
+      marginTop: getHeight(31),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(25),
+      color: BLACK_PRIMARY
+    },
+    subTitle: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(16),
+      color: BLACK_PRIMARY,
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(20)
     },
     editPart: {
       flex:1,
-      justifyContent: 'center',
+      height: '100%',
+      width: '100%',
+    },
+    btnSubject: {
+      width: getWidth(308),
+      height: getHeight(49),
+      flexDirection: 'row',
+      justifyContent: 'space-between',
       alignItems: 'center',
+      borderWidth: 1,
+      borderColor: PURPLE_MAIN,
+      alignSelf: 'center',
+      paddingLeft: getWidth(8),
+      paddingRight: getWidth(11),
+      marginBottom: getHeight(30)
     },
     problemName: {
       height: getHeight(42), 
-      borderColor: 'white', 
-      borderWidth: 1, 
-      color: 'white', 
+      width: getWidth(308),
+      alignSelf: 'center',
+      borderColor: BLACK_PRIMARY, 
+      borderBottomWidth: 1, 
+      color: BLACK_PRIMARY, 
       fontFamily:  'Montserrat-Regular', 
       fontSize: getHeight(18), 
       paddingLeft: getWidth(10),
-      marginTop: getHeight(41),
-      
     },
-    dropDescText: {
-      color: '#FFFFFF',
-      fontFamily: 'Montserrat-Regular',
-      fontSize: getHeight(18),
-      marginBottom: getHeight(8)
-    },
-    modalPart: {
-      alignSelf: 'flex-start', 
-      
-    },
-    belowPart: {
-      flex: 1,
-      width: '100%',
-      justifyContent: 'flex-end'
-    },
-    blackPart: {
-      width: '100%',
-      height: getHeight(338),
-      backgroundColor: BLACK_PRIMARY,
-      alignItems: 'center'
-    },
-    uploadText: {
-      color: '#FFFFFF',
+    btnText: {
       fontFamily: 'Montserrat-Bold',
-      fontSize: getHeight(30),
-      width: '100%',
-      marginTop: getHeight(33),
-      paddingLeft: getWidth(50),
-      marginBottom: getHeight(40)
+      color: PURPLE_MAIN,
+      fontSize: getHeight(17)
     },
-    mListItem: {
+    photoBtn: {
+      width: getWidth(308),
+      height: getHeight(37),
+      justifyContent: 'space-between',
+      paddingHorizontal: getWidth(7),
+      alignSelf: 'center',
       flexDirection: 'row',
-      width: '100%',
-      paddingLeft: getWidth(19),
       alignItems: 'center',
-      paddingVertical: getHeight(10)
+      borderWidth: 1,
+      borderColor: GRAY_THIRD
     },
-    modalListText: {
-      fontFamily: 'Montserrat-Regular',
-      fontSize: getHeight(16),
-      color: '#FFFFFF',
-      marginLeft: getWidth(21)
+    selectionHeader: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      width: '100%',
+      paddingHorizontal: getWidth(33),
+      alignSelf: 'center',
+      marginTop: getHeight(33),
+      marginBottom: getHeight(73)
+    },
+    selectionItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: getWidth(305),
+      height: getHeight(70),
+      borderBottomWidth: 2,
+      borderColor: GRAY_THIRD,
+      alignSelf: 'center',
+      alignItems: 'center',
     }
 })
 
 const mapStateToProps = (state) => ({
   subjects: state.subject,
-  user: state.user
+  user: state.user,
+  bank: state.bank,
 })
 
 export default connect(mapStateToProps)(LearnScreen);

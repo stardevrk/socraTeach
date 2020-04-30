@@ -6,12 +6,12 @@ import {
     ActivityIndicator,
     Alert,
     TouchableOpacity,
-    Text
+    Text,
+    Linking
 } from 'react-native';
 import Page from '../components/basePage';
+import NavPage from '../components/navPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import BaseButton from '../components/baseButton';
-import AuthInput from '../components/authInput';
 import navigationService from '../navigation/navigationService';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import pages from '../constants/pages';
@@ -19,12 +19,13 @@ import Bank from '../components/icons/bank';
 import {validateExp, validateCardNum} from '../service/utils';
 import {getStripeToken} from '../service/stripe';
 import {signupStripeInfo, signupUserInfo} from '../model/actions/signupAC';
+import {getExpress} from '../model/actions/userAC';
 import {connect} from 'react-redux';
-import { BLACK_PRIMARY } from '../constants/colors';
-import {auth} from '../constants/firebase';
+import { BLACK_PRIMARY, PURPLE_MAIN } from '../constants/colors';
+import {auth, firestore} from '../constants/firebase';
+import { withMappedNavigationParams } from 'react-navigation-props-mapper';
 
-const BACK_BUTTON = require('../assets/images/back-button.png');
-
+@withMappedNavigationParams()
 class BankSetup extends Component {
 
   constructor(props) {
@@ -46,50 +47,31 @@ class BankSetup extends Component {
   }
     
   goForward = () => {
-    if (this.state.routeName == '') {
-      this.setState({emptyRoute: true});
-      return;
-    }
-    if (this.state.accountNumber == '') {
-      this.setState({emptyAccountNumber: true});
-      return;
-    }
-    
-    if (this.state.secondAccount == '') {
-      this.setState({emptySecond: true});
-      return;
-    }
-
-    const {dispatch, signupInfo} = this.props;
-    this.setState({loading: true});
-    dispatch(signupUserInfo({
-      routeNumber: this.state.routeName,
-      accountNumber: this.state.accountNumber,
-      secondAccount: this.state.secondAccount
-    }));
-    auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
-      firestore.collection('users').doc(result.user.uid).set({
-        country: signupInfo.country,
-        email: signupInfo.email,
-        userName: signupInfo.userName,
-        stripeToken: signupInfo.stripeToken,
-        routeNumber: this.state.routeName,
-        accountNumber: this.state.accountNumber,
-        secondAccount: this.state.secondAccount,
-        bankSkipped: false,
-        lastLogin: Date.now()
-      })
-    }).finally(() => {
-      this.setState({loading: false});
+    //Test mode ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM
+    //Live mode ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi
+    let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi&state=${auth.currentUser.uid}`;
+    Linking.canOpenURL(url)
+    .then((supported) => {
+      if (!supported) {
+        console.log("Can't handle url: " + url);
+      } else {
+        Linking.openURL(url);
+        navigationService.pop();
+      }
     })
+    .catch((err) => console.error('An error occurred', err));
   }
 
-  goBack = () => {
-    navigationService.navigate(pages.BANKS);
+  _goBack = () => {
+    navigationService.pop();
   }
 
   goSKIP = () => {
-    
+    const {email, password} = this.props;
+    this.setState({loading: true});
+    // dispatch(signupUserInfo({
+    //   bankSkipped: true
+    // }));
   }
 
   _changeRoute = (name) => {
@@ -128,74 +110,59 @@ class BankSetup extends Component {
     }
   }
 
-  _onREMOVE = () => {
-
-  }
-
   render () {
+    const {bank} = this.props;
+    let displayBalance = '0.00';
+    if (bank.balance != null) {
+      displayBalance = bank.balance.total.toFixed(2);
+    }
     return (
-        <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
+        <NavPage onLeftClick={this._goBack}>
           {
             this.state.loading == true ? 
             <View style={styles.wrapper}>
               <ActivityIndicator size={'large'} />
             </View>
             :
-            <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-            <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
-                
-                <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
-                    <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
-                </TouchableOpacity>
-                <Text style={styles.pageName}>Bank</Text>
-                <View style={{width: '100%', paddingLeft: getWidth(34), marginBottom: getHeight(56)}}>
-                  <Bank size={getWidth(48)} color={'#FFFFFF'} />
+            <View style={styles.container}>
+                <View style={{flex: 1}}>
+                  {
+                    this.props.bank.balance != null ?
+                    <Text style={styles.titleText}>
+                      Balance: ${displayBalance}
+                    </Text>
+                    :
+                    <Text style={styles.titleText}>
+                      Add bank for teaching
+                    </Text>
+                  }
+                  
+                  <Text style={styles.subTitle}>
+                      Stripe Connect portal
+                  </Text>
+                  <TouchableOpacity style={styles.portalView}
+                    onPress={this.goForward}
+                  >
+                    <Bank size={getHeight(24)} color={PURPLE_MAIN} />
+                    <Text style={styles.portalText}>
+                      Link to Stripe via the Web
+                    </Text>
+                  </TouchableOpacity>
+                  {
+                    this.props.bank.express != null ?
+                    <Text style={styles.descText}>
+                      You are successfully connected to Stripe. Balances will be reflected once Stripe has verified your account (1~2 days). Balances will be paid out nightly. To access your Connect profile, or edit, add, and remove bank accounts, follow the link in your email. Money from new teaching sessions will be reflected in the balance within 5 minutes of the session.
+                    </Text>
+                    :
+                    <Text style={styles.descText}>
+                      Bank account/debit card linkage through Stripe will take 2~3 minutes to reflect within SocraTeach
+                    </Text>
+                  }
+                  
                 </View>
-
-                <AuthInput 
-                    desc={'Routing Number'}
-                    wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
-                    onChangeText={this._changeRoute}
-                    placeholder={'Tom Smith'}
-                    errorExist={this.state.emptyRoute}
-                    errorText={'Required!'}
-                />
-
-                <AuthInput 
-                    desc={'Account Number'}
-                    wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
-                    placeholder={'394994948372'}
-                    onChangeText={this._changeAccountNumber}
-                    errorExist={this.state.emptyAccountNumber || this.state.invalidAccountNum}
-                    errorText={this.state.invalidAccountNum == true ? 'Invalid Card Number' : 'Required!'}
-                    keyboardType={'numeric'}
-                />
-                
-
-                <AuthInput 
-                    desc={'Account Number'}
-                    wrapperStyle={{marginBottom: getHeight(27)}}
-                    descStyle={{marginBottom: getHeight(25)}}
-                    onChangeText={this._changeSecond}
-                    errorExist={this.state.emptySecond}
-                    placeholder={'394994948372'}
-                    errorText={'Required!'}
-                    keyboardType={'numeric'}
-                />
-                
-                
-            </KeyboardAwareScrollView>
-            <View style={styles.bottomBtnView}>
-                  <BaseButton 
-                    text={'REMOVE'}
-                    onClick={this._onREMOVE}
-                  />
-                </View>
-            </View>
+              </View>
           }
-        </Page>
+        </NavPage>
     )
   }
 }
@@ -209,11 +176,14 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: '100%',
+        height: '100%',
     },
     wrapper: {
       flex: 1,
       width: '100%',
-      height: '100%'
+      height: '100%',
+      justifyContent: 'center',
+      alignItems: 'center'
     },
     logoImage: {
         width: getWidth(291),
@@ -247,7 +217,84 @@ const styles = StyleSheet.create({
     bottomBtnView: {
       width: '100%', 
       alignItems: 'center',
-      marginBottom: getHeight(20)
+      marginBottom: getHeight(18)
+    },
+    titleText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(24),
+      marginTop: getHeight(32),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(25),
+      color: BLACK_PRIMARY
+    },
+    subTitle: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(16),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(26),
+      color: BLACK_PRIMARY
+    },
+    portalView: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      width: '100%',
+      marginBottom: getHeight(26),
+      marginLeft: getWidth(38)
+    },
+    portalText: {
+      fontFamily: 'Montserrat-Regular',
+      fontSize: getHeight(20),
+      color: PURPLE_MAIN,
+      marginLeft: getWidth(7)
+    },
+    descView: {
+      width: getWidth(320),
+      alignSelf: 'center'
+    },
+    descText: {
+      fontFamily: 'Montserrat-Regular',
+      fontSize: getHeight(14),
+      color: BLACK_PRIMARY,
+      width: getWidth(305),
+      alignSelf: 'center'
+    },
+    btnText: {
+      fontFamily: 'Montserrat-Medium',
+      color: '#FFFFFF',
+      fontSize: getHeight(18)
+    },
+    bodyText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: BLACK_PRIMARY,
+      marginTop: getHeight(29)
+    },
+    secondText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: BLACK_PRIMARY,
+    },
+    bodySecText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(15),
+      color: BLACK_PRIMARY
+    },
+    bodyThirdText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(18),
+      color: BLACK_PRIMARY
+    },
+    btnBody: {
+      width: getWidth(220), 
+      height: getHeight(36), 
+      borderRadius: getHeight(10), 
+      backgroundColor: PURPLE_MAIN, 
+      justifyContent: 'center',
+      alignItems: 'center', 
+      flexDirection: 'row',
+      paddingLeft: getWidth(13),
+      paddingRight: getWidth(25),
+      marginBottom: getHeight(23)
     }
 })
 

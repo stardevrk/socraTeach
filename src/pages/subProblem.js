@@ -6,9 +6,12 @@ import {
     ActivityIndicator,
     TouchableOpacity
 } from 'react-native';
-import {BLACK_PRIMARY} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN} from '../constants/colors';
 import Page from '../components/basePage';
+import NavPage from '../components/navPage';
+import SwitchPage from '../components/switchPage';
 import Vector from '../components/icons/vector';
+import BaseButton from '../components/baseButton';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 import {connect} from 'react-redux';
 import navigationService from '../navigation/navigationService';
@@ -22,32 +25,45 @@ class Loading extends Component {
     }
 
     _gotoHome = () => {
-      navigationService.reset(pages.LOADING);
+      // navigationService.popToTop();
+    }
+
+    _gotoTeach = () => {
+      navigationService.navigate(pages.TEACH_SWITCH)
+    }
+
+    _homeClick = () => {
+      navigationService.navigate(pages.LOADING);
     }
 
     render () {
         return (
-            <Page>
-                <View style={styles.container} >
-                    <View style={styles.modal}>
-                      <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                        <Vector size={getHeight(40)} />
-                        <Text style={styles.bodyText}>Problem Submitted</Text>
-                      </View>
-                      <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), borderRadius: getHeight(10), backgroundColor: 'rgba(58, 58, 60, 0.8)', justifyContent: 'center', alignItems: 'center', marginBottom: getHeight(23)}}
-                      onPress={this._gotoHome}
-                      >
-                        <Text style={styles.btnText}>Home</Text>
-                      </TouchableOpacity>
-                    </View>
-                    <Text style={styles.descText}>
-                      You'll get a notification when a
+            <SwitchPage leftSwitch={'Learn'} rightSwitch={'Teach'} switchChange={this._gotoTeach}>
+                <View style={{flex: 1, width: '100%'}}>
+                  <View style={{flex: 1}}>
+                    <Text
+                      style={styles.titleText}
+                    >
+                      Problem submittted.
+                    </Text>
+                    <Text style={styles.subTitle}>
+                      You'll get the notification when a 
+                    </Text>
+                    <Text style={styles.subTitle}>
+                      teacher is ready to help.
                     </Text>
                     <Text style={styles.descText}>
-                      teacher can help you solve it!
+                      If you need help on more than one problem you can continue submitting more problems
                     </Text>
+                  </View>
+                  <BaseButton 
+                      text={'Home'}
+                      onClick={this._homeClick}
+                      buttonStyle={{marginBottom: getHeight(30), backgroundColor: PURPLE_MAIN, alignSelf: 'center'}}
+                      textStyle={{color: '#FFFFFF'}}
+                  />
                 </View>
-            </Page>
+            </SwitchPage>
             
         )
     }
@@ -64,37 +80,28 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center'
     },
-    loadText: {
-        paddingBottom: getHeight(10),
-        color: '#FFFFFF',
-        fontFamily: 'Montserrat-Bold',
-    },
-    modal: {
-      width: getWidth(244),
-      height: getHeight(262),
-      backgroundColor: '#FFFFFF',
-      alignItems: 'center',
-      borderRadius: getHeight(10),
-      marginBottom: getHeight(49)
-    },
-    btnText: {
+    titleText: {
       fontFamily: 'Montserrat-Medium',
-      color: '#FFFFFF',
-      fontSize: getHeight(18)
+      fontSize: getHeight(24),
+      marginTop: getHeight(31),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(25),
+      color: BLACK_PRIMARY
     },
-    bodyText: {
+    subTitle: {
       fontFamily: 'Montserrat-Medium',
-      fontSize: getHeight(18),
+      fontSize: getHeight(17),
       color: BLACK_PRIMARY,
-      marginTop: getHeight(28)
+      marginLeft: getWidth(32),
     },
     descText: {
       fontFamily: 'Montserrat-Medium',
-      fontSize: getHeight(18),
-      color: '#FFFFFF',
-      width: '100%',
-      textAlign: 'center'
-    }
+      fontSize: getHeight(15),
+      marginTop: getHeight(43),
+      width: getWidth(308),
+      alignSelf: 'center',
+      color: BLACK_PRIMARY
+    },
 });
 
 const mapStateToProps = (state) => ({

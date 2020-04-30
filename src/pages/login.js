@@ -5,9 +5,11 @@ import {
     ActivityIndicator,
     View,
     TouchableOpacity,
-    Text
+    Text,
+    Keyboard
 } from 'react-native';
 import Page from '../components/basePage';
+import SwitchPage from '../components/switchPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
 import BaseButton from '../components/baseButton';
 import BaseInput from '../components/baseInput';
@@ -39,11 +41,16 @@ class Login extends Component {
             emptyPassword: false,
             mismatch: false,
             loading: false,
-            modalVisiable: false
+            modalVisiable: false,
+            activeInput: 'email'
         }
     }
     
     loginClick = () => {
+        if (this.state.invalidEmail == true) {
+            return;
+        }
+
         if (this.state.email == '') {
             this.setState({emptyEmail: true});
             return;
@@ -76,7 +83,7 @@ class Login extends Component {
     _changeEmail = (email) => {
         this.setState({email: email});
         if (email != '') {
-            this.setState({emptyEmail: false});
+            this.setState({emptyEmail: false, mismatch: false});
         }
 
         if (!validateEmail(email)) {
@@ -89,12 +96,13 @@ class Login extends Component {
     _changePassword = (password) => {
         this.setState({password: password});
         if (password != '') {
-            this.setState({emptyPassword: false})
+            this.setState({emptyPassword: false, mismatch: false})
         }
     }
 
     _forgotpasswordClick = () => {
-        this.setState({modalVisiable: true});
+        // this.setState({modalVisiable: true});
+        navigationService.navigate(pages.FORGOT_PASSWORD);
     }
 
     _gotoHome = () => {
@@ -103,95 +111,126 @@ class Login extends Component {
 
         })
         navigationService.reset(pages.LOADING);
-        
     }
 
     _forwardClick = () => {
-        if (this.state.password == '') {
-            this.setState({emptyPassword: true});
-            return;
-        }
+        // if (this.state.password == '') {
+        //     this.setState({emptyPassword: true});
+        //     return;
+        // }
 
-        this.setState({loading: true});
-        auth.signInWithEmailAndPassword(this.props.login.email, this.state.password).then((value) => {
-            this.setState({mismatch: false});
-            firestore.collection('users').doc(value.user.uid).update({
-                lastLogin: Date.now()
-            }).catch((error) => {
-                console.log("Firestore Update Error", error);
-            })
-        }).catch((error) => {
-            console.log("SignIn Error = ", error);
-            this.setState({mismatch: true});
-        }).finally(() => {
-            this.setState({loading: false});
-        })
+        // this.setState({loading: true});
+        // auth.signInWithEmailAndPassword(this.props.login.email, this.state.password).then((value) => {
+        //     this.setState({mismatch: false});
+        //     firestore.collection('users').doc(value.user.uid).update({
+        //         lastLogin: Date.now()
+        //     }).catch((error) => {
+        //         console.log("Firestore Update Error", error);
+        //     })
+        // }).catch((error) => {
+        //     console.log("SignIn Error = ", error);
+        //     this.setState({mismatch: true});
+        // }).finally(() => {
+        //     this.setState({loading: false});
+        // })
+        navigationService.navigate(pages.APP)
+    }
+
+    _gotoSignup = () => {
+        navigationService.navigate(pages.SIGNUP_SWITCH);
+    }
+
+    _getPasswordRef = (ref) => {
+        this.passwordInput = ref;
+    }
+
+    _emailFocus = () => {
+        this.setState({activeInput: 'email'});
+    }
+
+    _passwordFocus = () => {
+        this.setState({activeInput: 'password'})
+    }
+
+    _keyboardDidHide = () => {
+        this.setState({activeInput: ''});
+    }
+
+    componentDidMount() {
+        Keyboard.addListener("keyboardDidHide", this._keyboardDidHide);
+        setTimeout(() => {
+            this.setState({activeInput: 'email'})
+          }, 80);
+    }
+
+    componentWillUnmount() {
+        Keyboard.removeListener("keyboardDidHide", this._keyboardDidHide);
     }
 
     render () {
         return (
-            <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
+            <SwitchPage leftExist={false} leftSwitch={'Sign up'} rightSwitch={'Login'} switchValue={'right'} switchChange={this._gotoSignup}>
                 {
-                    this.state.modalVisiable == false ?
                     this.state.loading == true ? 
                     <View style={styles.loadingWrapper}>
                         <ActivityIndicator size={'large'} />
                     </View>
                     :
                     <KeyboardAwareScrollView style={styles.container} contentContainerStyle={styles.wrapper}>
-                        <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
-                            <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
-                        </TouchableOpacity>
-                        
-                        <AuthInput 
-                            desc={'Password'}
-                            pwdType={true}
-                            wrapperStyle={{marginBottom: getHeight(18)}}
-                            descStyle={{marginBottom: getHeight(20)}}
-                            onChangeText={this._changePassword}
-                            errorExist={this.state.emptyEmail || this.state.mismatch}
-                            errorText={this.state.mismatch == true ? 'Incorrect Password or Email!' : 'Required!'}
-                            autoFocus={true}
-                        />
-                        <TouchableOpacity style={{marginBottom: getHeight(45), marginLeft: getWidth(33), width: getWidth(108), flexDirection: 'row'}}
-                        onPress={this._forgotpasswordClick}
-                        >
-                            <View>
-                                <Text style={styles.forgotText}>Forgot Password?</Text>
-                                <View style={{height: 1, backgroundColor: '#FFFFFF', marginTop: -getHeight(2)}}></View>
-                            </View>
-                            <View style={{flex: 1}}>
+                        <View style={{flex: 1}}>
+                            <Text style={styles.titleText}>
+                                Login
+                            </Text>
+                            <AuthInput 
+                                desc={'Email Address'}
+                                wrapperStyle={{marginBottom: getHeight(27)}}
+                                descStyle={{marginBottom: getHeight(25)}}
+                                onChangeText={this._changeEmail}
+                                errorExist={this.state.emptyEmail || this.state.invalidEmail}
+                                errorText={this.state.emptyEmail ? 'Required!': 'Invalid Email!'}
+                                autoCap={false}
+                                autoFocus={true}
+                                returnKeyType={'next'}
+                                onSubmitEditing={() => {this.passwordInput.focus()}}
+                                activeInput={this.state.activeInput == 'email' ? true : false}
+                                onFocus={this._emailFocus}
+                                keyboardType={'email-address'}
+                            />
+                            <AuthInput 
+                                desc={'Password'}
+                                pwdType={true}
+                                wrapperStyle={{marginBottom: getHeight(16)}}
+                                descStyle={{marginBottom: getHeight(25)}}
+                                onChangeText={this._changePassword}
+                                errorExist={this.state.emptyPassword || this.state.mismatch}
+                                errorText={this.state.mismatch == true ? 'Incorrect Password or Email!' : 'Required!'}
+                                getRef={this._getPasswordRef}
+                                activeInput={this.state.activeInput == 'password' ? true : false}
+                                onFocus={this._passwordFocus}
+                            />
+                            <TouchableOpacity style={{marginLeft: getWidth(33), width: getWidth(108), flexDirection: 'row'}}
+                            onPress={this._forgotpasswordClick}
+                            >
+                                <View>
+                                    <Text style={styles.forgotText}>Forgot Password?</Text>
+                                    <View style={{height: 1, backgroundColor: BLACK_PRIMARY, marginTop: -getHeight(2)}}></View>
+                                </View>
+                                <View style={{flex: 1}}>
 
-                            </View>
-                        </TouchableOpacity>
-                        <View style={styles.forwardBtnView}>
-                            <TouchableOpacity style={styles.forwardBtn} onPress={this._forwardClick}>
-                                <Image style={styles.backBtnImage} resizeMode={'contain'} source={FORWARD_BUTTON}/>
+                                </View>
                             </TouchableOpacity>
+                        </View>
+                        <View style={{width: '100%', alignItems: 'center'}}>
+                            <BaseButton 
+                                text={'Login'}
+                                onClick={this.loginClick}
+                                buttonStyle={{marginBottom: getHeight(18), backgroundColor: PURPLE_MAIN}}
+                                textStyle={{color: '#FFFFFF'}}
+                            />
                         </View>
                     </KeyboardAwareScrollView>
-                    :
-                    <View style={styles.modalWrapper}>
-                        <Image style={{marginTop: getHeight(120), width: getWidth(156), height: getHeight(82)}} source={LOGO_IMAGE} resizeMode={'contain'}/>
-                        <View style={styles.modalView}>
-                            <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                                <Text style={styles.descText}>
-                                    Password recovery 
-                                </Text>
-                                <Text style={styles.descText}>
-                                    information has been 
-                                </Text>
-                                <Text style={styles.descText}>
-                                    sent to your email
-                                </Text>
-                            </View>
-                            <TouchableOpacity style={styles.btnWrapper} onPress={this._gotoHome}>
-                                <Text style={styles.btnText}>Home</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
                 }
-            </Page>
+            </SwitchPage>
         )
     }
 }
@@ -259,7 +298,7 @@ const styles = StyleSheet.create({
     forgotText: {
         fontFamily: 'Montserrat-Regular',
         fontSize: getHeight(12),
-        color: '#FFFFFF',
+        color: BLACK_PRIMARY,
     },
     modalWrapper: {
         width: '100%',
@@ -292,7 +331,14 @@ const styles = StyleSheet.create({
         color: '#3A3A3C',
         fontFamily: 'Montserrat-Medium',
         fontSize: getHeight(18)
-    }
+    },
+    titleText: {
+        fontFamily: 'Montserrat-Medium',
+        fontSize: getHeight(24),
+        marginTop: getHeight(32),
+        marginLeft: getWidth(32),
+        marginBottom: getHeight(25)
+    },
 })
 
 const mapStateToProps = (state) => ({

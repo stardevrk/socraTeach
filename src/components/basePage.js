@@ -34,7 +34,7 @@ const Page = ({
     statusBarExist
 }) => {
     return (
-        <SafeAreaView forceInset={forceInset} style={{backgroundColor: backgroundColor}}>
+        <SafeAreaView forceInset={forceInset} style={{backgroundColor: backgroundColor, paddingTop: getHeight(15)}}>
             {
                 statusBarExist == true ? 
                 <StatusBar backgroundColor={backgroundColor} translucent />
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
 });
 
 Page.defaultProps = {
-    backgroundColor: PURPLE_MAIN,
+    backgroundColor: '#FFFFFF',
     statusBarExist: statusExist
 };
 

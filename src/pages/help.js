@@ -5,22 +5,28 @@ import {
     Text,
     ActivityIndicator,
     TouchableOpacity,
-    Image
+    Image,
+    Linking
 } from 'react-native';
-import {BLACK_PRIMARY, PURPLE_MAIN, GRAY_SECONDARY} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN, GRAY_THIRD} from '../constants/colors';
 import Page from '../components/basePage';
+import NavPage from '../components/navPage';
+import RadioButton from '../components/radioButton';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 import {connect} from 'react-redux';
+import Forward from '../components/icons/forward';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
-import Checked from '../components/icons/checked';
-import HelpIcon from '../components/icons/help';
-import TopBarPage from '../components/topBarPage';
-
-const ICON_LOGO = require('../assets/images/icon-logo.png');
-
 
 class Help extends Component {
+
+  constructor(props) {
+    super(props)
+
+    this.state = {
+
+    }
+  }
 
     componentDidMount() {
         
@@ -28,35 +34,100 @@ class Help extends Component {
 
     _gotoHome = () => {
       navigationService.reset(pages.LOADING);
-    }   
+    }
+
+    _gotoPolicy = () => {
+      let url = `http://socrateach.com/privacy-policy/`;
+      Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log("Can't handle url: " + url);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+    }
+
+    _gotoTerms = () => {
+      let url = `https://www.apple.com/legal/internet-services/itunes/dev/stdeula/`;
+      Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log("Can't handle url: " + url);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+    }
+
+    _gotoContact = () => {
+      let url = `mailto:admin@socrateach.com`;
+      Linking.canOpenURL(url)
+      .then((supported) => {
+        if (!supported) {
+          console.log("Can't handle url: " + url);
+        } else {
+          return Linking.openURL(url);
+        }
+      })
+      .catch((err) => console.error('An error occurred', err));
+    }
+
+    _goBack = () => {
+      navigationService.pop()
+    }
 
     render () {
         return (
-            <TopBarPage titleText={'HELP'} rightExist={true}>
-                <View style={styles.container} >
-                  <Image style={{width: getWidth(155), height: getHeight(82), marginBottom: getHeight(42)}} resizeMode={'contain'} source={ICON_LOGO}/>
-                  <View style={{width: getWidth(244), height: getHeight(262), backgroundColor: GRAY_SECONDARY, borderRadius: getHeight(10), alignItems: 'center'}}>
-                    <View style={{flex: 1, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
-                      <HelpIcon size={getWidth(40)} color={PURPLE_MAIN} />
-                      <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), marginTop: getHeight(29)}}>
-                        Call or Text
-                      </Text>
-                      <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
-                        1-630-408-6670 for
-                      </Text>
-                      <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(18)}}>
-                        Questions/Concerns
-                      </Text>
-                    </View>
-                    <TouchableOpacity style={{width: getWidth(220), height: getHeight(36), backgroundColor: '#FFFFFF', borderRadius: getHeight(10), marginBottom: getHeight(23), justifyContent: 'center', alignItems: 'center'}}
-                    onPress={this._gotoHome}
-                    >
-                      <Text style={{color: PURPLE_MAIN, fontFamily: 'Montserrat-Medium', fontSize: getHeight(17)}}>OK</Text>
-                    </TouchableOpacity>
+          <NavPage onLeftClick={this._goBack}>
+            <View style={{flex: 1, width: '100%'}}>
+              <View style={styles.selectionHeader}>
+                <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(24), color: BLACK_PRIMARY}}>
+                  Help
+                </Text>
+                {/* <TouchableOpacity
+                  onPress={this._saveConfiguration}
+                >
+                  <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), color: PURPLE_MAIN}}>
+                    Save to Send
+                  </Text>
+                </TouchableOpacity> */}
+              </View>
+              <TouchableOpacity style={styles.selectionItem} onPress={this._gotoPolicy}>
+                  <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(16), color: BLACK_PRIMARY}}>
+                    Privacy Policy
+                  </Text>
+                  <Forward size={getHeight(24)} color={GRAY_THIRD} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.selectionItem}>
+                  <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(16), color: BLACK_PRIMARY}}>
+                    Copyright
+                  </Text>
+                  <Forward size={getHeight(24)} color={GRAY_THIRD} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.selectionItem} onPress={this._gotoTerms}>
+                  <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(16), color: BLACK_PRIMARY}}>
+                    Terms & Conditions
+                  </Text>
+                  <Forward size={getHeight(24)} color={GRAY_THIRD} />
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.selectionItem} onPress={this._gotoContact}>
+                  <View>
+                    <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(14), color: BLACK_PRIMARY}}>
+                      Contact admin@socrateach.com for
+                    </Text>
+                    <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(14), color: BLACK_PRIMARY}}>
+                      further questions
+                    </Text>
                   </View>
                   
-                </View>
-            </TopBarPage>
+                  <Forward size={getHeight(24)} color={GRAY_THIRD} />
+              </TouchableOpacity>
+              
+            </View>
+          </NavPage>
             
         )
     }
@@ -68,57 +139,28 @@ Help.navigatorStyle = {
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    loadText: {
-        paddingBottom: getHeight(10),
-        color: '#FFFFFF',
-        fontFamily: 'Montserrat-Bold',
-    },
-    modal: {
-      width: getWidth(244),
-      height: getHeight(262),
-      backgroundColor: '#FFFFFF',
-      alignItems: 'center',
-      borderRadius: getHeight(10),
-      marginTop: getHeight(42)
-    },
-    btnText: {
-      fontFamily: 'Montserrat-Medium',
-      color: '#FFFFFF',
-      fontSize: getHeight(18)
-    },
-    bodyText: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: getHeight(18),
-      color: BLACK_PRIMARY,
-      marginTop: getHeight(19)
-    },
-    bodySecText: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: getHeight(15),
-      color: BLACK_PRIMARY
-    },
-    bodyThirdText: {
-      fontFamily: 'Montserrat-Medium',
-      fontSize: getHeight(18),
-      color: BLACK_PRIMARY
-    },
-    btnBody: {
-      width: getWidth(220), 
-      height: getHeight(36), 
-      borderRadius: getHeight(10), 
-      backgroundColor: PURPLE_MAIN, 
-      justifyContent: 'center',
-      alignItems: 'center', 
-      flexDirection: 'row',
-      paddingLeft: getWidth(13),
-      paddingRight: getWidth(25),
-      marginBottom: getHeight(23)
-    }
+  selectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    width: '100%',
+    paddingHorizontal: getWidth(33),
+    alignSelf: 'center',
+    marginTop: getHeight(33),
+    marginBottom: getHeight(34)
+  },
+  selectionItem: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: getWidth(305),
+    height: getHeight(47),
+    borderBottomWidth: 2,
+    borderColor: GRAY_THIRD,
+    alignSelf: 'center',
+    alignItems: 'center',
+    marginBottom: getHeight(16),
+    paddingHorizontal: getWidth(10)
+  }
 });
 
 const mapStateToProps = (state) => ({

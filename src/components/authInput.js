@@ -1,6 +1,6 @@
 import React from 'react';
 import {TextInput, Text, View, Platform} from 'react-native';
-import {PURPLE_MAIN} from '../constants/colors';
+import {PURPLE_MAIN, BLACK_PRIMARY} from '../constants/colors';
 import PropTypes from 'prop-types';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 
@@ -13,16 +13,16 @@ const wrapperDefault = {
 };
 
 const descDefault = {
-  color: '#FFFFFF',
+  color: BLACK_PRIMARY,
   fontFamily: 'Montserrat-Medium',
-  fontSize: getHeight(25),
+  fontSize: getHeight(16),
   width: '100%'
 };
 
 const textDefault = {
-  color: 'white',
+  color: BLACK_PRIMARY,
   fontFamily: 'Montserrat-Regular',
-  fontSize: getHeight(20),
+  fontSize: getHeight(16),
   width: '100%',
   height: getHeight(35),
   paddingVertical: 0
@@ -36,7 +36,7 @@ const errorDefault = {
   paddingLeft: getWidth(10),
 }
 
-const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder, keyboardType, autoFocus, defaultValue, autoCap}) => {
+const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwdType, errorText, errorExist, errorStyle, placeholder, keyboardType, autoFocus, defaultValue, autoCap, activeInput, returnKeyType, getRef, onSubmitEditing, onFocus, disabled}) => {
   return (
     <View
       style={{...wrapperDefault, ...wrapperStyle}}
@@ -44,12 +44,17 @@ const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwd
       <Text style={{...descDefault, ...descStyle}}>{desc}</Text>
       {
         pwdType == true ? 
-        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType}></TextInput>
+        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} secureTextEntry={true} placeholder={placeholder} placeholderTextColor={'#d0d0d0'} keyboardType={keyboardType} returnKeyType={returnKeyType} ref={getRef} onSubmitEditing={onSubmitEditing} onFocus={onFocus} editable={!disabled} selectTextOnFocus={!disabled}
+        ></TextInput>
         :
-        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#d3d3d3'} keyboardType={keyboardType} defaultValue={defaultValue} autoCapitalize={autoCap == true ? 'words' : 'none'}></TextInput>  
+        <TextInput style={{...textDefault, ...textStyle}} autoFocus={autoFocus} onChangeText={onChangeText} placeholder={placeholder} placeholderTextColor={'#a0a0a0'} keyboardType={keyboardType} defaultValue={defaultValue} autoCapitalize={autoCap == true ? 'words' : 'none'} returnKeyType={returnKeyType} ref={getRef} onSubmitEditing={onSubmitEditing} onFocus={onFocus} editable={!disabled} selectTextOnFocus={!disabled}></TextInput> 
       }
-      
-      <View style={{width: '100%', backgroundColor: 'rgba(88, 86, 214, 0.76)', height: 2, paddingLeft: getWidth(1)}} />
+      {
+        activeInput == false ?
+        <View style={{width: '100%', backgroundColor: '#E5E5E5', height: 1, paddingLeft: getWidth(1)}} />
+        : 
+        <View style={{width: '100%', backgroundColor: BLACK_PRIMARY, height: 2, paddingLeft: getWidth(1)}} />
+      }
       {
         errorExist == true ? 
         <Text style={{...errorDefault, ...errorStyle}}>{errorText}</Text>
@@ -61,7 +66,7 @@ const ComonInput = ({desc, onChangeText, wrapperStyle, descStyle, textStyle, pwd
 
 ComonInput.defaultProps = {
   desc: '',
-  onChangeText: null,
+  onChangeText: () => null,
   descStyle: {},
   textStyle: {},
   pwdType: false,
@@ -73,7 +78,13 @@ ComonInput.defaultProps = {
   keyboardType: 'default',
   autoFocus: false,
   defaultValue: '',
-  autoCap: false
+  autoCap: false,
+  activeInput: false,
+  returnKeyType: 'default',
+  getRef: () => null,
+  onSubmitEditing: () => null,
+  onFocus: () => null,
+  disabled: false
 };
 
 ComonInput.propTypes = {
@@ -90,7 +101,13 @@ ComonInput.propTypes = {
   keyboardType: PropTypes.string,
   autoFocus: PropTypes.bool,
   defaultValue: PropTypes.string,
-  autoCap: PropTypes.bool
+  autoCap: PropTypes.bool,
+  activeInput: PropTypes.bool,
+  returnKeyType: PropTypes.string,
+  getRef: PropTypes.string,
+  onSubmitEditing: PropTypes.func,
+  onFocus: PropTypes.func,
+  disabled: PropTypes.bool
 };
 
 export default ComonInput;

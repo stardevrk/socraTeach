@@ -21,7 +21,6 @@ export function getPosterInfo(posterId) {
 }
 
 export function getTeacherInfo (teacherId) {
-  console.log("teacherId ^^^^^^^^^^^^^^^^^", teacherId);
   return async function (dispatch, getState) {
     try {
       firestore.collection('users').doc(teacherId).get().then((teacherDoc) => {
@@ -40,6 +39,7 @@ export function getExpressAccount() {
       if (!hasListener('user_express_account')) {
         let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('express_account').doc('express_account_creation_result').onSnapshot(doc => {
             if (doc.exists) {
+              dispatch(clearExpress());
               console.log("Fetch Express Account", doc.data());
               dispatch(getExpress(doc.data()));
             } else {
@@ -65,6 +65,7 @@ export function fetchBalance() {
           if (xhr.status == 200) {
               let responseData = JSON.parse(xhr.response);
               if (responseData['result'] == true) {
+                dispatch(clearBalance());
                 let balanceObject = responseData['balance'];
                 let availableArray = balanceObject.available;
                 let pendingArray = balanceObject.pending;

@@ -13,6 +13,7 @@ import ltSession from './ltSession';
 import payment from './payment';
 import bank from './bank';
 import pHistory from './pHistory';
+import branch from './branch';
 
 export default combineReducers({
   user,
@@ -28,5 +29,6 @@ export default combineReducers({
   ltSession,
   payment,
   bank,
-  pHistory
+  pHistory,
+  branch
 })

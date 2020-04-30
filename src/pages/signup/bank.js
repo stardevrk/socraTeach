@@ -10,6 +10,7 @@ import {
     Linking
 } from 'react-native';
 import Page from '../../components/basePage';
+import NavPage from '../../components/navPage';
 import {getWidth, getHeight} from '../../constants/dynamicSize';
 import BaseButton from '../../components/baseButton';
 import BaseInput from '../../components/baseInput';
@@ -21,16 +22,19 @@ import pages from '../../constants/pages';
 import Bank from '../../components/icons/bank';
 import {validateExp, validateCardNum} from '../../service/utils';
 import {getStripeToken} from '../../service/stripe';
-import {signupStripeInfo, signupUserInfo} from '../../model/actions/signupAC';
-import {getExpress} from '../../model/actions/userAC';
+import store from '../../model/store';
+import _ from 'lodash';
+import {fetchUser} from '../../model/actions/userAC';
 import {connect} from 'react-redux';
 import { BLACK_PRIMARY, PURPLE_MAIN } from '../../constants/colors';
 import {auth, firestore} from '../../constants/firebase';
+import { withMappedNavigationParams } from 'react-navigation-props-mapper';
 
 const ICON_LOGO = require('../../assets/images/icon-logo.png');
 const BACK_BUTTON = require('../../assets/images/back-button.png');
 const FORWARD_BUTTON = require('../../assets/images/forward-button.png');
 
+@withMappedNavigationParams()
 class BankSetup extends Component {
 
   constructor(props) {
@@ -52,16 +56,21 @@ class BankSetup extends Component {
   }
     
   goForward = () => {
-    const {dispatch, signupInfo} = this.props;
+    const {email, password} = this.props;
     this.setState({loading: true});
-    dispatch(signupUserInfo({
-      routeNumber: this.state.routeName,
-      accountNumber: this.state.accountNumber,
-      secondAccount: this.state.secondAccount,
-      bankSkipped: false
-    }));
-    auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
+    // dispatch(signupUserInfo({
+    //   routeNumber: this.state.routeName,
+    //   accountNumber: this.state.accountNumber,
+    //   secondAccount: this.state.secondAccount,
+    //   bankSkipped: false
+    // }));
+    auth.createUserWithEmailAndPassword(email, password).then((result) => {
+      let currentState = store.getState();
+      let signupInfo = _.get(currentState, 'signupInfo', {});
+      store.dispatch(fetchUser(signupInfo));
       // dispatch(getExpress({desc: 'Express Account Will be Created'}));
+      //Test mode ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM
+      //Live mode ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi
       let url = `https://connect.stripe.com/express/oauth/authorize?redirect_uri=https://socrateach-65b77.firebaseapp.com&client_id=ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi&state=${result.user.uid}`;
       Linking.canOpenURL(url)
       .then((supported) => {
@@ -80,19 +89,22 @@ class BankSetup extends Component {
     })
   }
 
-  goBack = () => {
+  _goBack = () => {
     navigationService.pop();
   }
 
   goSKIP = () => {
-    const {dispatch, signupInfo} = this.props;
+    const {email, password} = this.props;
     this.setState({loading: true});
-    dispatch(signupUserInfo({
-      bankSkipped: true
-    }));
+    // dispatch(signupUserInfo({
+    //   bankSkipped: true
+    // }));
 
-    auth.createUserWithEmailAndPassword(signupInfo.email, signupInfo.password).then((result) => {
+    auth.createUserWithEmailAndPassword(email, password).then((result) => {
       console.log("Signup Result = ", result);
+      let currentState = store.getState();
+      let signupInfo = _.get(currentState, 'signupInfo', {});
+      store.dispatch(fetchUser(signupInfo));
     }).catch(error => {
       console.log("Create Firebase User Error = ", error);
     })
@@ -139,7 +151,7 @@ class BankSetup extends Component {
 
   render () {
     return (
-        <Page backgroundColor={BLACK_PRIMARY} forceInset={{top: 'never'}}>
+        <NavPage titleText={'Sign up'} onLeftClick={this._goBack}>
           {
             this.state.loading == true ? 
             <View style={styles.wrapper}>
@@ -147,8 +159,7 @@ class BankSetup extends Component {
             </View>
             :
             <View style={styles.container}>
-                
-                <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
+                {/* <TouchableOpacity style={styles.backBtnView} onPress={this.goBack}>
                     <Image style={styles.backBtnImage} resizeMode={'contain'} source={BACK_BUTTON}/>
                 </TouchableOpacity>
                 <View style={{flex: 1, width: '100%'}}>
@@ -164,23 +175,45 @@ class BankSetup extends Component {
                     <TouchableOpacity style={styles.btnBody}
                     onPress={this.goForward}
                     >
-                      {/* <Text style={styles.btnText}>Home</Text> */}
+                      
                       
                       <Text style={styles.btnText}>
                         Add Bank
                       </Text>
                     </TouchableOpacity>
                   </View>
+                </View> */}
+
+                <View style={{flex: 1}}>
+                  <Text style={styles.titleText}>
+                      Add bank for teaching
+                  </Text>
+                  <Text style={styles.subTitle}>
+                      Stripe Connect portal
+                  </Text>
+                  <TouchableOpacity style={styles.portalView}
+                    onPress={this.goForward}
+                  >
+                    <Bank size={getHeight(24)} color={PURPLE_MAIN} />
+                    <Text style={styles.portalText}>
+                      Link to Stripe via the Web
+                    </Text>
+                  </TouchableOpacity>
+                  <View style={styles.descView}>
+                    <Text style={styles.descText}>
+                      If you plan to only use the Learn feature you can skip this section. You can add a bank account via Stripe at any time.
+                    </Text>
+                  </View>
                 </View>
-                <View style={styles.bottomBtnView}>
-                  <BaseButton 
-                    text={'SKIP'}
-                    onClick={this.goSKIP}
-                  />
-                </View>
-            </View>
+                <BaseButton 
+                  text={'SKIP'}
+                  onClick={this.goSKIP}
+                  buttonStyle={{marginBottom: getHeight(18), backgroundColor: PURPLE_MAIN, alignSelf: 'center'}}
+                  textStyle={{color: '#FFFFFF'}}
+                />
+              </View>
           }
-        </Page>
+        </NavPage>
     )
   }
 }
@@ -235,16 +268,43 @@ const styles = StyleSheet.create({
     bottomBtnView: {
       width: '100%', 
       alignItems: 'center',
-      marginBottom: getHeight(37)
+      marginBottom: getHeight(18)
     },
-    modal: {
-      width: getWidth(244),
-      height: getHeight(262),
-      backgroundColor: '#FFFFFF',
+    titleText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(24),
+      marginTop: getHeight(32),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(25),
+      color: BLACK_PRIMARY
+    },
+    subTitle: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(16),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(26),
+      color: BLACK_PRIMARY
+    },
+    portalView: {
+      flexDirection: 'row',
       alignItems: 'center',
-      borderRadius: getHeight(10),
-      marginTop: getHeight(42),
+      justifyContent: 'center',
+      width: '100%',
+      marginBottom: getHeight(26)
+    },
+    portalText: {
+      fontFamily: 'Montserrat-Regular',
+      fontSize: getHeight(20),
+      color: PURPLE_MAIN,
+      marginLeft: getWidth(7)
+    },
+    descView: {
+      width: getWidth(320),
       alignSelf: 'center'
+    },
+    descText: {
+      fontFamily: 'Montserrat-Regular',
+      fontSize: getHeight(14),
     },
     btnText: {
       fontFamily: 'Montserrat-Medium',

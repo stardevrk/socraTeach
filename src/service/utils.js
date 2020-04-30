@@ -100,3 +100,28 @@ export const calcDiffTS = (past, current) => {
   if (daysDifference > 0) return daysDifference + 'd';
   return '1d';
 }
+
+export const getAMPM = (timeObject) => {
+    let hours = timeObject.getHours();
+    hours = (hours+24)%24; 
+    let mid='am';
+    let min = timeObject.getMinutes();
+    if(hours==0){ //At 00 hours we need to show 12 am
+      hours=12;
+    }
+    else if(hours>12)
+    {
+      hours=hours%12;
+      mid='pm';
+    }
+
+    if (hours < 10) {
+      hours = '0' + hours;
+    }
+
+    if (min < 10) {
+      min = '0' + min;
+    }
+
+    return (hours + ':' + min + mid);
+}

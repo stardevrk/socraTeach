@@ -15,7 +15,7 @@ import {getWidth, getHeight} from '../constants/dynamicSize';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
 import Crop from '../components/icons/crop';
-import Aback from '../components/icons/aback';
+import Back from '../components/icons/back';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import {uploadImage} from '../service/firebase';
@@ -25,6 +25,8 @@ import {getMyInitLearnList} from '../controller/learn';
 import {PanGestureHandler, PinchGestureHandler, TouchableOpacity} from 'react-native-gesture-handler';
 import AmazingCropper from '../components/imageCropper';
 import PropTypes from 'prop-types';
+import { BLACK_PRIMARY, PURPLE_MAIN } from '../constants/colors';
+import { withMappedNavigationParams } from 'react-navigation-props-mapper';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const IMAGE_WIDTH = Dimensions.get('screen').width > 500 ? getWidth(360) / 3 : (Dimensions.get('screen').width - 15) / 3;
@@ -32,9 +34,11 @@ const tag ='[GESTURE]'
 
 const CustomCropperFooter = (props) => (
   <View style={{width: '100%', height: '100%', alignItems: 'center', justifyContent: 'flex-end'}}>
-    <BaseButton
-      text={'CONTINUE'}
-      onClick={props.onDone}
+    <BaseButton 
+        text={'Crop'}
+        onClick={props.onDone}
+        buttonStyle={{marginBottom: getHeight(30), backgroundColor: PURPLE_MAIN, alignSelf: 'center'}}
+        textStyle={{color: '#FFFFFF'}}
     />
   </View>
 )
@@ -45,6 +49,7 @@ CustomCropperFooter.propTypes = {
   onCancel: PropTypes.func
 }
 
+@withMappedNavigationParams()
 class ImageCrop extends Component {
 
   constructor(props) {
@@ -62,12 +67,12 @@ class ImageCrop extends Component {
       prevImageWidth: 0,
       problemName: ''
     }
-
-    props.navigation.addListener('didFocus', payload => {
-      let newAspect = payload.action.params.imageHeight/payload.action.params.imageWidth;
-      this.setState({imageSource: payload.action.params.imageUri, subject: payload.action.params.subject, aspect: newAspect, imageWidth: payload.action.params.imageWidth,
-      imageHeight: payload.action.params.imageHeight, problemName: payload.action.params.problemName});
-    })
+    console.log("Image Crops Props === ", this.props);
+    // props.navigation.addListener('didFocus', payload => {
+    //   let newAspect = payload.action.params.imageHeight/payload.action.params.imageWidth;
+    //   this.setState({imageSource: payload.action.params.imageUri, aspect: newAspect, imageWidth: payload.action.params.imageWidth,
+    //   imageHeight: payload.action.params.imageHeight});
+    // })
   }
 
   goForward = () => {
@@ -80,36 +85,37 @@ class ImageCrop extends Component {
 
   _onDone = (croppedUri) => {
     console.log('Cropped Image === ', croppedUri);
+    this.props.updateResult(croppedUri);
+    // if (this.state.imageSource == '' || this.state.subject == '') {
+    //   console.log("Not be able to go forward")
+    //   return;
+    // }
 
-    if (this.state.imageSource == '' || this.state.subject == '') {
-      console.log("Not be able to go forward")
-      return;
-    }
-    this.setState({loading: true});    
-    uploadImage(croppedUri).then((data) => {
-      console.log("Problem Uploaded!!!!");
-      let newDocRef  = firestore.collection(this.state.subject).doc();
-      newDocRef.set({
-        problemId: newDocRef.id,
-        posterId: auth.currentUser.uid,
-        problemImage: data,
-        updateTime: Date.now(),
-        sessionExist: false,
-        subject: this.state.subject,
-        problemName: this.state.problemName
-      }).catch((err) => {
-        console.log("firestore set error ==== ", err);
-      })
-      .finally(() => {
-        this.setState({loading: false});
-      })
-      const {dispatch} = this.props;
-      dispatch(getMyInitLearnList());
+    // this.setState({loading: true});    
+    // uploadImage(croppedUri).then((data) => {
+    //   console.log("Problem Uploaded!!!!");
+    //   let newDocRef  = firestore.collection(this.state.subject).doc();
+    //   newDocRef.set({
+    //     problemId: newDocRef.id,
+    //     posterId: auth.currentUser.uid,
+    //     problemImage: data,
+    //     updateTime: Date.now(),
+    //     sessionExist: false,
+    //     subject: this.state.subject,
+    //     problemName: this.state.problemName
+    //   }).catch((err) => {
+    //     console.log("firestore set error ==== ", err);
+    //   })
+    //   .finally(() => {
+    //     this.setState({loading: false});
+    //   })
+    //   const {dispatch} = this.props;
+    //   dispatch(getMyInitLearnList());
       
-    }).catch((err) =>{
-      console.log("Upload Error = ", err);
-    });
-    navigationService.navigate(pages.PROBLEM_SUBMITTED);
+    // }).catch((err) =>{
+    //   console.log("Upload Error = ", err);
+    // });
+    // navigationService.navigate(pages.PROBLEM_SUBMITTED);
   }
 
   _onCancel = () => {
@@ -123,45 +129,46 @@ class ImageCrop extends Component {
     this.scale.setValue(event.nativeEvent.scale);
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    if (nextProps.navigation.state.params.imageUri != nextState.prevImageSource ||
-      nextProps.navigation.state.params.imageWidth != nextState.prevImageWidth ||
-      nextProps.navigation.state.params.imageHeight != nextState.prevImageHeight
-      ) {
-      return true
-    } else {
-      return false
-    }
-  }
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   if (nextProps.navigation.state.params.imageUri != nextState.prevImageSource ||
+  //     nextProps.navigation.state.params.imageWidth != nextState.prevImageWidth ||
+  //     nextProps.navigation.state.params.imageHeight != nextState.prevImageHeight
+  //     ) {
+  //     return true
+  //   } else {
+  //     return false
+  //   }
+  // }
 
   _goBack = () => {
-    navigationService.navigate(pages.LEARN_SUBJECT)
+    // navigationService.navigate(pages.LEARN_SUBJECT)
+    navigationService.popToTop();
   }
 
   render () {
-    let imageWidth = this.props.navigation.state.params.imageWidth;
-    let imageHeight = this.props.navigation.state.params.imageHeight;
-    let imageSource = this.props.navigation.state.params.imageUri;
-    let aspect = imageHeight/imageWidth;
-    this.setState({
-      prevImageSource: imageSource,
-      prevImageWidth: imageWidth,
-      prevImageHeight: imageHeight
-    })
+    // let imageWidth = this.props.navigation.state.params.imageWidth;
+    // let imageHeight = this.props.navigation.state.params.imageHeight;
+    // let imageSource = this.props.navigation.state.params.imageUri;
+    // let aspect = imageHeight/imageWidth;
+    // this.setState({
+    //   prevImageSource: imageSource,
+    //   prevImageWidth: imageWidth,
+    //   prevImageHeight: imageHeight
+    // })
     return (
         <Page forceInset={{bottom: 'never', top: 'never'}}>
             <View style={styles.container}>
-              <View style={{marginTop: getHeight(38), marginBottom: getHeight(10), width: '100%'}}>
-                <TouchableOpacity style={{marginLeft: getWidth(39)}} onPress={this._goBack}>
-                  <Aback size={getHeight(28)} color={'#FFFFFF'}/>
+              <View style={{marginTop: getHeight(5), marginBottom: getHeight(10), width: '100%'}}>
+                <TouchableOpacity style={{marginLeft: getWidth(10)}} onPress={() => { this._goBack()}}>
+                  <Back size={getHeight(48)} color={BLACK_PRIMARY}/>
                 </TouchableOpacity>
               </View>
               <View style={styles.headView}>
-                  <Text style={{color: '#FFFFFF', fontFamily: 'Montserrat-Medium', fontSize: getHeight(25), flex: 1, textAlign: 'center'}}>
-                    Select Your Problem
+                  <Text style={{color: BLACK_PRIMARY, fontFamily: 'Montserrat-Medium', fontSize: getHeight(25)}}>
+                    Select one Problem
                   </Text> 
               </View>
-              <View style={{height: getHeight(640), width: getWidth(350), borderRadius: getHeight(10)}}>
+              <View style={{height: getHeight(660), width: getWidth(370), borderRadius: getHeight(10)}}>
                 <AmazingCropper
                   ref={(instance) => this.child = instance}
                   onDone={this._onDone}
@@ -169,22 +176,14 @@ class ImageCrop extends Component {
                     <CustomCropperFooter />
                   }
                   onCancel={this.onCancel}
-                  imageUri={imageSource}
-                  imageWidth={imageWidth}
-                  imageHeight={imageHeight}
+                  imageUri={this.props.imageUri}
+                  imageWidth={this.props.imageWidth}
+                  imageHeight={this.props.imageHeight}
                   NOT_SELECTED_AREA_OPACITY={0.3}
                   BORDER_WIDTH={0}
                 />
               </View>
-              
             </View>
-            {
-              this.state.loading == true ? 
-              <View style={styles.loadingWrapper}>
-                <ActivityIndicator size={'large'} />
-              </View>
-             : null
-            }
         </Page>
     )
   }
@@ -204,8 +203,7 @@ const styles = StyleSheet.create({
     },
     headView: {
       flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
+      marginLeft: getWidth(32),
       width: '100%',
       marginBottom: getHeight(24)
     },

@@ -12,10 +12,8 @@ import {
 import Page from '../components/basePage';
 // import MenuPage from '../components/menuPage';
 import TopBarPage from '../components/topBarPage';
+import SwitchPage from '../components/switchPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import {notifications} from '../constants/firebase';
-import BaseButton from '../components/baseButton';
-import MenuButton from '../components/menuButton';
 import navigationService from '../navigation/navigationService';
 import Pages from '../constants/pages';
 import SessionListItem from '../components/sessionListItem';
@@ -47,73 +45,73 @@ class Session extends Component {
     }
 
     static getDerivedStateFromProps (props, state) {
-      let learnData = props.learnSession;
-      let teachData = props.teachSession;
-      if (state.prevLearnSession != learnData || state.prevTeachSession != teachData) {
-        let learnArray = _.map(learnData, (item) => {
-          let newItem = {
-            id: item.problemId,
-            type: 'learn', 
-            teacherPhoneNumber: item.teacherPhoneNumber,
-            acceptance: item.acceptance,
-            name: item.teacherName ? item.teacherName : '',
-            userId: item.teacherId,
-            problemId: item.problemId,
-            subject: item.subject,
-            newExist: item.acceptance == false ? true : false,
-            lastUpdate: item.lastUpdate,
-            problemName: item.problemName ? item.problemName : ''
-          }
+      // let learnData = props.learnSession;
+      // let teachData = props.teachSession;
+      // if (state.prevLearnSession != learnData || state.prevTeachSession != teachData) {
+      //   let learnArray = _.map(learnData, (item) => {
+      //     let newItem = {
+      //       id: item.problemId,
+      //       type: 'learn', 
+      //       teacherPhoneNumber: item.teacherPhoneNumber,
+      //       acceptance: item.acceptance,
+      //       name: item.teacherName ? item.teacherName : '',
+      //       userId: item.teacherId,
+      //       problemId: item.problemId,
+      //       subject: item.subject,
+      //       newExist: item.acceptance == false ? true : false,
+      //       lastUpdate: item.lastUpdate,
+      //       problemName: item.problemName ? item.problemName : ''
+      //     }
           
-          return newItem;
-        });
+      //     return newItem;
+      //   });
         
   
-        let filteredTeach = _.filter(teachData, {'acceptance': true});
+      //   let filteredTeach = _.filter(teachData, {'acceptance': true});
   
-        let teachArray = _.map(filteredTeach, (item) => {
-          let newItem = {
-            id: item.problemId,
-            type: 'teach',
-            subject: item.subject,
-            acceptance: item.acceptance,
-            confirmed: item.confirmed,
-            lastUpdate: item.lastUpdate,
-            newExist: item.confirmed == false ? true: false,
-            userId: item.posterId,
-            name: item.posterName ? item.posterName : '',
-            problemId: item.problemId,
-            problemName: item.problemName ? item.problemName : ''
-          }
+      //   let teachArray = _.map(filteredTeach, (item) => {
+      //     let newItem = {
+      //       id: item.problemId,
+      //       type: 'teach',
+      //       subject: item.subject,
+      //       acceptance: item.acceptance,
+      //       confirmed: item.confirmed,
+      //       lastUpdate: item.lastUpdate,
+      //       newExist: item.confirmed == false ? true: false,
+      //       userId: item.posterId,
+      //       name: item.posterName ? item.posterName : '',
+      //       problemId: item.problemId,
+      //       problemName: item.problemName ? item.problemName : ''
+      //     }
           
-          return newItem
-        })
-        let totalArray = _.concat(learnArray, teachArray);
-        let sortedArray = _.orderBy(totalArray, ['newExist', 'lastUpdate'], ['desc', 'desc']);
+      //     return newItem
+      //   })
+      //   let totalArray = _.concat(learnArray, teachArray);
+      //   let sortedArray = _.orderBy(totalArray, ['newExist', 'lastUpdate'], ['desc', 'desc']);
         
-        // let completedArray = _.map(sortedArray, async item => {
-        //   let userDoc = await firestore.collection('users').doc(item.userId).get();
-        //   let name = userDoc.data().userName;
-        //   let newItem = {
-        //     ...item,
-        //     name: name
-        //   }
-        //   // console.log("New Item = ", newItem);
-        //   return newItem;
-        // });
-        // for (item of sortedArray) {
-        //   let userDoc = await firestore.collection('users').doc(item.userId).get();
-        //   item.name = userDoc.data().userName;
-        // }
-        console.log("completedArray Array = ", sortedArray);
-        return {
-          sessionData : sortedArray,
-          prevLearnSession: learnData,
-          prevTeachSession: teachData
-        }
-      } else {
-        return null;
-      }
+      //   // let completedArray = _.map(sortedArray, async item => {
+      //   //   let userDoc = await firestore.collection('users').doc(item.userId).get();
+      //   //   let name = userDoc.data().userName;
+      //   //   let newItem = {
+      //   //     ...item,
+      //   //     name: name
+      //   //   }
+      //   //   // console.log("New Item = ", newItem);
+      //   //   return newItem;
+      //   // });
+      //   // for (item of sortedArray) {
+      //   //   let userDoc = await firestore.collection('users').doc(item.userId).get();
+      //   //   item.name = userDoc.data().userName;
+      //   // }
+      //   console.log("completedArray Array = ", sortedArray);
+      //   return {
+      //     sessionData : sortedArray,
+      //     prevLearnSession: learnData,
+      //     prevTeachSession: teachData
+      //   }
+      // } else {
+      //   return null;
+      // }
     }
 
     _renderItem = (item) => {
@@ -290,6 +288,7 @@ class Session extends Component {
     render () {
       
         return (
+          
             <TopBarPage renderTitle={this._renderTitle} titleText={'NOTIFICATIONS'} rightExist={true}>
                 <View style={styles.container}>
                     <FlatList 

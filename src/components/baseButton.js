@@ -5,9 +5,9 @@ import PropTypes from 'prop-types';
 import {getHeight, getWidth} from '../constants/dynamicSize';
 
 const wrapperDefault = {
-  width: getWidth(270),
+  width: getWidth(306),
   height: getHeight(50),
-  borderRadius: getWidth(5),
+  borderRadius: getWidth(10),
   backgroundColor: '#FFFFFF',
   justifyContent: 'center',
   alignItems: 'center'

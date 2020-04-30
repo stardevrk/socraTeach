@@ -7,7 +7,8 @@ export function getMyLiveLearnSession() {
   return async function (dispatch, getState) {
     try {
       if (!hasListener('my_livelearn_session')) {
-        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').onSnapshot(sn => {
+        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session')
+        .onSnapshot(sn => {
           if (sn.size > 0) {
             dispatch(clearLearnSession());
             let sessionData = {};
@@ -17,7 +18,7 @@ export function getMyLiveLearnSession() {
               // let teacherDoc = await firestore.collection('users').doc(teacherId).get();
               // let teacherName = teacherDoc.data().userName;
               // docData['teacherName'] = teacherName;
-              if (docData.sessionEnded == false)
+              // if (docData.sessionDeleted == false)
                 sessionData[doc.id] = docData;
             });
             console.log("LiveLearn Session Data = ", sessionData);
@@ -48,7 +49,7 @@ export function getMyLiveTeachSession() {
               // let posterDoc = await firestore.collection('users').doc(posterId).get();
               // let studentName = posterDoc.data().userName;
               // docData['studentName'] = studentName;
-              if (docData.sessionEnded == false)
+              // if (docData.sessionDeleted == false)
                 sessionData[doc.id] = docData;
             });
             dispatch(getTeachSession(sessionData));

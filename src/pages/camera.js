@@ -14,18 +14,22 @@ import MenuPage from '../components/menuPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
+import Back from '../components/icons/back';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
 import CameraRollPicker from '../components/cameraRollPicker/index';
 import CameraRollGallery from '../components/cameraRollBrowser/index';
 import { RNCamera } from 'react-native-camera';
 import { SafeAreaView } from 'react-navigation';
+import {withMappedNavigationParams} from 'react-navigation-props-mapper';
+import { BLACK_PRIMARY, PURPLE_MAIN } from '../constants/colors';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 const BACK_IMAGE = require('../assets/images/back-button.png');
 
 const IMAGE_WIDTH = Dimensions.get('screen').width > 500 ? getWidth(360) / 3 : (Dimensions.get('screen').width - 15) / 3;
 
+@withMappedNavigationParams()
 export default class Camera extends Component {
 
   constructor(props) {
@@ -76,9 +80,9 @@ export default class Camera extends Component {
 
     this.getSelectedImages = this.getSelectedImages.bind(this);
 
-    props.navigation.addListener('didFocus', payload => {
-      this.setState({subject: payload.action.params.subject, problemName: payload.action.params.problemName});
-    })
+    // props.navigation.addListener('didFocus', payload => {
+    //   this.setState({subject: payload.action.params.subject, problemName: payload.action.params.problemName});
+    // })
   }
 
   _photoTake = async () => {
@@ -88,9 +92,11 @@ export default class Camera extends Component {
           fixOrientation: true, quality: 0.5, base64: true
       };
       const data = await this.camera.takePictureAsync(options);
-      console.log("Camera Photo Take ======= ", data);
+      console.log("Camera Photo Take ======= ", data.uri);
       // Actions.EditStory({ data: { uri: data.uri, type: 'image', typer: 'camera' } })
-      navigationService.navigate(pages.PROBLEM_CROP, {imageUri: data.uri, subject: this.state.subject, imageWidth: data.width, imageHeight: data.height, problemName: this.state.problemName});
+      // navigationService.navigate(pages.PROBLEM_CROP, {imageUri: data.uri, subject: this.state.subject, imageWidth: data.width, imageHeight: data.height, problemName: this.state.problemName});
+      this.props.updatePhoto(data);
+      // navigationService.go();
     }
     // navigationService.navigate(pages.PROBLEM_CROP);
   }
@@ -125,7 +131,7 @@ export default class Camera extends Component {
 
   render () {
       return (
-          <SafeAreaView style={styles.container}>
+          <SafeAreaView style={styles.container} forceInset={{bottom: 'never', top: 'never'}}>
             
               <RNCamera
                   ref={ref => {
@@ -160,15 +166,17 @@ export default class Camera extends Component {
                     buttonNegative: 'Cancel'
                   }}
               >
-                <TouchableOpacity style={{position: 'absolute', top: getHeight(40), left: getWidth(32)}}
-                  onPress={() => {navigationService.navigate(pages.LEARN_SUBJECT)}}
+                <TouchableOpacity style={{position: 'absolute', top: getHeight(40), left: getWidth(10)}}
+                  onPress={() => {navigationService.pop()}}
                 >
-                  <Image source={BACK_IMAGE} style={{width: getHeight(48), height: getHeight(48)}}/>
+                  {/* <Image source={BACK_IMAGE} style={{width: getHeight(48), height: getHeight(48)}}/> */}
+                  <Back size={getHeight(48)} color={BLACK_PRIMARY}/>
                 </TouchableOpacity>
                 <BaseButton 
-                  text={'TAKE'}
+                  text={'CAPTURE'}
                   onClick={this._photoTake}
-                  buttonStyle={{position: 'absolute', bottom: getHeight(30)}}
+                  buttonStyle={{position: 'absolute', bottom: getHeight(30), backgroundColor: PURPLE_MAIN}}
+                  textStyle={{color: '#FFFFFF'}}
                 />
               </RNCamera>
               

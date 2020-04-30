@@ -5,7 +5,7 @@ import {
     Text,
     ActivityIndicator
 } from 'react-native';
-import {PURPLE_MAIN} from '../constants/colors';
+import {PURPLE_MAIN, BLACK_PRIMARY} from '../constants/colors';
 import Page from '../components/basePage';
 import {getHeight} from '../constants/dynamicSize';
 import {appInitialized} from '../controller/init';
@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     },
     loadText: {
         paddingBottom: getHeight(10),
-        color: '#FFFFFF',
+        color: BLACK_PRIMARY,
         fontFamily: 'Montserrat-Bold',
     }
 });

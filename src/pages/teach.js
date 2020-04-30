@@ -6,28 +6,22 @@ import {
     ActivityIndicator,
     Image,
     TouchableOpacity,
-    Alert
+    Alert,
+    FlatList
 } from 'react-native';
-import Page from '../components/basePage';
+import SwitchPage from '../components/switchPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
-import {BLACK_PRIMARY, PURPLE_MAIN} from '../constants/colors';
+import {BLACK_PRIMARY, PURPLE_MAIN, GRAY_THIRD} from '../constants/colors';
 import BaseButton from '../components/baseButton';
-import MenuButton from '../components/menuButton';
 import Triangle from '../components/icons/triangle';
-import Algebra from '../components/icons/algebra';
-import Geometry from '../components/icons/geometry';
-import Physics from '../components/icons/physics';
-import Chemistry from '../components/icons/chemistry';
-import Bank from '../components/icons/bank';
-import Computer from '../components/icons/computer';
 import navigationService from '../navigation/navigationService';
 import pages from '../constants/pages';
-import ModalDropdown from '../components/dropDownList';
-import MenuPage from '../components/menuPage';
-import TopBarPage from '../components/topBarPage';
+import RadioButton from '../components/radioButton';
 import {connect} from 'react-redux';
 import _ from 'lodash';
+import {firestore} from '../constants/firebase';
 import {fetchInitProblem, clearSubjectProblems} from '../controller/problem';
+import {changeAppBranch} from '../model/actions/branchAC';
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -56,209 +50,208 @@ class TeachScreen extends Component {
           name: 'Chemistry'
         }
       ],
-      subject: ''
+      subject: '',
+      selecting: false,
+      displaySubject: '',
+      noProblem: false,
+      loading: false
     }
     console.log("Problem Subject === ", props.problem);
 
   }
 
-  modalWillShow = () => {
-    console.log("$$$$$$$");
-    this.setState({modalOpened: true});
-    
+  _subjectSelect = (oneItem) => {
+    this.setState({subject: oneItem.name.toLowerCase(), displaySubject: oneItem.displayName})
+    const {dispatch} = this.props;
+    dispatch(clearSubjectProblems(oneItem.name.toLowerCase()));
+    dispatch(fetchInitProblem(oneItem.name.toLowerCase()));
   }
 
-  modalWillHide = () => {
-    console.log("######");
-    this.setState({modalOpened: false});
-    
+  _gotoLearn = () => {
+    const {dispatch} = this.props;
+    dispatch(changeAppBranch('learn'));
+    navigationService.navigate(pages.LEARN_SWITCH)
   }
 
-    renderModalListRow = (rowData, rowID, highlighted) => {
-      switch (rowData.iconName) {
-        case 'algebra': 
-          return (
-            <View style={styles.mListItem}>
-              <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'physics': 
-          return (
-            <View style={styles.mListItem}>
-              <Physics size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'geometry': 
-          return (
-            <View style={styles.mListItem}>
-              <Geometry size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'chemistry': 
-          return (
-            <View style={styles.mListItem}>
-              <Chemistry size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'economics': 
-          return (
-            <View style={styles.mListItem}>
-              <Bank size={getHeight(14)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        case 'computer':
-          return (
-            <View style={styles.mListItem}>
-              <Computer size={getHeight(15)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-        default:
-          return (
-            <View style={styles.mListItem}>
-              <Algebra size={getHeight(12)} color={'#FFFFFF'} />
-              <Text style={styles.modalListText}>{rowData.name}</Text>
-            </View>
-          )
-      }
-      
-    }
+  _returnBack = () => {
+    this.setState({subject: ''});
+    navigationService.pop();
+  }
 
-    renderModalListText = (rowData) => {
-      console.log('rowData', rowData);
-      return `${rowData.name}`;
-    }
+  _returnNoPorblem = () => {
+    this.setState({selecting: true, subject: '', noProblem: true});
+    navigationService.pop();
+  }
 
-    renderModalSeparator = () => {
-      return (
-        <View style={{width: '100%', height: 2, backgroundColor: PURPLE_MAIN}}></View>
+  _forwardClick = () => {
+
+    if (this.state.subject == '') {
+      Alert.alert(
+        'YOUR SUBJECT!',
+        'Please select your subject.',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
       )
+     return; 
     }
 
-    // libraryClick = () => {
-    //   navigationService.navigate(pages.CAMERA_ROLL);
-    // }
+    if(this.props.bank.express == null) {
+      Alert.alert(
+        'Missing Bank Setup',
+        'You did not setup bank to get paid.',
+        [
+          {
+            text: 'OK',
+            onPress: () => console.log('Cancel Pressed'),
+            style: 'cancel'
+          }
+        ],
+        {cancelable: false}
+      )
+     return; 
+    }
+    
+    navigationService.push(pages.CHOOSE_PROBLEM, {subject: this.state.subject, returnBack: () => {
+      this._returnBack()
+    }, returnNoProblem: () => {
+      this._returnNoPorblem()
+    }});
+  }
 
-    goForward = () => {
-
-      if (this.state.subject == '') {
-        Alert.alert(
-          'YOUR SUBJECT',
-          'Please select your subject',
-          [
-            {
-              text: 'OK',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel'
-            }
-          ],
-          {cancelable: false}
-        )
-        return;
-      }
-
-      if(this.props.bank.express == null) {
-        Alert.alert(
-          'Missing Bank Setup',
-          'You did not setup bank to get paid.',
-          [
-            {
-              text: 'OK',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel'
-            }
-          ],
-          {cancelable: false}
-        )
-        return;
-      }
-      const problems = this.props.problem;
-      const currentSubject = this.state.subject.toLowerCase();
-      const problemObject = _.get(problems, currentSubject, {});
-      const problemList = _.get(problemObject, 'problems', []);
-      const cardLength = _.get(problemObject, 'problemLength', 0);
-      
-      navigationService.navigate(pages.CHOOSE_PROBLEM, {subject: this.state.subject, cardLength: cardLength});
-      
-      
+  _confirmSubject = () => {
+    if (this.state.subject == '') {
+      this.setState({selecting: !this.state.selecting})
+     return;
     }
 
-    _subjectSelect = (subject) => {
-      console.log("Subject Changing!!!");
-      const {dispatch} = this.props;
-      dispatch(clearSubjectProblems(subject.toLowerCase()));
-      dispatch(fetchInitProblem(subject.toLowerCase()));
-      this.setState({subject: subject});
-    }
-
-    _gotoTeach = () => {
-      if(this.props.bank.express == null) {
-        Alert.alert(
-          'Missing Bank Setup',
-          'You did not setup bank to get paid.',
-          [
-            {
-              text: 'OK',
-              onPress: () => console.log('Cancel Pressed'),
-              style: 'cancel'
-            }
-          ],
-          {cancelable: false}
-        )
-        
+    this.setState({loading: true});
+    firestore.collection(this.state.subject)
+    .where('sessionExist', '==', false)
+    .get()
+    .then(snapshot => {
+      this.setState({loading: false});
+      snapshot.forEach((doc) => {
+        doc
+      })
+      if (snapshot.docs.length > 0) {
+        this.setState({selecting: !this.state.selecting})
       } else {
-        navigationService.navigate(pages.TEACH_START);
+        this.setState({noProblem: true})
       }
+    })
       
-    }
+  }
+
+  _renderSubjects = (item) => {
+    let oneItem = item.item;
+
+    return (
+      <TouchableOpacity 
+        style={styles.selectionItem}
+        onPress={()=> {this._subjectSelect(oneItem)}}
+      >
+          <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
+            {oneItem.displayName}
+          </Text>
+          <RadioButton 
+            isSelected={this.state.subject == oneItem.name.toLowerCase() ? true : false}
+            onPress={()=> {this._subjectSelect(oneItem)}}
+            size={getHeight(11)}
+          />
+      </TouchableOpacity>
+    )
+  }
 
     render () {
       const {subjects} = this.props;
       return (
-          <TopBarPage forceInset={{bottom: 'never'}} titleText={'TEACH'} onRightClick={this._gotoTeach} notiExist={true} rightExist={true}>
-            <View style={styles.container}>
-              <View style={styles.workingPart}>
-                  <Text
-                      style={styles.title}
-                  >
-                    Subject
+        <SwitchPage leftSwitch={'Learn'} rightSwitch={'Teach'} switchValue={'right'} switchChange={this._gotoLearn}>
+        {
+          this.state.selecting == false ?
+          
+            <View style={{flex: 1, width: '100%'}}>
+              <View style={{flex: 1}}>
+                <Text
+                  style={styles.titleText}
+                >
+                  Subject
+                </Text>
+                <TouchableOpacity
+                  style={styles.btnSubject}
+                  onPress={() => {
+                    this.setState({selecting: !this.state.selecting})
+                  }}
+                >
+                  <Text style={styles.btnText}>
+                    {this.state.subject != '' ? this.state.displaySubject : 'Subject'}
                   </Text>
-                  <View style={styles.modalPart}>
-                    <ModalDropdown options={subjects.subject} 
-                      descPart={
-                        <Triangle width={getHeight(16)} height={getHeight(16)} color={'#FFFFFF'} />
-                      }
-                      style={{width: getWidth(276)}}
-                      textStyle={{color: '#FFFFFF', fontSize: getHeight(18), fontFamily: 'Montserrat-Regular'}}
-                      dropdownStyle={{backgroundColor: BLACK_PRIMARY, width: getWidth(276), height: getHeight(247), marginTop: -getHeight(40)}}
-                      buttonStyle={{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderWidth: 1, borderColor: '#FFFFFF', padding: getHeight(8)}}
-                      dropdownTextStyle={{backgroundColor: BLACK_PRIMARY, color: '#FFFFFF'}}
-                      dropdownTextHighlightStyle={{color: '#FFFFFF'}}
-                      onDropdownWillShow={this.modalWillShow}
-                      onDropdownWillHide={this.modalWillHide}
-                      renderSeparator={this.renderModalSeparator}
-                      renderRow={this.renderModalListRow}
-                      renderButtonText={this.renderModalListText}
-                      defaultValue={'Choose Your Subject'}
-                      onExtractBtnText={this._subjectSelect}
-                    >
-                    </ModalDropdown>
-                  </View>
-                </View>
-                <View style={{width: '100%', justifyContent: 'flex-start', alignItems: 'center', marginBottom: getHeight(57)}}>
-                  <BaseButton 
-                    text={'TEACH'}
-                    onClick={this.goForward}
-                  />
-                </View>
+                  <Triangle width={getHeight(16)} height={getHeight(16)} color={PURPLE_MAIN} />
+                </TouchableOpacity>
+                <Text style={styles.subTitle}>
+                  Solve the problem fully before
+                </Text>
+                <Text style={styles.subTitle}>
+                  selecting it to teach.
+                </Text>
+                <Text style={styles.descText}>
+                  It may help to write out some notes for your student in advance. Images can be shared in the tutoring session.
+                </Text>
               </View>
+              <BaseButton 
+                  text={'Continue'}
+                  onClick={this._forwardClick}
+                  buttonStyle={{marginBottom: getHeight(30), backgroundColor: PURPLE_MAIN, alignSelf: 'center'}}
+                  textStyle={{color: '#FFFFFF'}}
+              />
+            </View>
+          
+          :
+          <View style={{flex: 1, width: '100%'}}>
+            <View style={styles.selectionHeader}>
+              <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(24), color: BLACK_PRIMARY}}>
+                Select Subject
+              </Text>
+              <TouchableOpacity onPress={this._confirmSubject}>
+                <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), color: PURPLE_MAIN}}>
+                  Save
+                </Text>
+              </TouchableOpacity>
+            </View>
+            {
+              this.state.noProblem == true ?
+              <View style={styles.nopView}>
+                <Text style={styles.nopText}>
+                  There are no more problems left in that subject. Check back or choose another subject.
+                </Text>
+              </View>
+              :
+              <View style={{height: getHeight(75)}}>
+              </View>
+            }
             
-          </TopBarPage>
+            <FlatList 
+              data={subjects.subject}
+              renderItem={this._renderSubjects}
+              keyExtractor={item => item.name}
+              contentContainerStyle={{flex: 1, width: '100%'}}
+              style={{flex: 1, width: '100%'}}
+            />
+            {
+              this.state.loading == true ?
+              <View style={{position: 'absolute', top: 0, left: 0, bottom: 0, right: 0, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(200, 200, 200, 0.8)'}}>
+                <ActivityIndicator size={'large'} />
+              </View>
+              : null
+            }
+          </View>
+        }
+        </SwitchPage>
       )
     }
 }
@@ -270,72 +263,100 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
     },
-    headerTitle: {
-      width: '100%',
-      textAlign: 'center',
-      fontSize: getHeight(24),
-      fontFamily: 'Montserrat-Regular',
-      color: '#FFFFFF',
-      position: 'absolute',
-      top: getHeight(20)
-    },
-    workingPart: {
-      flex: 1,
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: '100%',
-      // backgroundColor: '#f3f3f3'
-    },
-    title: {
-      width: '100%',
+    titleText: {
       fontFamily: 'Montserrat-Medium',
-      color: '#FFFFFF',
-      fontSize: getHeight(30),
-      paddingLeft: getWidth(52),
-      marginBottom: getHeight(41)
+      fontSize: getHeight(24),
+      marginTop: getHeight(31),
+      marginLeft: getWidth(32),
+      marginBottom: getHeight(25),
+      color: BLACK_PRIMARY
     },
-    dropDescText: {
-      color: '#FFFFFF',
-      fontFamily: 'Montserrat-Regular',
-      fontSize: getHeight(18),
-      marginBottom: getHeight(8)
+    subTitle: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(17),
+      color: BLACK_PRIMARY,
+      marginLeft: getWidth(32),
     },
-    modalPart: {
-      alignSelf: 'flex-start', 
-      marginLeft: getWidth(50)
+    descText: {
+      fontFamily: 'Montserrat-Medium',
+      fontSize: getHeight(15),
+      marginTop: getHeight(43),
+      width: getWidth(302),
+      alignSelf: 'center',
+      color: BLACK_PRIMARY
     },
-    belowPart: {
-      flex: 1,
+    editPart: {
+      flex:1,
+      height: '100%',
       width: '100%',
-      justifyContent: 'flex-end'
     },
-    blackPart: {
-      width: '100%',
-      height: getHeight(338),
-      backgroundColor: BLACK_PRIMARY,
+    btnSubject: {
+      width: getWidth(308),
+      height: getHeight(49),
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      borderWidth: 1,
+      borderColor: PURPLE_MAIN,
+      alignSelf: 'center',
+      paddingLeft: getWidth(8),
+      paddingRight: getWidth(11),
+      marginBottom: getHeight(63)
+    },
+    problemName: {
+      height: getHeight(42), 
+      width: getWidth(308),
+      alignSelf: 'center',
+      borderColor: BLACK_PRIMARY, 
+      borderBottomWidth: 1, 
+      color: BLACK_PRIMARY, 
+      fontFamily:  'Montserrat-Regular', 
+      fontSize: getHeight(18), 
+      paddingLeft: getWidth(10),
+    },
+    btnText: {
+      fontFamily: 'Montserrat-Bold',
+      color: PURPLE_MAIN,
+      fontSize: getHeight(17)
+    },
+    photoBtn: {
+      width: getWidth(308),
+      height: getHeight(37),
+      justifyContent: 'space-between',
+      paddingHorizontal: getWidth(7),
+      alignSelf: 'center',
+      flexDirection: 'row',
       alignItems: 'center'
     },
-    uploadText: {
-      color: '#FFFFFF',
-      fontFamily: 'Montserrat-Bold',
-      fontSize: getHeight(48),
-      width: '100%',
-      marginTop: getHeight(33),
-      paddingLeft: getWidth(34),
-      marginBottom: getHeight(40)
-    },
-    mListItem: {
+    selectionHeader: {
       flexDirection: 'row',
-      width: '100%',
-      paddingLeft: getWidth(19),
+      justifyContent: 'space-between',
       alignItems: 'center',
-      paddingVertical: getHeight(10)
+      width: '100%',
+      paddingHorizontal: getWidth(33),
+      alignSelf: 'center',
+      marginTop: getHeight(33),
     },
-    modalListText: {
-      fontFamily: 'Montserrat-Regular',
-      fontSize: getHeight(16),
-      color: '#FFFFFF',
-      marginLeft: getWidth(21)
+    selectionItem: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      width: getWidth(305),
+      height: getHeight(70),
+      borderBottomWidth: 2,
+      borderColor: GRAY_THIRD,
+      alignSelf: 'center',
+      alignItems: 'center',
+    },
+    nopView: {
+      marginLeft: getWidth(32),
+      width: getWidth(305),
+      marginTop: getHeight(13),
+      marginBottom: getHeight(29)
+    },
+    nopText: {
+      fontFamily:  'Montserrat-Regular', 
+      fontSize: getHeight(14),
+      color: BLACK_PRIMARY
     }
 })
 

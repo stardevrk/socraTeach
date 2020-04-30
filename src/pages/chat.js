@@ -9,7 +9,7 @@ import {
     Platform
 } from 'react-native';
 import Page from '../components/basePage';
-import MenuPage from '../components/menuPage';
+import NavPage from '../components/navPage';
 import {getWidth, getHeight} from '../constants/dynamicSize';
 import BaseButton from '../components/baseButton';
 import MenuButton from '../components/menuButton';
@@ -19,12 +19,13 @@ import NavButton from '../components/navButton';
 import {connect} from 'react-redux';
 import {GiftedChat, Actions} from 'react-native-gifted-chat';
 import _ from 'lodash';
-import {auth} from '../constants/firebase';
+import {auth, firestore} from '../constants/firebase';
 import {getChatUsers, getInitChats, clearChatsData, getMoreChats, sendMessage} from '../controller/chat';
 import ActionSheet from 'react-native-action-sheet';
 import ImagePicker from 'react-native-image-picker';
 import {uploadImage} from '../service/firebase';
 import {withMappedNavigationParams} from 'react-navigation-props-mapper';
+import PushNotificationIOS from "@react-native-community/push-notification-ios"
 
 const LOGO_IMAGE = require('../assets/images/logo.png');
 
@@ -46,30 +47,34 @@ class ChatScreen extends Component {
           // prevSession: {},
           sessionTimer: null,
           loading: false,
-          prevSessionData: {}
+          prevSessionData: {},
+          sendable: true
         }
 
-        props.navigation.addListener('didFocus', payload => {
-          // let problemData = payload.action.params.problem;
-          // console.log(payload.action.params)
-          console.log("Chat Screen Payload ========== ", payload);
+        this.my_listener = null;
+        this.partner_listener = null;
 
-          let problemData = payload.state.params !== undefined ? payload.state.params.problem : payload.action.params.problem;
-          let subject = payload.state.params !== undefined ? payload.state.params.subject : payload.action.params.subject;
-          let prevScreen = payload.state.params !== undefined ? payload.state.params.prevScreen : payload.action.params.prevScreen;
-          // tempProblemId = problemData.problemId;
-          let timer = payload.state.params !== undefined ? payload.state.params.timer : payload.action.params.timer;
-          this.setState({prevScreen: prevScreen, sessionTimer: timer});
+        // props.navigation.addListener('didFocus', payload => {
+        //   // let problemData = payload.action.params.problem;
+        //   // console.log(payload.action.params)
+        //   console.log("Chat Screen Payload ========== ", payload);
+
+        //   let problemData = payload.state.params !== undefined ? payload.state.params.problem : payload.action.params.problem;
+        //   let subject = payload.state.params !== undefined ? payload.state.params.subject : payload.action.params.subject;
+        //   let prevScreen = payload.state.params !== undefined ? payload.state.params.prevScreen : payload.action.params.prevScreen;
+        //   // tempProblemId = problemData.problemId;
+        //   let timer = payload.state.params !== undefined ? payload.state.params.timer : payload.action.params.timer;
+        //   this.setState({prevScreen: prevScreen, sessionTimer: timer});
 
 
           
-          // this.setState({subject: subject, problemData: problemData, prevScreen: prevScreen});
-          // if (this.state.subject !== '') {
-          //   this.props.dispatch(clearChatsData());
-          // this.props.dispatch(getChatUsers(subject.toLowerCase(), tempProblemId));
-          // this.props.dispatch(getInitChats(subject.toLowerCase(), tempProblemId));
-          // }
-        })
+        //   // this.setState({subject: subject, problemData: problemData, prevScreen: prevScreen});
+        //   // if (this.state.subject !== '') {
+        //   //   this.props.dispatch(clearChatsData());
+        //   // this.props.dispatch(getChatUsers(subject.toLowerCase(), tempProblemId));
+        //   // this.props.dispatch(getInitChats(subject.toLowerCase(), tempProblemId));
+        //   // }
+        // })
     }
     
     
@@ -77,7 +82,7 @@ class ChatScreen extends Component {
         /** Commented By Me*/
         const subject = props.sessionData.subject;
         const problemId = props.sessionData.problemId;
-        // let newSession = props.session;
+        // // let newSession = props.session;
 
         if (props.chat == null || props.chat == undefined) {
           return null;
@@ -89,7 +94,7 @@ class ChatScreen extends Component {
           return {
             prevSessionData: props.sessionData,
             subject: subject,
-            problemData: props.problem
+            // problemData: props.problem
           }
         }
 
@@ -105,14 +110,7 @@ class ChatScreen extends Component {
         const {messages} = props.chat;
         console.log("Message Item $$$$$$$$$$=", messages);
 
-        let chatUserName = '';
-        if (props.sessionData.type == 'teach') {
-          chatUserName = props.sessionData.name != undefined ? props.sessionData.name : '';
-        }
-
-        if (props.sessionData.type == 'learn') {
-          chatUserName = props.sessionData.name != undefined ? props.sessionData.name : '';
-        }
+        let chatUserName = props.sessionData.name != undefined ? props.sessionData.name : '';
         
         if (messages !== state.prevMessages) {
           
@@ -161,21 +159,21 @@ class ChatScreen extends Component {
     onSend = (messages = []) => {
       /** Commented By Me*/
       const {dispatch, sessionData}  = this.props;
-      if (this.state.sessionTimer != null) {
-        // clearInterval(this.state.sessionTimer);  
-      }
+      // if (this.state.sessionTimer != null) {
+      //   // clearInterval(this.state.sessionTimer);  
+      // }
       
-      // this.setState(previousState => ({
-      //   messages: GiftedChat.append(previousState.messages, messages),
-      // }));
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).collection('readBy').doc(auth.currentUser.uid).set({
+        lastRead: Date.now()
+      })
+
       if (this.state.messages.length > 0) {
         for (const message of messages) {
-          dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, message, false));
+          dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, message, false, sessionData.userId));
         }
       } else {
-        
         for (const message of messages) {
-          dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, message, true));
+          dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, message, true, sessionData.userId));
         }
       }
       
@@ -203,6 +201,20 @@ class ChatScreen extends Component {
         loadingEarlier: false,
         earlierLodable: false,
       })
+      const {sessionData} = this.props;
+      firestore.collection('users').doc(auth.currentUser.uid).update({
+        currentChatSee: false,
+        currentChatSubject: '',
+        currentChatProblem: ''
+      })
+
+      if (this.my_listener != null) {
+        this.my_listener();
+      }
+
+      if (this.partner_listener != null) {
+        this.partner_listener();
+      }
     }
 
     _renderActions = () => {
@@ -249,9 +261,9 @@ class ChatScreen extends Component {
             }
             if (this.state.messages.length > 0) {
               
-                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, false));
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, false, sessionData.userId));
             } else {
-                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, true));
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, true, sessionData.userId));
             }
           }).finally(() => {
             this.setState({loading: false});
@@ -296,9 +308,9 @@ class ChatScreen extends Component {
               {_id: auth.currentUser.uid}
             }
             if (this.state.messages.length > 0) {
-                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, false));
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, false, sessionData.userId));
             } else {
-                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, true));
+                dispatch(sendMessage(sessionData.subject.toLowerCase(), sessionData.problemId, newMessage, true, sessionData.userId));
             }
           }).finally(() => {
             this.setState({loading: false});
@@ -308,6 +320,10 @@ class ChatScreen extends Component {
     }
 
     _pressActionButton = () => {
+      console.log("this.state.sendable === ", this.state.sendable);
+      if (this.state.sendable == false) {
+        return;
+      }
       const options = [
         'Image From Library',
         'Image From Camera',
@@ -339,24 +355,67 @@ class ChatScreen extends Component {
     }
 
     componentDidMount() {
-      const {subject, problem, prevScreen} = this.props;
-      this.setState({subject: subject, problemData: problem, prevScreen: prevScreen});
+      const {sessionData, unread, prev} = this.props;
+      let my_session = 'learn_session';
+      let partner_session = 'teach_session';
+      if (prev != 'learn_session') {
+        my_session = 'teach_session';
+        partner_session = 'learn_session'
+      }
+
+      this.my_listener = firestore.collection('users').doc(auth.currentUser.uid).collection(my_session).doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).onSnapshot(doc => {
+        if (doc.exists) {
+          if (doc.data().sessionEnded == true) {
+            this.setState({sendable: false});
+          }
+        }
+      })
+      this.partner_listener = firestore.collection('users').doc(sessionData.userId).collection(partner_session).doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).onSnapshot(doc => {
+        if (doc.exists) {
+          if (doc.data().sessionEnded == true) {
+            this.setState({sendable: false});
+          }
+        }
+      })
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).collection('readBy').doc(auth.currentUser.uid).set({
+        lastRead: Date.now()
+      })
+
+      firestore.collection(sessionData.subject.toLowerCase()).doc(sessionData.problemId).collection('unread').doc(auth.currentUser.uid).set({
+        number: 0
+      })
+
+      firestore.collection('users').doc(auth.currentUser.uid).update({
+        currentChatSee: true,
+        currentChatSubject: sessionData.subject.toLowerCase(),
+        currentChatProblem: sessionData.problemId
+      })
+
+      if (Platform.OS == 'ios') {
+        PushNotificationIOS.getApplicationIconBadgeNumber((number) => {
+          if (number >= unread)
+            PushNotificationIOS.setApplicationIconBadgeNumber(number - unread);
+            
+            if(this.props.user.badge > unread)
+            firestore.collection('users').doc(auth.currentUser.uid).update({
+              badge: this.props.user.badge - unread
+            })
+        })
+      }
+      
+      // const {subject, problem, prevScreen} = this.props;
+      // this.setState({subject: subject, problemData: problem, prevScreen: prevScreen});
+    }
+
+    _goBack = () => {
+      navigationService.pop();
     }
 
     render () {
       
         return (
-          <Page backgroundColor={'#FFFFFF'}>
-            
+          <NavPage onLeftClick={this._goBack}>
               <KeyboardAvoidingView style={{flex: 1, width: '100%'}}>
-              <View style={{height: getHeight(40), width: '100%'}}>
-                <NavButton 
-                  iconName={'md-arrow-back'} 
-                  buttonStyle={{position: 'absolute', left: getWidth(16), top: getHeight(10)}}
-                  onClick={this.goBack}
-                  color={'#000000'}
-                />
-              </View>
                 <GiftedChat
                   ref={ref => this.giftedChatRef = ref}
                   messages={this.state.messages}
@@ -375,6 +434,7 @@ class ChatScreen extends Component {
                     backgroundColor: 'black',
                     swipeToDismiss: false
                   }}
+                  disableComposer={!this.state.sendable}
                 />
                 {
                   this.state.loading == true ? 
@@ -385,7 +445,7 @@ class ChatScreen extends Component {
                 }
             </KeyboardAvoidingView>
             
-          </Page>
+          </NavPage>
         )
     }
 }
@@ -413,7 +473,8 @@ const styles = StyleSheet.create({
 const mapStateToProps = (state) => ({
     subjects: state.subject,
     chat: state.chat,
-    session: state.session
+    session: state.session,
+    user: state.user
   })
   
 export default connect(mapStateToProps)(ChatScreen);
