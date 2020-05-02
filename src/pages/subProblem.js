@@ -38,7 +38,7 @@ class Loading extends Component {
 
     render () {
         return (
-            <SwitchPage leftSwitch={'Learn'} rightSwitch={'Teach'} switchChange={this._gotoTeach}>
+            <SwitchPage leftSwitch={'Learn'} rightSwitch={'Teach'} switchChange={this._gotoTeach} switchValue={'left'}>
                 <View style={{flex: 1, width: '100%'}}>
                   <View style={{flex: 1}}>
                     <Text

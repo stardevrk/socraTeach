@@ -115,14 +115,24 @@ class LeSessionNew extends Component {
       if (this.sessionListener != null) {
         this.sessionListener()
       }
-      if (sessionData.newExist == true) { // New Session is started fully
+      // if (sessionData.newExist == true) { // New Session is started fully
+      //   firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
+      //     joined: true,
+      //     shouldPay: Date.now(),
+      //     lastUpdate: Date.now()
+      //   }).then(value => {
+      //     navigationService.push(pages.LEARN_SESSION, {sessionData: sessionData});
+      //   })
+      // } else {
         firestore.collection('users').doc(auth.currentUser.uid).collection('learn_session').doc(sessionData.subject.toLowerCase() + '-' + sessionData.problemId).update({
           joined: true,
-          shouldPay: Date.now(),
           lastUpdate: Date.now()
+        }).then(value => {
+          
         })
-      }
-      navigationService.push(pages.LEARN_SESSION, {sessionData: sessionData});
+        navigationService.push(pages.LEARN_SESSION, {sessionData: sessionData});
+      // }
+      
     }
 
     _deleteNotification = () => {
@@ -209,20 +219,13 @@ class LeSessionNew extends Component {
               this.setState({deletable: true});
             }
           } else {
-            this.setState({deletable: false});
+            if (learnData.sessionStartingPoint === undefined || learnData.sessionStartingPoint == 0) {
+              this.setState({deletable: true});
+            } else {
+              this.setState({deletable: false});
+            }
           }
           
-          // if ((learnData.sessionStartingPoint > Date.now() || learnData.sessionStartingValue == 0)) {
-          //   this.setState({startable: false, sessionBtnText: 'Waiting for the teacher'})
-          // }
-
-          // if (earnData.sessionStartingValue == 0 && learnData.teacherJoined == false) {
-          //   this.setState({startable: false, sessionBtnText: 'Waiting for the teacher'})
-          // }
-
-          // if (learnData.sessionStartingPoint < Date.now()) {
-          //   this.setState({startable: false, sessionBtnText: 'Not available!'});
-          // }
         }
         
         

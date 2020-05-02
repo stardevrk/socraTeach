@@ -26,6 +26,8 @@ import {connect} from 'react-redux';
 import {getUserPayments, getUserPaymentHistory} from '../controller/payment';
 import _ from 'lodash';
 import Star from '../components/icons/star';
+import {getMyLiveLearnSession, getMyLiveTeachSession, clearMyLTSession} from '../controller/ltsession';
+import {getExpressAccount, fetchBalance} from '../controller/user';
 
 const MENU_LOGO = require('../assets/images/logo-menu.png')
 
@@ -130,6 +132,8 @@ class MenuContent extends Component {
 
       if (!_.isEmpty(filteredLearn) || !_.isEmpty(secondTeach)) {
         notiExist = true;
+      } else {
+        notiExist = false;
       }
 
       if (state.prevLearnSession != learnSessionData || state.prevTeachSession != teachSessionData ||
@@ -225,13 +229,17 @@ class MenuContent extends Component {
     }
 
     componentDidMount() {
+      console.log("Menu Content Loaded#########");
       const {dispatch} = this.props;
       dispatch(getUserPayments());
       dispatch(getUserPaymentHistory());
+      dispatch(clearMyLTSession());
+      dispatch(getMyLiveLearnSession());
+      dispatch(getMyLiveTeachSession());
     }
 
     render () {
-      console.log("This.props === ", this.props.user);
+      // console.log("This.props === ", this.props.user);
       const balance = this.props.bank ? this.props.bank.balance : null;
       
       const displayBalance = balance ? '$' + balance + ' in Socra' : '$0.00 in Socra';

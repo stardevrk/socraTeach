@@ -10,6 +10,7 @@ import {clearMyLTSession} from './ltsession';
 import {getMyInitTeachList} from './teach';
 import {getMyInitLearnList} from './learn';
 import AsyncStorage from '@react-native-community/async-storage';
+import {fetchBalance} from './user';
 import _ from 'lodash';
 
 let firstAuth = true;
@@ -69,6 +70,7 @@ async function getUserInfo (authData) {
           let listener = firestore.collection('users').doc(userId).onSnapshot(sn => {
             let userData = sn.data();
             store.dispatch(fetchUser(userData));
+            store.dispatch(fetchBalance());
           });
           addListener(userId + 'my_user_info',  listener);
         }

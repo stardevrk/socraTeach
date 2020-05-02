@@ -49,8 +49,8 @@ class SessionAvailability extends Component {
                     <TouchableOpacity
                       onPress={this._saveConfiguration}
                     >
-                      <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(18), color: PURPLE_MAIN}}>
-                        Send to teacher
+                      <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: PURPLE_MAIN}}>
+                        Send
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -137,10 +137,11 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     width: '100%',
-    paddingHorizontal: getWidth(33),
+    paddingLeft: getWidth(32),
+    paddingRight: getWidth(30),
     alignSelf: 'center',
     marginTop: getHeight(33),
-    marginBottom: getHeight(57)
+    marginBottom: getHeight(57),
   },
   selectionItem: {
     flexDirection: 'row',

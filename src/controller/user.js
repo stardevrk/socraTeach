@@ -33,27 +33,6 @@ export function getTeacherInfo (teacherId) {
   }
 }
 
-export function getExpressAccount() {
-  return async function (dispatch, getState) {
-    try {
-      if (!hasListener('user_express_account')) {
-        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('express_account').doc('express_account_creation_result').onSnapshot(doc => {
-            if (doc.exists) {
-              dispatch(clearExpress());
-              console.log("Fetch Express Account", doc.data());
-              dispatch(getExpress(doc.data()));
-            } else {
-              dispatch(clearExpress());
-            }
-        })
-        addListener('user_express_account', listener);
-      }
-    } catch (e) {
-      console.log('Get Express Account', e);
-    }
-  }
-}
-
 export function fetchBalance() {
   return async function (dispatch, getState) {
     try {
@@ -90,3 +69,28 @@ export function fetchBalance() {
     }
   }
 }
+
+export function getExpressAccount() {
+  return async function (dispatch, getState) {
+    try {
+      if (!hasListener('user_express_account')) {
+        let listener = firestore.collection('users').doc(auth.currentUser.uid).collection('express_account').doc('express_account_creation_result').onSnapshot(doc => {
+            if (doc.exists) {
+              dispatch(clearExpress());
+              console.log("Fetch Express Account", doc.data());
+              dispatch(getExpress(doc.data()));
+              if (doc.data().newPayment != undefined && doc.data().newPayment > 0) {
+                dispatch(fetchBalance());
+              }
+            } else {
+              dispatch(clearExpress());
+            }
+        })
+        addListener('user_express_account', listener);
+      }
+    } catch (e) {
+      console.log('Get Express Account', e);
+    }
+  }
+}
+
