@@ -201,7 +201,7 @@ class BankSetup extends Component {
                   </TouchableOpacity>
                   <View style={styles.descView}>
                     <Text style={styles.descText}>
-                      If you plan to only use the Learn feature you can skip this section. You can add a bank account via Stripe at any time.
+                      If you plan to only use the Learn feature, you can skip this section. You can add a bank account via Stripe at any time. In the Stripe sign up process, please use socrateach.com as your business website.
                     </Text>
                   </View>
                 </View>

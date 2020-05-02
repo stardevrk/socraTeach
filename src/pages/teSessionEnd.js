@@ -115,7 +115,9 @@ class TeSessionEnd extends Component {
                       Rate {sessionData.name}
                     </Text>
                   </View>
-                  <View style={styles.selectionItem}>
+                  <TouchableOpacity style={styles.selectionItem}
+                    onPress={()=> {this.setState({studentRating: 5})}}
+                  >
                       <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                         5 - Superb
                       </Text>
@@ -124,8 +126,10 @@ class TeSessionEnd extends Component {
                         onPress={()=> {this.setState({studentRating: 5})}}
                         size={getHeight(11)}
                       />
-                  </View>
-                  <View style={styles.selectionItem}>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.selectionItem}
+                    onPress={()=> {this.setState({studentRating: 4})}}
+                  >
                       <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                         4 - Good
                       </Text>
@@ -134,8 +138,10 @@ class TeSessionEnd extends Component {
                         onPress={()=> {this.setState({studentRating: 4})}}
                         size={getHeight(11)}
                       />
-                  </View>
-                  <View style={styles.selectionItem}>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.selectionItem}
+                    onPress={()=> {this.setState({studentRating: 3})}}
+                  >
                       <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                         3 - Average
                       </Text>
@@ -144,8 +150,10 @@ class TeSessionEnd extends Component {
                         onPress={()=> {this.setState({studentRating: 3})}}
                         size={getHeight(11)}
                       />
-                  </View>
-                  <View style={styles.selectionItem}>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.selectionItem}
+                    onPress={()=> {this.setState({studentRating: 2})}}
+                  >
                       <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                         2 - Not helpful
                       </Text>
@@ -154,8 +162,10 @@ class TeSessionEnd extends Component {
                         onPress={()=> {this.setState({studentRating: 2})}}
                         size={getHeight(11)}
                       />
-                  </View>
-                  <View style={styles.selectionItem}>
+                  </TouchableOpacity>
+                  <TouchableOpacity style={styles.selectionItem}
+                    onPress={()=> {this.setState({studentRating: 1})}}
+                  >
                       <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                         1 - Report this student
                       </Text>
@@ -164,7 +174,7 @@ class TeSessionEnd extends Component {
                         onPress={()=> {this.setState({studentRating: 1})}}
                         size={getHeight(11)}
                       />
-                  </View>
+                  </TouchableOpacity>
                   <BaseButton 
                     text={'Done'}
                     onClick={this._saveResult}

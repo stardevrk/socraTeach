@@ -115,7 +115,9 @@ class LeSessionEnd extends Component {
                   Was {sessionData.name} Helpful?
                 </Text>
               </View>
-              <View style={styles.selectionItem}>
+              <TouchableOpacity style={styles.selectionItem}
+                onPress={()=> {this.setState({teacherRating: 5})}}
+              >
                   <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                     5 - Superb
                   </Text>
@@ -124,8 +126,10 @@ class LeSessionEnd extends Component {
                     onPress={()=> {this.setState({teacherRating: 5})}}
                     size={getHeight(11)}
                   />
-              </View>
-              <View style={styles.selectionItem}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.selectionItem}
+                onPress={()=> {this.setState({teacherRating: 4})}}
+              >
                   <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                     4 - Good
                   </Text>
@@ -134,8 +138,10 @@ class LeSessionEnd extends Component {
                     onPress={()=> {this.setState({teacherRating: 4})}}
                     size={getHeight(11)}
                   />
-              </View>
-              <View style={styles.selectionItem}>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.selectionItem}
+                onPress={()=> {this.setState({teacherRating: 3})}}
+              >
                   <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                     3 - Average
                   </Text>
@@ -144,8 +150,10 @@ class LeSessionEnd extends Component {
                     onPress={()=> {this.setState({teacherRating: 3})}}
                     size={getHeight(11)}
                   />
-              </View>
-              <View style={styles.selectionItem}>
+              </TouchableOpacity>
+              <View style={styles.selectionItem}
+                onPress={()=> {this.setState({teacherRating: 2})}}
+              >
                   <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                     2 - Not helpful
                   </Text>
@@ -155,7 +163,9 @@ class LeSessionEnd extends Component {
                     size={getHeight(11)}
                   />
               </View>
-              <View style={styles.selectionItem}>
+              <TouchableOpacity style={styles.selectionItem}
+                onPress={()=> {this.setState({teacherRating: 1})}}
+              >
                   <Text style={{fontFamily: 'Montserrat-Medium', fontSize: getHeight(20), color: BLACK_PRIMARY}}>
                     1 - Report this teacher
                   </Text>
@@ -164,7 +174,7 @@ class LeSessionEnd extends Component {
                     onPress={()=> {this.setState({teacherRating: 1})}}
                     size={getHeight(11)}
                   />
-              </View>
+              </TouchableOpacity>
               <BaseButton 
                 text={'Done'}
                 onClick={this._saveResult}

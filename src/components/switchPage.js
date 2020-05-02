@@ -131,11 +131,11 @@ class SwitchPage extends Component {
                     onChangeValue={switchChange}
                     activeBackgroundColor={PURPLE_MAIN}
                     inactiveBackgroundColor={PURPLE_MAIN}
-                    switchWidth={getWidth(40)}
-                    switchHeight={getHeight(20)}
-                    buttonWidth={getHeight(14)}
-                    buttonHeight={getHeight(14)}
-                    buttonBorderRadius={getHeight(7)}
+                    switchWidth={getWidth(60)}
+                    switchHeight={getHeight(30)}
+                    buttonWidth={getHeight(20)}
+                    buttonHeight={getHeight(20)}
+                    buttonBorderRadius={getHeight(10)}
                   />
                   <View style={styles.centerRightView}>
                     {
