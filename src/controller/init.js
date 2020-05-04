@@ -74,7 +74,7 @@ async function getUserInfo (authData) {
           });
           addListener(userId + 'my_user_info',  listener);
         }
-        
+        navigationService.navigate(pages.APP)
       } else { //Signup
         let currentState = store.getState();
         let signupInfo = _.get(currentState, 'signupInfo', {});
@@ -103,11 +103,12 @@ async function getUserInfo (authData) {
           currentChatProblem: ''
         }).then((value) => {
           
-          if (signupInfo.card != undefined) {
-            firestore.collection('users').doc(userId).collection('cards').add({
-              ...signupInfo.card
-            })
-          }
+          // if (signupInfo.card != undefined) {
+          //   firestore.collection('users').doc(userId).collection('cards').add({
+          //     ...signupInfo.card
+          //   })
+          // }
+          navigationService.navigate(pages.APP)
         });
       }
     }).catch(error => {  
@@ -121,10 +122,10 @@ async function getUserInfo (authData) {
 async function onAuthStateChanged (authData) {
   console.log('authData', authData)
   if (authData) {
-    await getUserInfo(authData);
     await getSubjectInfo();
+    await getUserInfo(authData);
     // setFCMToken(authData);
-    navigationService.navigate(pages.APP)
+    
   } else {
     console.log('onAuthStateChanged authData null');
     clearListeners();

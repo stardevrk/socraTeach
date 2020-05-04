@@ -19,7 +19,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import pages from '../../constants/pages';
 import Card from '../../components/icons/card';
 import {validateExp, validateCardNum} from '../../service/utils';
-import {getStripeToken} from '../../service/stripe';
+// import {getStripeToken} from '../../service/stripe';
 import {signupStripeInfo} from '../../model/actions/signupAC';
 import {connect} from 'react-redux';
 import { BLACK_PRIMARY } from '../../constants/colors';
@@ -77,34 +77,34 @@ class Payment extends Component {
 
     const {dispatch} = this.props;
     this.setState({loading: true});
-    getStripeToken(this.state.cardNumber, exp_month, exp_year, this.state.cardSecurity).then((value) => {
-      console.log("Stripe Response ", value.tokenId);
-      let card = {
-        name: this.state.cardName,
-        number: this.state.cardNumber,
-        exp_month: parseInt(exp_month),
-        exp_year: parseInt(exp_year),
-        cvc: this.state.cardSecurity
-      }
-      dispatch(signupStripeInfo(value.tokenId, card));
-      navigationService.navigate(pages.BANK);
-    }).catch(() => {
-      Alert.alert(
-        'Invalid Card',
-        'Please use correct Card',
-        [
-          {
-            text: 'OK',
-            onPress: () => console.log('Cancel Pressed'),
-            style: 'cancel'
-          }
-        ],
-        {cancelable: false}
-      )
-    })
-    .finally(() => {
-      this.setState({loading: false});
-    });
+    // getStripeToken(this.state.cardNumber, exp_month, exp_year, this.state.cardSecurity).then((value) => {
+    //   console.log("Stripe Response ", value.tokenId);
+    //   let card = {
+    //     name: this.state.cardName,
+    //     number: this.state.cardNumber,
+    //     exp_month: parseInt(exp_month),
+    //     exp_year: parseInt(exp_year),
+    //     cvc: this.state.cardSecurity
+    //   }
+    //   dispatch(signupStripeInfo(value.tokenId, card));
+    //   navigationService.navigate(pages.BANK);
+    // }).catch(() => {
+    //   Alert.alert(
+    //     'Invalid Card',
+    //     'Please use correct Card',
+    //     [
+    //       {
+    //         text: 'OK',
+    //         onPress: () => console.log('Cancel Pressed'),
+    //         style: 'cancel'
+    //       }
+    //     ],
+    //     {cancelable: false}
+    //   )
+    // })
+    // .finally(() => {
+    //   this.setState({loading: false});
+    // });
 
     // navigationService.navigate(pages.SINGUP_FINISH);
   }

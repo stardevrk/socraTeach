@@ -1,26 +1,26 @@
 import Axios from 'axios';
-import stripe from 'tipsi-stripe';
+// import stripe from 'tipsi-stripe';
 
-let Stripe_PublishKey = 'pk_test_BT3DREmIiXj1UvAVaZsa80y300Zec15sQc';
+// let Stripe_PublishKey = 'pk_test_BT3DREmIiXj1UvAVaZsa80y300Zec15sQc';
 
-export const getStripeToken = (cardNumber, exp_month, exp_year, cvc) => {
-  stripe.setOptions({
-    publishableKey: Stripe_PublishKey
-  })
-  return new Promise(async (resolve, reject) => {
-    try{
-      let token = await stripe.createTokenWithCard({
-          number: cardNumber,
-          expMonth: parseInt(exp_month),
-          expYear: parseInt(exp_year),
-          cvc: cvc,
-        });
-        resolve(token);
-    } catch (error) {
-        reject();
-    }
-  })
-}
+// export const getStripeToken = (cardNumber, exp_month, exp_year, cvc) => {
+//   stripe.setOptions({
+//     publishableKey: Stripe_PublishKey
+//   })
+//   return new Promise(async (resolve, reject) => {
+//     try{
+//       let token = await stripe.createTokenWithCard({
+//           number: cardNumber,
+//           expMonth: parseInt(exp_month),
+//           expYear: parseInt(exp_year),
+//           cvc: cvc,
+//         });
+//         resolve(token);
+//     } catch (error) {
+//         reject();
+//     }
+//   })
+// }
 
 // var stripe = require('stripe')(Stripe_PublishKey);
 // export const getStripeToken = (cardNumber, exp_month, exp_year, cvc) => {

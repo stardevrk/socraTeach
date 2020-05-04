@@ -569,10 +569,6 @@ PODS:
     - React
   - RNSVG (9.13.6):
     - React
-  - Stripe (14.0.0)
-  - tipsi-stripe (7.5.1):
-    - React
-    - Stripe (~> 14.0.0)
   - Yoga (1.14.0)
 
 DEPENDENCIES:
@@ -623,7 +619,6 @@ DEPENDENCIES:
   - RNImageRotate (from `../node_modules/react-native-image-rotate`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
   - RNSVG (from `../node_modules/react-native-svg`)
-  - tipsi-stripe (from `../node_modules/tipsi-stripe`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
 
 SPEC REPOS:
@@ -657,7 +652,6 @@ SPEC REPOS:
     - leveldb-library
     - nanopb
     - Protobuf
-    - Stripe
 
 EXTERNAL SOURCES:
   DoubleConversion:
@@ -736,8 +730,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-reanimated"
   RNSVG:
     :path: "../node_modules/react-native-svg"
-  tipsi-stripe:
-    :path: "../node_modules/tipsi-stripe"
   Yoga:
     :path: "../node_modules/react-native/ReactCommon/yoga"
 
@@ -809,8 +801,6 @@ SPEC CHECKSUMS:
   RNImageRotate: 61c62c5a907405821e28dc8c0e04e4fdc909b1fa
   RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
   RNSVG: 8ba35cbeb385a52fd960fd28db9d7d18b4c2974f
-  Stripe: db29ad197c74aca6fb981e4e8355cf7ebd0fca5a
-  tipsi-stripe: 3e0073c7eec0b2bfd1d1d5736d843c22e3024485
   Yoga: f2a7cd4280bfe2cca5a7aed98ba0eb3d1310f18b
 
 PODFILE CHECKSUM: a8b2f0659008efebef43dd788e2604eb96a7cf22

@@ -143,6 +143,7 @@ class TeSession extends Component {
                         borderRadius: getHeight(10),
                         alignSelf: 'center'
                       }}
+                      swipeToDismiss={false}
                       source={{
                         uri: this.state.problemImage,
                       }}

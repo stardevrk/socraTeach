@@ -86,6 +86,7 @@ class ChooseProblem extends Component {
               height: getHeight(575),
               borderRadius: getHeight(10)
             }}
+            swipeToDismiss={false}
             source={{
               uri: card['problemImage'],
             }}
@@ -245,6 +246,7 @@ class ChooseProblem extends Component {
                   stackSeparation={15}
                   useViewOverflow={true}
                   disableBottomSwipe={true}
+                  disableTopSwipe={true}
                   newSubjectCards={this.state.newSubjectCards}
                   containerStyle={{justifyContent: 'center', alignItems: 'center', flex: 1, width: '100%'}}
                   overlayLabels={{

@@ -68,6 +68,7 @@ class BankSetup extends Component {
       let currentState = store.getState();
       let signupInfo = _.get(currentState, 'signupInfo', {});
       store.dispatch(fetchUser(signupInfo));
+      
       // dispatch(getExpress({desc: 'Express Account Will be Created'}));
       //Test mode ca_GnclzGHybAEFl9aSwOI96R3jkPDIIIlM
       //Live mode ca_GncllTyA3AAQIxk0jJd7RZsYaKCB1Jpi
@@ -105,6 +106,7 @@ class BankSetup extends Component {
       let currentState = store.getState();
       let signupInfo = _.get(currentState, 'signupInfo', {});
       store.dispatch(fetchUser(signupInfo));
+      
     }).catch(error => {
       console.log("Create Firebase User Error = ", error);
     })
